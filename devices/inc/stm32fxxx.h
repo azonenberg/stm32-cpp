@@ -47,4 +47,24 @@
 #include <stm32f031.h>
 #endif
 
+/**
+	@brief Disables interrupts without saving the previous enable state
+ */
+extern "C" void DisableInterrupts();
+
+/**
+	@brief Enables interrupts without saving the previous enable state
+ */
+extern "C" void EnableInterrupts();
+
+/**
+	@brief Enters a critical section, disables interrupts, and returns the previous PRIMASK value
+ */
+extern "C" uint32_t EnterCriticalSection();
+
+/**
+	@brief Leaves a critical section and restores the previous PRIMASK value
+ */
+extern "C" void LeaveCriticalSection(uint32_t cpu_sr);
+
 #endif
