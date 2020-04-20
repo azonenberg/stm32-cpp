@@ -41,8 +41,120 @@ void RCCHelper::Enable(volatile gpio_t* gpio)
 		RCC.AHBENR |= RCC_AHB_GPIOB;
 }
 
+/**
+	@brief Enable a UART
+ */
 void RCCHelper::Enable(volatile usart_t* uart)
 {
 	if(uart == &USART1)
 		RCC.APB2ENR |= RCC_APB2_USART1;
 }
+
+/**
+	@brief Enable a SPI bus
+ */
+void RCCHelper::Enable(volatile spi_t* spi)
+{
+	if(spi == &SPI1)
+		RCC.APB2ENR |= RCC_APB2_SPI1;
+}
+
+#ifdef STM32F0
+
+/**
+	@brief Configures the PLL to use the internal 8 MHz oscillator, then selects it
+
+	@param prediv	Pre-divider from 8 MHz input
+	@param mult		Multiplier from pre-divided clock to CPU clock
+
+	@param ahbdiv	Divider from CPU clock to AHB clock
+	@param apbdiv	Divider from AHB clock to APB clock
+ */
+void RCCHelper::InitializePLLFromInternalOscillator(uint8_t prediv, uint8_t mult, uint16_t ahbdiv, uint8_t apbdiv)
+{
+	//Pre-divider is offset by 1
+	prediv = (prediv - 1) & 0xf;
+	RCC.CFGR2 = prediv;
+
+	//Multiplier is offset by 2
+	mult = (mult - 2) & 0xf;
+
+	//Properly encode the APB clock
+	uint8_t apbsel;
+	switch(apbdiv)
+	{
+		case 1:
+			apbsel = 0;
+			break;
+		case 2:
+			apbsel = 4;
+			break;
+		case 4:
+			apbsel = 5;
+			break;
+		case 8:
+			apbsel = 6;
+			break;
+
+		//invalid selector is treated as max possible divide
+		default:
+		case 16:
+			apbsel = 7;
+			break;
+	}
+
+	//Properly encode the AHB clock
+	uint8_t ahbsel;
+	switch(ahbdiv)
+	{
+		case 1:
+			ahbsel = 0;
+			break;
+		case 2:
+			ahbsel = 8;
+			break;
+		case 4:
+			ahbsel = 9;
+			break;
+		case 8:
+			ahbsel = 10;
+			break;
+		case 16:
+			ahbsel = 11;
+			break;
+		case 64:
+			ahbsel = 12;
+			break;
+		case 128:
+			ahbsel = 13;
+			break;
+		case 256:
+			ahbsel = 14;
+			break;
+
+		//invalid selector is treated as max possible divide
+		default:
+		case 512:
+			ahbsel = 15;
+			break;
+	}
+
+	//Configure PLL multipliers/dividers
+	RCC.CFGR = (mult << 18) |
+				(prediv & 1) << 17 |
+				0x8000 |
+				(apbsel << 8) |
+				(ahbsel << 4);
+
+	//Start the PLL
+	RCC.CR |= RCC_PLL_ON;
+
+	//Wait for PLL to be stable, then start using it
+	while( (RCC.CR & RCC_PLL_READY) == 0)
+	{}
+	RCC.CFGR = (RCC.CFGR & 0xfffffffc) | 2;
+	while( (RCC.CFGR & 0xc) != 0x8)
+	{}
+}
+
+#endif

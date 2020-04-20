@@ -33,13 +33,25 @@
 /**
 	@brief Reset and Clock Control
 
-	Helper class for enabling various devices
+	Helper class for enabling various devices.
+
+	All functions are static because there's only one RCC in the device.
  */
 class RCCHelper
 {
 public:
 	static void Enable(volatile gpio_t* gpio);
 	static void Enable(volatile usart_t* uart);
+	static void Enable(volatile spi_t* spi);
+
+	#ifdef STM32F0
+	static void InitializePLLFromInternalOscillator(
+		uint8_t prediv,
+		uint8_t mult,
+		uint16_t ahbdiv,
+		uint8_t apbdiv
+		);
+	#endif
 };
 
 #endif
