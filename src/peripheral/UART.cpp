@@ -293,18 +293,3 @@ void UART::Printf(const char* format, ...)
 
 	__builtin_va_end(list);
 }
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Interrupt handlers
-
-void __attribute__((isr)) USART1_Handler()
-{
-	//Check why we got the IRQ.
-	//For now, ignore anything other than "data ready"
-	if(0 == (USART1.ISR & USART_ISR_RXNE))
-		return;
-
-	//rx data? Shove it in the fifo
-	g_uart->OnIRQRxData(USART1.RDR);
-}
-
