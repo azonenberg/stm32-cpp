@@ -86,7 +86,8 @@ SECTIONS
 		. += 1024;		/* ADC not yet implemented */
 		. += 1024;		/* Reserved */
 		. += 1024;		/* TIM1 not yet implemented */
-		. += 1024;		/* SPI1 not yet implemented */
+		. = ALIGN(1024);
+		*(.spi1)
 		. += 1024;		/* Reserved */
 		. = ALIGN(1024);
 		*(.usart1)

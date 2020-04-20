@@ -37,11 +37,11 @@ volatile rcc_t RCC __attribute__((section(".rcc")));
 
 //volatile flash_t FLASH __attribute__((section(".flash")));
 
-//volatile spi_t SPI1 __attribute__((section(".spi1")));
-
-volatile usart_t USART1 __attribute__((section(".usart1")));
+volatile spi_t SPI1 __attribute__((section(".spi1")));
 
 volatile syscfg_t SYSCFG __attribute__((section(".syscfg")));
+
+volatile usart_t USART1 __attribute__((section(".usart1")));
 
 volatile tim_t TIM2 __attribute__((section(".tim2")));
 volatile tim_t TIM3 __attribute__((section(".tim3")));
