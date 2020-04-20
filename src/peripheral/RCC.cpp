@@ -27,38 +27,22 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef uart_h
-#define uart_h
-
-#include <util/CharacterDevice.h>
+#include <stm32fxxx.h>
+#include <peripheral/RCC.h>
 
 /**
-	@file
-	@author Andrew D. Zonenberg
-	@brief UART driver
+	@brief Enable a GPIO bank
  */
-
-/**
-	@brief Driver for a UART
- */
-class UART : public CharacterDevice
+void RCCHelper::Enable(volatile gpio_t* gpio)
 {
-public:
+	if(gpio == &GPIOA)
+		RCC.AHBENR |= RCC_AHB_GPIOA;
+	else if(gpio == &GPIOB)
+		RCC.AHBENR |= RCC_AHB_GPIOB;
+}
 
-	UART(volatile usart_t* lane, uint32_t baud_div = 181)
-	 : UART(lane, lane, baud_div)
-	{}
-
-	UART(volatile usart_t* txlane, volatile usart_t* rxlane, uint32_t baud_div);
-
-	//TX side
-	virtual void PrintBinary(char ch);
-	void Printf(const char* format, ...);
-	void WritePadded(const char* str, int minlen, char padding, int prepad);
-
-protected:
-	volatile usart_t* m_txlane;
-	volatile usart_t* m_rxlane;
-};
-
-#endif
+void RCCHelper::Enable(volatile usart_t* uart)
+{
+	if(uart == &USART1)
+		RCC.APB2ENR |= RCC_APB2_USART1;
+}

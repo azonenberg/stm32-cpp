@@ -27,38 +27,84 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef uart_h
-#define uart_h
+#ifndef gpio_h
+#define gpio_h
 
-#include <util/CharacterDevice.h>
-
-/**
-	@file
-	@author Andrew D. Zonenberg
-	@brief UART driver
- */
+#include <peripheral/RCC.h>
 
 /**
-	@brief Driver for a UART
+	@brief A GPIO pin
  */
-class UART : public CharacterDevice
+class GPIOPin
 {
 public:
 
-	UART(volatile usart_t* lane, uint32_t baud_div = 181)
-	 : UART(lane, lane, baud_div)
-	{}
+	/**
+		@brief GPIO mode constants (must be same as STM32 MODER register)
+	 */
+	enum gpiomode_t
+	{
+		MODE_INPUT		= 0,
+		MODE_OUTPUT		= 1,
+		MODE_PERIPHERAL	= 2,
+		MODE_ANALOG		= 3
+	};
 
-	UART(volatile usart_t* txlane, volatile usart_t* rxlane, uint32_t baud_div);
+	/**
+		@brief Initializes the pin
+	 */
+	GPIOPin(volatile gpio_t* gpio, uint8_t pin, gpiomode_t mode, uint8_t altmode = 0)
+	: m_gpio(gpio)
+	, m_pin(pin)
+	, m_setmask(1 << pin)
+	, m_clearmask(~m_setmask)
+	{
+		//Make sure the bank we're part of is turned on
+		RCCHelper::Enable(gpio);
 
-	//TX side
-	virtual void PrintBinary(char ch);
-	void Printf(const char* format, ...);
-	void WritePadded(const char* str, int minlen, char padding, int prepad);
+		//Configure the pin
+		SetMode(mode, altmode);
+	}
+
+	/**
+		@brief Configure pin mode
+	 */
+	void SetMode(gpiomode_t mode, uint8_t altmode = 1)
+	{
+		m_gpio->MODER &= ~(0x3 << 2*m_pin);
+		m_gpio->MODER |= (mode << 2*m_pin);
+
+		if(mode == MODE_PERIPHERAL)
+		{
+			if(m_pin < 8)
+			{
+				m_gpio->AFRL &= ~(0xf << 4*m_pin);
+				m_gpio->AFRL |= (altmode << 4*m_pin);
+			}
+			else
+			{
+				m_gpio->AFRH &= ~(0xf << 4*(m_pin-8));
+				m_gpio->AFRH |= (altmode << 4*(m_pin-8));
+			}
+		}
+	}
+
+	/**
+		@brief Drives a value out the pin
+	 */
+	void Set(bool b)
+	{
+		if(b)
+			m_gpio->ODR |= m_setmask;
+		else
+			m_gpio->ODR &= m_clearmask;
+	}
 
 protected:
-	volatile usart_t* m_txlane;
-	volatile usart_t* m_rxlane;
+	volatile gpio_t* 	m_gpio;
+	uint8_t				m_pin;
+	uint32_t			m_setmask;
+	uint32_t			m_clearmask;
 };
 
 #endif

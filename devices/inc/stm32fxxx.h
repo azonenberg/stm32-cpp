@@ -27,38 +27,24 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef uart_h
-#define uart_h
-
-#include <util/CharacterDevice.h>
+#ifndef stm32fxxx_h
+#define stm32fxxx_h
 
 /**
 	@file
 	@author Andrew D. Zonenberg
-	@brief UART driver
+	@brief	Master include file for all parts
+
+	Pulls in the correct part depending on a global define
+
+	The user is responsible for externally defining the part number, e.g. STM32F031.
+
+	This header will define a family macro, e.g. STM32F0, based on that.
  */
 
-/**
-	@brief Driver for a UART
- */
-class UART : public CharacterDevice
-{
-public:
-
-	UART(volatile usart_t* lane, uint32_t baud_div = 181)
-	 : UART(lane, lane, baud_div)
-	{}
-
-	UART(volatile usart_t* txlane, volatile usart_t* rxlane, uint32_t baud_div);
-
-	//TX side
-	virtual void PrintBinary(char ch);
-	void Printf(const char* format, ...);
-	void WritePadded(const char* str, int minlen, char padding, int prepad);
-
-protected:
-	volatile usart_t* m_txlane;
-	volatile usart_t* m_rxlane;
-};
+#ifdef STM32F031
+#define STM32F0
+#include <stm32f031.h>
+#endif
 
 #endif

@@ -27,38 +27,19 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef uart_h
-#define uart_h
-
-#include <util/CharacterDevice.h>
+#ifndef RCC_h
+#define RCC_h
 
 /**
-	@file
-	@author Andrew D. Zonenberg
-	@brief UART driver
- */
+	@brief Reset and Clock Control
 
-/**
-	@brief Driver for a UART
+	Helper class for enabling various devices
  */
-class UART : public CharacterDevice
+class RCCHelper
 {
 public:
-
-	UART(volatile usart_t* lane, uint32_t baud_div = 181)
-	 : UART(lane, lane, baud_div)
-	{}
-
-	UART(volatile usart_t* txlane, volatile usart_t* rxlane, uint32_t baud_div);
-
-	//TX side
-	virtual void PrintBinary(char ch);
-	void Printf(const char* format, ...);
-	void WritePadded(const char* str, int minlen, char padding, int prepad);
-
-protected:
-	volatile usart_t* m_txlane;
-	volatile usart_t* m_rxlane;
+	static void Enable(volatile gpio_t* gpio);
+	static void Enable(volatile usart_t* uart);
 };
 
 #endif

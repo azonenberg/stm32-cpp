@@ -1,6 +1,6 @@
 /***********************************************************************************************************************
 *                                                                                                                      *
-* STARSHIPRAIDER v0.1                                                                                                  *
+* STM32-CPP v0.1                                                                                                       *
 *                                                                                                                      *
 * Copyright (c) 2020 Andrew D. Zonenberg                                                                               *
 * All rights reserved.                                                                                                 *
@@ -27,10 +27,11 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#include "stm32f031.h"
+#include <stm32fxxx.h>
 #include <ctype.h>
 #include <string.h>
-#include "UART.h"
+#include <peripheral/UART.h>
+#include <peripheral/RCC.h>
 
 extern UART* g_uart;
 
@@ -98,6 +99,10 @@ UART::UART(volatile usart_t* txlane, volatile usart_t* rxlane, uint32_t baud_div
 	: m_txlane(txlane)
 	, m_rxlane(rxlane)
 {
+	//Turn on the UART
+	RCCHelper::Enable(txlane);
+	RCCHelper::Enable(rxlane);
+
 	//Set baud rates
 	m_txlane->BRR = baud_div;
 	if(m_txlane != m_rxlane)
