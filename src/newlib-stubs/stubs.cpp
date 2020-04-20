@@ -27,21 +27,33 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#include <stm32f031.h>
+#include <stdint.h>
+#include <errno.h>
 
-volatile gpio_t GPIOA __attribute__((section(".gpioa")));
-volatile gpio_t GPIOB __attribute__((section(".gpiob")));
-volatile gpio_t GPIOC __attribute__((section(".gpioc")));
+extern "C" void atexit()
+{
+}
 
-volatile rcc_t RCC __attribute__((section(".rcc")));
+extern "C" void _exit()
+{
+	while(true)
+	{}
+}
 
-//volatile flash_t FLASH __attribute__((section(".flash")));
+extern "C" int _kill(int /*ignored*/, int /*ignored*/)
+{
+	errno = EINVAL;
+	return -1;
+}
 
-//volatile spi_t SPI1 __attribute__((section(".spi1")));
+extern "C" int _getpid()
+{
+	return 1;
+}
 
-volatile usart_t USART1 __attribute__((section(".usart1")));
+extern "C" void* _sbrk(int nbytes)
+{
+	errno = ENOMEM;
+	return (void*)-1;
+}
 
-volatile syscfg_t SYSCFG __attribute__((section(".syscfg")));
-
-volatile tim_t TIM2 __attribute__((section(".tim2")));
-volatile tim_t TIM3 __attribute__((section(".tim3")));
