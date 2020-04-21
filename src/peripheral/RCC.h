@@ -30,6 +30,8 @@
 #ifndef RCC_h
 #define RCC_h
 
+#include <stm32fxxx.h>
+
 /**
 	@brief Reset and Clock Control
 

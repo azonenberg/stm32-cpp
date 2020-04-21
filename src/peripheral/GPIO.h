@@ -53,7 +53,7 @@ public:
 	/**
 		@brief Initializes the pin
 	 */
-	GPIOPin(volatile gpio_t* gpio, uint8_t pin, gpiomode_t mode, uint8_t altmode = 0)
+	GPIOPin(volatile gpio_t* gpio, uint8_t pin, gpiomode_t mode, uint8_t altmode = 0, bool open_drain = false)
 	: m_gpio(gpio)
 	, m_pin(pin)
 	, m_setmask(1 << pin)
@@ -63,13 +63,13 @@ public:
 		RCCHelper::Enable(gpio);
 
 		//Configure the pin
-		SetMode(mode, altmode);
+		SetMode(mode, altmode, open_drain);
 	}
 
 	/**
 		@brief Configure pin mode
 	 */
-	void SetMode(gpiomode_t mode, uint8_t altmode = 1)
+	void SetMode(gpiomode_t mode, uint8_t altmode = 1, bool open_drain = false)
 	{
 		m_gpio->MODER &= ~(0x3 << 2*m_pin);
 		m_gpio->MODER |= (mode << 2*m_pin);
@@ -87,6 +87,11 @@ public:
 				m_gpio->AFRH |= (altmode << 4*(m_pin-8));
 			}
 		}
+
+		if(open_drain)
+			m_gpio->OTYPER |= (1 << m_pin);
+		else
+			m_gpio->OTYPER &= ~(1 << m_pin);
 	}
 
 	/**
@@ -98,6 +103,17 @@ public:
 			m_gpio->ODR |= m_setmask;
 		else
 			m_gpio->ODR &= m_clearmask;
+	}
+
+	/**
+		@brief Reads the current value of the pin
+	 */
+	bool Get()
+	{
+		if(m_gpio->IDR & m_setmask)
+			return true;
+		else
+			return false;
 	}
 
 protected:
