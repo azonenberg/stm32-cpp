@@ -60,6 +60,15 @@ void RCCHelper::Enable(volatile spi_t* spi)
 }
 
 /**
+	@brief Enable an I2C bus
+ */
+void RCCHelper::Enable(volatile i2c_t* i2c)
+{
+	if(i2c == &I2C1)
+		RCC.APB1ENR |= RCC_APB1_I2C1;
+}
+
+/**
 	@brief Enable a timer
  */
 void RCCHelper::Enable(volatile tim_t* tim)

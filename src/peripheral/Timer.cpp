@@ -39,55 +39,51 @@
 	@param chan			The peripheral to use
 	@param features		Capabilities of the requested timer
  */
-Timer::Timer(volatile tim_t* chan, Features features)
+Timer::Timer(volatile tim_t* chan, Features features, uint16_t prescale)
 	: m_chan(chan)
 	, m_features(features)
 {
 	RCCHelper::Enable(chan);
-	/*
-	//8-bit word size
-	//TODO: make this configurable
-	lane->CR2 = 7 << 8;
 
-	//Turn on the peripheral in master mode.
-	//To prevent problems, we need to have the internal CS# pulled high.
-	//TODO: support slave mode
-	lane->CR1 = SPI_MASTER | SPI_SOFT_CS | SPI_INTERNAL_CS;
-	lane->CR1 |= SPI_ENABLE;
+	//Configure the counter
+	chan->CNT = 0x0;
+	chan->PSC = (prescale - 1);
 
-	//Calculate correct init value for baud rate divisor
-	switch(baudDiv)
-	{
-		case 2:
-			break;
-		case 4:
-			lane->CR1 |= 0x8;
-			break;
-		case 8:
-			lane->CR1 |= 0x10;
-			break;
-		case 16:
-			lane->CR1 |= 0x18;
-			break;
-		case 32:
-			lane->CR1 |= 0x20;
-			break;
-		case 64:
-			lane->CR1 |= 0x28;
-			break;
-		case 128:
-			lane->CR1 |= 0x30;
-			break;
+	//Turn off most features
+	chan->CR2 = 0x0;
+	chan->SMCR = 0x0;
+	chan->DIER = 0x0;
+	chan->CCMR1 = 0x0;
+	chan->CCMR2 = 0x0;
+	chan->CCR1 = 0x0;
+	chan->CCR2 = 0x0;
+	chan->CCR3 = 0x0;
+	chan->CCR4 = 0x0;
+	chan->CCER = 0x0;
+	chan->BDTR = 0x0;
+	chan->DCR = 0x0;
+	chan->DMAR = 0x0;
 
-		//use max value for invalid divisor
-		case 256:
-		default:
-			lane->CR1 |= 0x38;
-			break;
-	}
+	//Reset the counter
+	chan->CR1 = 0x0;
+	chan->EGR = 0x1;
 
-	//Enable bidirectional mode if requested
-	if(!fullDuplex)
-		lane->CR1 |= SPI_BIDI_MODE;
-	*/
+	//Enable the counter
+	chan->CR1 = 0x1;
+}
+
+/**
+	@brief Blocking wait until the timer has advanced by the specified number of ticks
+
+	@param ticks		Number of ticks to wait
+	@param reset		If true, restart the counter from zero before starting the delay interval
+ */
+void Timer::Sleep(uint16_t ticks, bool reset)
+{
+	if(reset)
+		Restart();
+
+	unsigned int target = m_chan->CNT + ticks;
+	while(m_chan->CNT != target)
+	{}
 }

@@ -43,9 +43,10 @@ class RCCHelper
 {
 public:
 	static void Enable(volatile gpio_t* gpio);
-	static void Enable(volatile usart_t* uart);
+	static void Enable(volatile i2c_t* i2c);
 	static void Enable(volatile spi_t* spi);
 	static void Enable(volatile tim_t* tim);
+	static void Enable(volatile usart_t* uart);
 
 	#ifdef STM32F0
 	static void InitializePLLFromInternalOscillator(

@@ -27,37 +27,33 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef timer_h
-#define timer_h
+#ifndef i2c_h
+#define i2c_h
 
-class Timer
+class I2C
 {
 public:
+	I2C(volatile i2c_t* lane, uint8_t prescale, uint8_t clkdiv);
 
-	enum Features
+	void BlockingRead(uint8_t addr, uint8_t* data, uint8_t len);
+
+	void BlockingWrite(uint8_t addr, const uint8_t* data, uint8_t len);
+
+	void BlockingWrite8(uint8_t addr, uint8_t data)
+	{ BlockingWrite(addr, &data, 1); }
+
+	void BlockingWrite16(uint8_t addr, uint16_t data)
 	{
-		FEATURE_ADVANCED
-	};
-
-	Timer(volatile tim_t* chan, Features features, uint16_t prescale);
-
-	/**
-		@brief Gets the current counter value
-	 */
-	unsigned int GetCount()
-	{ return m_chan->CNT; }
-
-	/**
-		@brief Restarts the counter from the default value (0 if up, auto reload value if down)
-	 */
-	void Restart()
-	{ m_chan->EGR = 0x1; }
-
-	void Sleep(uint16_t ticks, bool reset = false);
+		uint8_t buf[2] =
+		{
+			static_cast<uint8_t>(data >> 8),
+			static_cast<uint8_t>(data & 0xff)
+		};
+		BlockingWrite(addr, buf, 2);
+	}
 
 protected:
-	volatile tim_t*	m_chan;
-	Features m_features;
+	volatile i2c_t*	m_lane;
 };
 
 #endif

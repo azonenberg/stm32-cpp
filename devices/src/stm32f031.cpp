@@ -37,6 +37,8 @@ volatile rcc_t RCC __attribute__((section(".rcc")));
 
 //volatile flash_t FLASH __attribute__((section(".flash")));
 
+volatile i2c_t I2C1 __attribute__((section(".i2c1")));
+
 volatile spi_t SPI1 __attribute__((section(".spi1")));
 
 volatile syscfg_t SYSCFG __attribute__((section(".syscfg")));

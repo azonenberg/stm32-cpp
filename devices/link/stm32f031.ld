@@ -80,6 +80,12 @@ SECTIONS
 		*(.tim14)
 		. = ALIGN(1024);
 		. += 1024;		/* Reserved */
+		. += 1024;		/* RTC */
+		. += 1024;		/* WWDG */
+		. += 1024;		/* IWDG */
+		. += 8192;		/* Reserved */
+		. = ALIGN(1024);
+		*(.i2c1)
 	} > APB1
 
 	.sfr_apb2 :

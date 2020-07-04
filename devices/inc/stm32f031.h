@@ -71,11 +71,12 @@ enum rcc_apb2
 
 enum rcc_apb1
 {
-	RCC_APB1_TIM14	= 0x0100,
-	RCC_APB1_TIM7	= 0x0020,
-	RCC_APB1_TIM6	= 0x0010,
-	RCC_APB1_TIM3	= 0x0002,
-	RCC_APB1_TIM2	= 0x0001
+	RCC_APB1_I2C1	= 0x200000,
+	RCC_APB1_TIM14	= 0x000100,
+	RCC_APB1_TIM7	= 0x000020,
+	RCC_APB1_TIM6	= 0x000010,
+	RCC_APB1_TIM3	= 0x000002,
+	RCC_APB1_TIM2	= 0x000001
 };
 
 typedef struct
@@ -206,5 +207,38 @@ extern volatile tim_t TIM3;
 extern volatile tim_t TIM14;
 extern volatile tim_t TIM16;
 extern volatile tim_t TIM17;
+
+enum i2c_cr2_bits
+{
+	I2C_AUTO_END	= 0x02000000,
+	I2C_STOP		= 0x00004000,
+	I2C_START		= 0x00002000,
+	I2C_READ		= 0x00000400
+};
+
+enum i2c_isr_bits
+{
+	I2C_BUSY				= 0x8000,
+	I2C_TRANSFER_COMPLETE	= 0x0040,
+	I2C_RX_READY			= 0x0004,
+	I2C_TX_EMPTY			= 0x0001
+};
+
+typedef struct
+{
+	uint32_t	CR1;
+	uint32_t	CR2;
+	uint32_t	OAR1;
+	uint32_t	OAR2;
+	uint32_t	TIMINGR;
+	uint32_t	TIMEOUTR;
+	uint32_t	ISR;
+	uint32_t	ICR;
+	uint32_t	PECR;
+	uint32_t	RXDR;
+	uint32_t	TXDR;
+} i2c_t;
+
+extern volatile i2c_t I2C1;
 
 #endif
