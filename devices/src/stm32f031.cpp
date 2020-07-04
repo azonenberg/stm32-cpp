@@ -43,5 +43,9 @@ volatile syscfg_t SYSCFG __attribute__((section(".syscfg")));
 
 volatile usart_t USART1 __attribute__((section(".usart1")));
 
+volatile tim_t TIM1 __attribute__((section(".tim1")));
 volatile tim_t TIM2 __attribute__((section(".tim2")));
 volatile tim_t TIM3 __attribute__((section(".tim3")));
+volatile tim_t TIM14 __attribute__((section(".tim14")));
+volatile tim_t TIM16 __attribute__((section(".tim16")));
+volatile tim_t TIM17 __attribute__((section(".tim17")));

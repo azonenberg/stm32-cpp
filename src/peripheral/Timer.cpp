@@ -27,34 +27,67 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef RCC_h
-#define RCC_h
-
 #include <stm32fxxx.h>
+#include <ctype.h>
+#include <string.h>
+#include <peripheral/RCC.h>
+#include <peripheral/Timer.h>
 
 /**
-	@brief Reset and Clock Control
+	@brief Initialize a timer
 
-	Helper class for enabling various devices.
-
-	All functions are static because there's only one RCC in the device.
+	@param chan			The peripheral to use
+	@param features		Capabilities of the requested timer
  */
-class RCCHelper
+Timer::Timer(volatile tim_t* chan, Features features)
+	: m_chan(chan)
+	, m_features(features)
 {
-public:
-	static void Enable(volatile gpio_t* gpio);
-	static void Enable(volatile usart_t* uart);
-	static void Enable(volatile spi_t* spi);
-	static void Enable(volatile tim_t* tim);
+	RCCHelper::Enable(chan);
+	/*
+	//8-bit word size
+	//TODO: make this configurable
+	lane->CR2 = 7 << 8;
 
-	#ifdef STM32F0
-	static void InitializePLLFromInternalOscillator(
-		uint8_t prediv,
-		uint8_t mult,
-		uint16_t ahbdiv,
-		uint8_t apbdiv
-		);
-	#endif
-};
+	//Turn on the peripheral in master mode.
+	//To prevent problems, we need to have the internal CS# pulled high.
+	//TODO: support slave mode
+	lane->CR1 = SPI_MASTER | SPI_SOFT_CS | SPI_INTERNAL_CS;
+	lane->CR1 |= SPI_ENABLE;
 
-#endif
+	//Calculate correct init value for baud rate divisor
+	switch(baudDiv)
+	{
+		case 2:
+			break;
+		case 4:
+			lane->CR1 |= 0x8;
+			break;
+		case 8:
+			lane->CR1 |= 0x10;
+			break;
+		case 16:
+			lane->CR1 |= 0x18;
+			break;
+		case 32:
+			lane->CR1 |= 0x20;
+			break;
+		case 64:
+			lane->CR1 |= 0x28;
+			break;
+		case 128:
+			lane->CR1 |= 0x30;
+			break;
+
+		//use max value for invalid divisor
+		case 256:
+		default:
+			lane->CR1 |= 0x38;
+			break;
+	}
+
+	//Enable bidirectional mode if requested
+	if(!fullDuplex)
+		lane->CR1 |= SPI_BIDI_MODE;
+	*/
+}

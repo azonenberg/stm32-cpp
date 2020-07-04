@@ -74,6 +74,12 @@ SECTIONS
 		*(.tim2)
 		. = ALIGN(1024);
 		*(.tim3)
+		. = ALIGN(1024);
+		. += 6144;		/* Reserved */
+		. = ALIGN(1024);
+		*(.tim14)
+		. = ALIGN(1024);
+		. += 1024;		/* Reserved */
 	} > APB1
 
 	.sfr_apb2 :
@@ -85,7 +91,8 @@ SECTIONS
 		. += 7168;		/* Reserved */
 		. += 1024;		/* ADC not yet implemented */
 		. += 1024;		/* Reserved */
-		. += 1024;		/* TIM1 not yet implemented */
+		. = ALIGN(1024);
+		*(.tim1)
 		. = ALIGN(1024);
 		*(.spi1)
 		. += 1024;		/* Reserved */
@@ -93,8 +100,10 @@ SECTIONS
 		*(.usart1)
 		. = ALIGN(1024);
 		. += 2048;		/* Reserved */
-		. += 1024;		/* TIM16 not implemented */
-		. += 1024;		/* TIM17 not implemented */
+		. = ALIGN(1024);
+		*(.tim16)
+		. = ALIGN(1024);
+		*(.tim17)
 		. += 3072;		/* Reserved */
 		. += 1024;		/* DBGMCU not implemented */
 	} > APB2

@@ -59,6 +59,25 @@ void RCCHelper::Enable(volatile spi_t* spi)
 		RCC.APB2ENR |= RCC_APB2_SPI1;
 }
 
+/**
+	@brief Enable a timer
+ */
+void RCCHelper::Enable(volatile tim_t* tim)
+{
+	if(tim == &TIM1)
+		RCC.APB2ENR |= RCC_APB2_TIM1;
+	else if(tim == &TIM2)
+		RCC.APB1ENR |= RCC_APB1_TIM2;
+	else if(tim == &TIM3)
+		RCC.APB1ENR |= RCC_APB1_TIM3;
+	else if(tim == &TIM14)
+		RCC.APB1ENR |= RCC_APB1_TIM14;
+	else if(tim == &TIM16)
+		RCC.APB2ENR |= RCC_APB2_TIM16;
+	else if(tim == &TIM17)
+		RCC.APB2ENR |= RCC_APB2_TIM17;
+}
+
 #ifdef STM32F0
 
 /**

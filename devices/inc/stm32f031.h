@@ -62,13 +62,18 @@ enum rcc_ahb
 
 enum rcc_apb2
 {
-	RCC_APB2_USART1 = 0x4000,
-	RCC_APB2_SPI1	= 0x1000,
-	RCC_APB2_TIM1	= 0x0800
+	RCC_APB2_TIM17	= 0x40000,
+	RCC_APB2_TIM16	= 0x20000,
+	RCC_APB2_USART1 = 0x04000,
+	RCC_APB2_SPI1	= 0x01000,
+	RCC_APB2_TIM1	= 0x00800
 };
 
 enum rcc_apb1
 {
+	RCC_APB1_TIM14	= 0x0100,
+	RCC_APB1_TIM7	= 0x0020,
+	RCC_APB1_TIM6	= 0x0010,
 	RCC_APB1_TIM3	= 0x0002,
 	RCC_APB1_TIM2	= 0x0001
 };
@@ -130,33 +135,6 @@ extern volatile usart_t USART1;
 
 typedef struct
 {
-	uint32_t CR1;
-	uint32_t CR2;
-	uint32_t SMCR;
-	uint32_t DIER;
-	uint32_t SR;
-	uint32_t EGR;
-	uint32_t CCMR1;
-	uint32_t CCMR2;
-	uint32_t CCER;
-	uint32_t CNT;
-	uint32_t PSC;
-	uint32_t ARR;
-	uint32_t field_30;
-	uint32_t CCR1;
-	uint32_t CCR2;
-	uint32_t CCR3;
-	uint32_t CCR4;
-	uint32_t field_44;
-	uint32_t DCR;
-	uint32_t DMAR;
-} tim_t;
-
-extern volatile tim_t TIM2;
-extern volatile tim_t TIM3;
-
-typedef struct
-{
 	uint32_t CFGR1;
 	uint32_t EXTICR1;
 	uint32_t EXTICR2;
@@ -169,19 +147,19 @@ extern volatile syscfg_t SYSCFG;
 
 typedef struct
 {
-	uint32_t CR1;
-	uint32_t CR2;
-	uint32_t SR;
-	uint8_t DR;			//STM32f0x1 datasheet page 807, 28.9.4 says the register is 16-bits wide, and that
-						//"Unused bits are ignored when writing to the register". This is untrue.
-						//If you access DR as a 16-bit write, you get *two* bytes of data sent.
-	uint8_t padding1;
-	uint16_t padding2;
-	uint32_t CRCPR;
-	uint32_t RXCRCR;
-	uint32_t TXCRCR;
-	uint32_t I2SCFGR;
-	uint32_t I2SPR;
+	uint32_t	CR1;
+	uint32_t	CR2;
+	uint32_t	SR;
+	uint8_t		DR;			//STM32f0x1 datasheet page 807, 28.9.4 says the register is 16-bits wide, and that
+							//"Unused bits are ignored when writing to the register". This is untrue.
+							//If you access DR as a 16-bit write, you get *two* bytes of data sent.
+	uint8_t		padding1;
+	uint16_t	padding2;
+	uint32_t	CRCPR;
+	uint32_t	RXCRCR;
+	uint32_t	TXCRCR;
+	uint32_t	I2SCFGR;
+	uint32_t	I2SPR;
 } spi_t;
 
 enum spi_cr1_bits
@@ -197,5 +175,36 @@ enum spi_cr1_bits
 };
 
 extern volatile spi_t SPI1;
+
+typedef struct
+{
+	uint32_t	CR1;
+	uint32_t	CR2;
+	uint32_t	SMCR;
+	uint32_t	DIER;
+	uint32_t	SR;
+	uint32_t	EGR;
+	uint32_t	CCMR1;
+	uint32_t	CCMR2;
+	uint32_t	CCER;
+	uint32_t	CNT;
+	uint32_t	PSC;
+	uint32_t	ARR;
+	uint32_t	RCR;
+	uint32_t	CCR1;
+	uint32_t	CCR2;
+	uint32_t	CCR3;
+	uint32_t	CCR4;
+	uint32_t	BDTR;
+	uint32_t	DCR;
+	uint32_t	DMAR;
+} tim_t;
+
+extern volatile tim_t TIM1;
+extern volatile tim_t TIM2;
+extern volatile tim_t TIM3;
+extern volatile tim_t TIM14;
+extern volatile tim_t TIM16;
+extern volatile tim_t TIM17;
 
 #endif

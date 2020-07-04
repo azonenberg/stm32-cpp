@@ -27,34 +27,23 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef RCC_h
-#define RCC_h
+#ifndef timer_h
+#define timer_h
 
-#include <stm32fxxx.h>
-
-/**
-	@brief Reset and Clock Control
-
-	Helper class for enabling various devices.
-
-	All functions are static because there's only one RCC in the device.
- */
-class RCCHelper
+class Timer
 {
 public:
-	static void Enable(volatile gpio_t* gpio);
-	static void Enable(volatile usart_t* uart);
-	static void Enable(volatile spi_t* spi);
-	static void Enable(volatile tim_t* tim);
 
-	#ifdef STM32F0
-	static void InitializePLLFromInternalOscillator(
-		uint8_t prediv,
-		uint8_t mult,
-		uint16_t ahbdiv,
-		uint8_t apbdiv
-		);
-	#endif
+	enum Features
+	{
+		FEATURE_ADVANCED
+	};
+
+	Timer(volatile tim_t* chan, Features features);
+
+protected:
+	volatile tim_t*	m_chan;
+	Features m_features;
 };
 
 #endif
