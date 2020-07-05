@@ -100,7 +100,7 @@ void SPI::BlockingWrite(uint8_t data)
 		m_lane->CR1 |= SPI_BIDI_OE;
 
 	//If FIFO is full, block
-	while( (m_lane->SR & 0x1800) == 0x1800)
+	while( (m_lane->SR & SPI_TX_FIFO_MASK) == SPI_TX_FIFO_MASK)
 	{}
 
 	//Send it
@@ -113,10 +113,10 @@ void SPI::BlockingWrite(uint8_t data)
 void SPI::WaitForWrites()
 {
 	//Wait for FIFO to empty
-	while( (m_lane->SR & 0x1800) != 0)
+	while( (m_lane->SR & SPI_TX_FIFO_MASK) != 0)
 	{}
 
 	//Wait for transmit buffer to empty
-	while( (m_lane->SR & 1) != 1)
+	while(!(m_lane->SR & SPI_TX_EMPTY))
 	{}
 }

@@ -81,7 +81,10 @@ Timer::Timer(volatile tim_t* chan, Features features, uint16_t prescale)
 void Timer::Sleep(uint16_t ticks, bool reset)
 {
 	if(reset)
+	{
 		Restart();
+		m_chan->CNT = 0;
+	}
 
 	unsigned int target = m_chan->CNT + ticks;
 	while(m_chan->CNT != target)

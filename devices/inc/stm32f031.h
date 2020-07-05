@@ -175,6 +175,12 @@ enum spi_cr1_bits
 	SPI_MASTER		= 0x0004
 };
 
+enum spi_sr_bits
+{
+	SPI_TX_FIFO_MASK	= 0x1800,
+	SPI_TX_EMPTY		= 0x0002
+};
+
 extern volatile spi_t SPI1;
 
 typedef struct
