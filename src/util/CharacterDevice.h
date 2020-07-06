@@ -31,6 +31,7 @@
 #define characterdevice_h
 
 #include <util/FIFO.h>
+#include <util/StringHelpers.h>
 
 /**
 	@file
@@ -45,6 +46,21 @@ public:
 
 	//Overrides
 	virtual void PrintBinary(char ch) =0;
+
+	//Pretty printing
+public:
+	void WritePadded(const char* str, int minlen, char padding, int prepad);
+
+	void Printf(const char* format, ...)
+	{
+		__builtin_va_list list;
+		__builtin_va_start(list, format);
+		DoPrintf(this, format, list);
+		__builtin_va_end(list);
+	}
+
+	void Printf(const char* format, __builtin_va_list list)
+	{ DoPrintf(this, format, list); }
 
 	//Convenience wrappers
 public:

@@ -27,54 +27,35 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#include <stm32fxxx.h>
-#include <ctype.h>
-#include <string.h>
-#include <peripheral/UART.h>
-#include <peripheral/RCC.h>
-#include <util/StringHelpers.h>
+#ifndef StringBuffer_h
+#define StringBuffer_h
 
-extern UART* g_uart;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// UART driver class
+#include <stdio.h>
+#include <stdint.h>
 
 /**
-	@brief Initializes a UART.
+	@brief Helper for formatting strings
  */
-UART::UART(volatile usart_t* txlane, volatile usart_t* rxlane, uint32_t baud_div)
-	: m_txlane(txlane)
-	, m_rxlane(rxlane)
+class StringBuffer : public CharacterDevice
 {
-	//Turn on the UART
-	RCCHelper::Enable(txlane);
-	RCCHelper::Enable(rxlane);
-
-	//Set baud rates
-	m_txlane->BRR = baud_div;
-	if(m_txlane != m_rxlane)
-		m_rxlane->BRR = baud_div;
-
-	//Wipe config register to default states
-	m_txlane->CR3 = 0x0;
-	m_txlane->CR2 = 0x0;
-	m_txlane->CR1 = 0x0;
-	if(m_txlane != m_rxlane)
+public:
+	StringBuffer(char* buf, size_t size)
+	: m_buf(buf)
+	, m_size(size)
+	, m_wptr(0)
 	{
-		m_rxlane->CR3 = 0x0;
-		m_rxlane->CR2 = 0x0;
-		m_rxlane->CR1 = 0x0;
 	}
 
-	//Configure TX/RX lanes appropriately
-	m_txlane->CR1 |= 0x9;
-	m_rxlane->CR1 |= 0x25;
-}
+	virtual void PrintBinary(char ch)
+	{
+		if(m_wptr <= m_size)
+			m_buf[m_wptr ++] = ch;
+	}
 
-void UART::PrintBinary(char ch)
-{
-	m_txlane->TDR = ch;
+protected:
+	char* m_buf;
+	size_t m_size;
+	size_t m_wptr;
+};
 
-	while(0 == (m_txlane->ISR & USART_ISR_TXE))
-	{}
-}
+#endif

@@ -53,8 +53,6 @@ public:
 
 	//TX side
 	virtual void PrintBinary(char ch);
-	void Printf(const char* format, ...);
-	void WritePadded(const char* str, int minlen, char padding, int prepad);
 
 protected:
 	volatile usart_t* m_txlane;
