@@ -120,3 +120,20 @@ void SPI::WaitForWrites()
 	while(!(m_lane->SR & SPI_TX_EMPTY))
 	{}
 }
+
+/**
+	@brief Set the SPI clock inversion mode (CPOL)
+ */
+void SPI::SetClockInvert(bool invert)
+{
+	//Disable the peripheral
+	m_lane->CR1 &= ~SPI_ENABLE;
+
+	if(invert)
+		m_lane->CR1 |= SPI_CPOL;
+	else
+		m_lane->CR1 &= ~SPI_CPOL;
+
+	//Re-enable it
+	m_lane->CR1 |= SPI_ENABLE;
+}

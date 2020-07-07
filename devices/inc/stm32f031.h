@@ -172,7 +172,8 @@ enum spi_cr1_bits
 	SPI_INTERNAL_CS	= 0x0100,
 	SPI_LSB_FIRST	= 0x0080,
 	SPI_ENABLE		= 0x0040,
-	SPI_MASTER		= 0x0004
+	SPI_MASTER		= 0x0004,
+	SPI_CPOL		= 0x0002
 };
 
 enum spi_sr_bits

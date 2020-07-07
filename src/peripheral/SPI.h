@@ -38,6 +38,8 @@ public:
 	void BlockingWrite(uint8_t data);
 	void WaitForWrites();
 
+	void SetClockInvert(bool invert);
+
 protected:
 	volatile spi_t*	m_lane;
 	bool m_fullDuplex;
