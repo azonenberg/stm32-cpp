@@ -133,10 +133,10 @@ protected:
 		return (m_wptr == m_rptr);
 	}
 
-	objtype m_storage[depth];
-	uint32_t m_wptr;
-	uint32_t m_rptr;
-	bool m_empty;
+	volatile objtype m_storage[depth];
+	volatile uint32_t m_wptr;
+	volatile uint32_t m_rptr;
+	volatile bool m_empty;
 };
 
 #endif
