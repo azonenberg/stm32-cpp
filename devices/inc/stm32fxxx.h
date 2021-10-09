@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP v0.1                                                                                                       *
 *                                                                                                                      *
-* Copyright (c) 2020 Andrew D. Zonenberg                                                                               *
+* Copyright (c) 2020-2021 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -45,6 +45,11 @@
 #ifdef STM32F031
 #define STM32F0
 #include <stm32f031.h>
+#endif
+
+#ifdef STM32F777
+#define STM32F7
+#include <stm32f777.h>
 #endif
 
 /**

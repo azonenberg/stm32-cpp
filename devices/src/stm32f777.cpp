@@ -27,26 +27,32 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef spi_h
-#define spi_h
+#include <stm32f777.h>
 
-#ifdef HAVE_SPI
+volatile gpio_t GPIOA __attribute__((section(".gpioa")));
+volatile gpio_t GPIOB __attribute__((section(".gpiob")));
+volatile gpio_t GPIOC __attribute__((section(".gpioc")));
+volatile gpio_t GPIOD __attribute__((section(".gpiod")));
+volatile gpio_t GPIOE __attribute__((section(".gpioe")));
+volatile gpio_t GPIOF __attribute__((section(".gpiof")));
+volatile gpio_t GPIOG __attribute__((section(".gpiog")));
+volatile gpio_t GPIOH __attribute__((section(".gpioh")));
+volatile gpio_t GPIOI __attribute__((section(".gpioi")));
+volatile gpio_t GPIOJ __attribute__((section(".gpioj")));
+volatile gpio_t GPIOK __attribute__((section(".gpiok")));
 
-class SPI
-{
-public:
-	SPI(volatile spi_t* lane, bool fullDuplex, uint16_t baudDiv);
+volatile rcc_t RCC __attribute__((section(".rcc")));
 
-	void BlockingWrite(uint8_t data);
-	void WaitForWrites();
+volatile flash_t FLASH __attribute__((section(".flash")));
 
-	void SetClockInvert(bool invert);
+volatile spi_t SPI1 __attribute__((section(".spi1")));
+volatile spi_t SPI4 __attribute__((section(".spi4")));
+volatile spi_t SPI5 __attribute__((section(".spi5")));
+volatile spi_t SPI6 __attribute__((section(".spi6")));
 
-protected:
-	volatile spi_t*	m_lane;
-	bool m_fullDuplex;
-};
-
-#endif
-
-#endif
+volatile usart_t USART1 __attribute__((section(".usart1")));
+volatile usart_t USART2 __attribute__((section(".usart2")));
+volatile usart_t USART3 __attribute__((section(".usart3")));
+volatile usart_t UART4 __attribute__((section(".uart4")));
+volatile usart_t UART5 __attribute__((section(".uart5")));
+volatile usart_t USART6 __attribute__((section(".usart6")));

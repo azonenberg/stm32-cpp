@@ -27,10 +27,30 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef stm32f031_h
-#define stm32f031_h
+#ifndef stm32f777_h
+#define stm32f777_h
 
 #include <stdint.h>
+
+typedef struct
+{
+	uint32_t ACR;
+	uint32_t KEYR;
+	uint32_t OPTKEYR;
+	uint32_t SR;
+	uint32_t CR;
+	uint32_t OPTCR;
+	uint32_t OPTCR1;
+} flash_t;
+
+extern volatile flash_t FLASH;
+
+enum flash_acr
+{
+	FLASH_ACR_ARTEN = 0x20,
+	FLASH_ACR_PREFETCHEN = 0x10,
+};
+
 
 typedef struct
 {
@@ -49,64 +69,98 @@ typedef struct
 extern volatile gpio_t GPIOA;
 extern volatile gpio_t GPIOB;
 extern volatile gpio_t GPIOC;
+extern volatile gpio_t GPIOD;
+extern volatile gpio_t GPIOE;
+extern volatile gpio_t GPIOF;
+extern volatile gpio_t GPIOG;
+extern volatile gpio_t GPIOH;
+extern volatile gpio_t GPIOI;
+extern volatile gpio_t GPIOJ;
+extern volatile gpio_t GPIOK;
 
-enum rcc_ahb
+enum rcc_ahb1
 {
-	RCC_AHB_GPIOA	= 0x020000,
-	RCC_AHB_GPIOB	= 0x040000,
-	RCC_AHB_GPIOC	= 0x080000,
-	RCC_AHB_GPIOD	= 0x100000,
-	RCC_AHB_GPIOE	= 0x200000,
-	RCC_AHB_GPIOF	= 0x400000
-};
-
-enum rcc_apb2
-{
-	RCC_APB2_TIM17	= 0x40000,
-	RCC_APB2_TIM16	= 0x20000,
-	RCC_APB2_USART1 = 0x04000,
-	RCC_APB2_SPI1	= 0x01000,
-	RCC_APB2_TIM1	= 0x00800
+	RCC_AHB1_GPIOA = 0x0001,
+	RCC_AHB1_GPIOB = 0x0002,
+	RCC_AHB1_GPIOC = 0x0004,
+	RCC_AHB1_GPIOD = 0x0008,
+	RCC_AHB1_GPIOE = 0x0010,
+	RCC_AHB1_GPIOF = 0x0020,
+	RCC_AHB1_GPIOG = 0x0040,
+	RCC_AHB1_GPIOH = 0x0080,
+	RCC_AHB1_GPIOI = 0x0100,
+	RCC_AHB1_GPIOJ = 0x0200,
+	RCC_AHB1_GPIOK = 0x0400
 };
 
 enum rcc_apb1
 {
-	RCC_APB1_I2C1	= 0x200000,
-	RCC_APB1_TIM14	= 0x000100,
-	RCC_APB1_TIM7	= 0x000020,
-	RCC_APB1_TIM6	= 0x000010,
-	RCC_APB1_TIM3	= 0x000002,
-	RCC_APB1_TIM2	= 0x000001
+	RCC_APB1_UART5 = 0x100000,
+	RCC_APB1_UART4 = 0x080000,
+	RCC_APB1_USART3 = 0x040000,
+	RCC_APB1_USART2 = 0x020000
+};
+
+enum rcc_apb2
+{
+	RCC_APB2_SPI1 = 0x1000,
+	RCC_APB2_SPI4 = 0x2000,
+	RCC_APB2_SPI5 = 0x100000,
+	RCC_APB2_SPI6 = 0x200000
 };
 
 typedef struct
 {
 	uint32_t CR;
+	uint32_t PLLCFGR;
 	uint32_t CFGR;
 	uint32_t CIR;
-	uint32_t APB2RSTR;
+	uint32_t AHB1RSTR;
+	uint32_t AHB2RSTR;
+	uint32_t AHB3RSTR;
+	uint32_t field_1c;
 	uint32_t APB1RSTR;
-	uint32_t AHBENR;
-	uint32_t APB2ENR;
+	uint32_t APB2RSTR;
+	uint32_t field_28;
+	uint32_t field_2c;
+	uint32_t AHB1ENR;
+	uint32_t AHB2ENR;
+	uint32_t AHB3ENR;
+	uint32_t field_3c;
 	uint32_t APB1ENR;
+	uint32_t APB2ENR;
+	uint32_t field_48;
+	uint32_t field_4c;
+	uint32_t AHB1LPENR;
+	uint32_t AHB2LPENR;
+	uint32_t AHB3LPENR;
+	uint32_t field_5c;
+	uint32_t APB1LPENR;
+	uint32_t APB2LPENR;
+	uint32_t field_68;
+	uint32_t field_6c;
 	uint32_t BDCR;
 	uint32_t CSR;
-	uint32_t AHBRSTR;
-	uint32_t CFGR2;
-	uint32_t CFGR3;
-	uint32_t CR2;
+	uint32_t field_78;
+	uint32_t field_7c;
+	uint32_t SSCGR;
+	uint32_t PLLI2SCFGR;
+	uint32_t PLLSAICFGR;
+	uint32_t DCKCFGR1;
+	uint32_t DCKCFGR2;
 } rcc_t;
 
-enum rcc_cr_bits
+enum rcc_pll_bits
 {
-	RCC_PLL_READY	= 0x02000000,
-	RCC_PLL_ON		= 0x01000000,
-	RCC_CSS_ON		= 0x00080000,
-	RCC_HSE_BYP		= 0x00040000,
-	RCC_HSE_READY	= 0x00020000,
-	RCC_HSE_ON		= 0x00010000,
-	RCC_HSI_READY	= 0x00000002,
-	RCC_HSI_ON		= 0x00000001
+	RCC_PLL_READY	= 0x2000000,
+	RCC_PLL_ENABLE 	= 0x1000000,
+
+	RCC_APB2_DIV4 	= 0xA000,
+	RCC_APB1_DIV8	= 0x1800,
+	RCC_AHB_DIV1	= 0x0,
+	RCC_SYSCLK_PLL	= 0x2,
+
+	RCC_PLLCFGR_RESERVED_MASK = 0x80BC8000
 };
 
 extern volatile rcc_t RCC;
@@ -133,124 +187,52 @@ enum usart_bits
 };
 
 extern volatile usart_t USART1;
+extern volatile usart_t USART2;
+extern volatile usart_t USART3;
+extern volatile usart_t UART4;
+extern volatile usart_t UART5;
+extern volatile usart_t USART6;
 
 typedef struct
 {
-	uint32_t CFGR1;
-	uint32_t EXTICR1;
-	uint32_t EXTICR2;
-	uint32_t EXTICR3;
-	uint32_t EXTICR4;
-	uint32_t CFGR2;
-} syscfg_t;
-
-extern volatile syscfg_t SYSCFG;
-
-typedef struct
-{
-	uint32_t	CR1;
-	uint32_t	CR2;
-	uint32_t	SR;
-	uint8_t		DR;			//STM32f0x1 datasheet page 807, 28.9.4 says the register is 16-bits wide, and that
-							//"Unused bits are ignored when writing to the register". This is untrue.
-							//If you access DR as a 16-bit write, you get *two* bytes of data sent.
-	uint8_t		padding1;
-	uint16_t	padding2;
-	uint32_t	CRCPR;
-	uint32_t	RXCRCR;
-	uint32_t	TXCRCR;
-	uint32_t	I2SCFGR;
-	uint32_t	I2SPR;
+	uint16_t CR1;
+	uint16_t field_02;
+	uint16_t CR2;
+	uint16_t field_06;
+	uint16_t SR;
+	uint16_t field_0a;
+	uint8_t  DR;
+	uint8_t  field_0d;
+	uint16_t field_0e;
+	uint16_t CRCPR;
+	uint16_t field_12;
+	uint16_t RXCRCR;
+	uint16_t field_16;
+	uint16_t TXCRCR;
+	uint16_t field_1a;
+	uint16_t I2SCFGR;
+	uint16_t field_1e;
+	uint16_t I2SPR;
+	uint16_t field_22;
 } spi_t;
 
-enum spi_cr1_bits
-{
-	SPI_BIDI_MODE	= 0x8000,
-	SPI_BIDI_OE		= 0x4000,
-	SPI_RX_ONLY		= 0x0400,
-	SPI_SOFT_CS		= 0x0200,
-	SPI_INTERNAL_CS	= 0x0100,
-	SPI_LSB_FIRST	= 0x0080,
-	SPI_ENABLE		= 0x0040,
-	SPI_MASTER		= 0x0004,
-	SPI_CPOL		= 0x0002
-};
-
-enum spi_sr_bits
-{
-	SPI_TX_FIFO_MASK	= 0x1800,
-	SPI_TX_EMPTY		= 0x0002
-};
-
 extern volatile spi_t SPI1;
+extern volatile spi_t SPI4;
+extern volatile spi_t SPI5;
+extern volatile spi_t SPI6;
 
 typedef struct
 {
-	uint32_t	CR1;
-	uint32_t	CR2;
-	uint32_t	SMCR;
-	uint32_t	DIER;
-	uint32_t	SR;
-	uint32_t	EGR;
-	uint32_t	CCMR1;
-	uint32_t	CCMR2;
-	uint32_t	CCER;
-	uint32_t	CNT;
-	uint32_t	PSC;
-	uint32_t	ARR;
-	uint32_t	RCR;
-	uint32_t	CCR1;
-	uint32_t	CCR2;
-	uint32_t	CCR3;
-	uint32_t	CCR4;
-	uint32_t	BDTR;
-	uint32_t	DCR;
-	uint32_t	DMAR;
-} tim_t;
+	uint32_t reserved_0;
+	uint32_t ictr;
+	uint32_t reserved_8[62];
+} nvic_t;
 
-extern volatile tim_t TIM1;
-extern volatile tim_t TIM2;
-extern volatile tim_t TIM3;
-extern volatile tim_t TIM14;
-extern volatile tim_t TIM16;
-extern volatile tim_t TIM17;
-
-enum i2c_cr2_bits
-{
-	I2C_AUTO_END	= 0x02000000,
-	I2C_STOP		= 0x00004000,
-	I2C_START		= 0x00002000,
-	I2C_READ		= 0x00000400
-};
-
-enum i2c_isr_bits
-{
-	I2C_BUSY				= 0x8000,
-	I2C_TRANSFER_COMPLETE	= 0x0040,
-	I2C_RX_READY			= 0x0004,
-	I2C_TX_EMPTY			= 0x0001
-};
-
-typedef struct
-{
-	uint32_t	CR1;
-	uint32_t	CR2;
-	uint32_t	OAR1;
-	uint32_t	OAR2;
-	uint32_t	TIMINGR;
-	uint32_t	TIMEOUTR;
-	uint32_t	ISR;
-	uint32_t	ICR;
-	uint32_t	PECR;
-	uint32_t	RXDR;
-	uint32_t	TXDR;
-} i2c_t;
-
-extern volatile i2c_t I2C1;
+extern volatile nvic_t NVIC;
 
 //Defines for what peripherals are present / implemented
-#define HAVE_I2C
-#define HAVE_TIM
-#define HAVE_SPI
+//#define HAVE_I2C
+//#define HAVE_TIM
+//#define HAVE_SPI
 
 #endif

@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP v0.1                                                                                                       *
 *                                                                                                                      *
-* Copyright (c) 2020 Andrew D. Zonenberg                                                                               *
+* Copyright (c) 2020-2021 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -32,6 +32,8 @@
 #include <string.h>
 #include <peripheral/RCC.h>
 #include <peripheral/Timer.h>
+
+#ifdef HAVE_TIM
 
 /**
 	@brief Initialize a timer
@@ -90,3 +92,5 @@ void Timer::Sleep(uint16_t ticks, bool reset)
 	while(m_chan->CNT != target)
 	{}
 }
+
+#endif

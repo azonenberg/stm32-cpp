@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP v0.1                                                                                                       *
 *                                                                                                                      *
-* Copyright (c) 2020 Andrew D. Zonenberg                                                                               *
+* Copyright (c) 2020-2021 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -30,6 +30,8 @@
 #ifndef i2c_h
 #define i2c_h
 
+#ifdef HAVE_I2C
+
 class I2C
 {
 public:
@@ -55,5 +57,7 @@ public:
 protected:
 	volatile i2c_t*	m_lane;
 };
+
+#endif
 
 #endif

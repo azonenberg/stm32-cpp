@@ -43,9 +43,19 @@ class RCCHelper
 {
 public:
 	static void Enable(volatile gpio_t* gpio);
+
+	#ifdef HAVE_I2C
 	static void Enable(volatile i2c_t* i2c);
+	#endif
+
+	#ifdef HAVE_SPI
 	static void Enable(volatile spi_t* spi);
+	#endif
+
+	#ifdef HAVE_TIM
 	static void Enable(volatile tim_t* tim);
+	#endif
+
 	static void Enable(volatile usart_t* uart);
 
 	#ifdef STM32F0

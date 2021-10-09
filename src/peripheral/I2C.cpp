@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP v0.1                                                                                                       *
 *                                                                                                                      *
-* Copyright (c) 2020 Andrew D. Zonenberg                                                                               *
+* Copyright (c) 2020-2021 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -32,6 +32,8 @@
 #include <string.h>
 #include <peripheral/RCC.h>
 #include <peripheral/I2C.h>
+
+#ifdef HAVE_I2C
 
 /**
 	@brief Initialize an I2C lane
@@ -105,3 +107,5 @@ void I2C::BlockingRead(uint8_t addr, uint8_t* data, uint8_t len)
 		data[i] = m_lane->RXDR;
 	}
 }
+
+#endif

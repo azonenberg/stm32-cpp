@@ -35,10 +35,41 @@
  */
 void RCCHelper::Enable(volatile gpio_t* gpio)
 {
-	if(gpio == &GPIOA)
-		RCC.AHBENR |= RCC_AHB_GPIOA;
-	else if(gpio == &GPIOB)
-		RCC.AHBENR |= RCC_AHB_GPIOB;
+	#if defined(STM32F0)
+
+		if(gpio == &GPIOA)
+			RCC.AHBENR |= RCC_AHB_GPIOA;
+		else if(gpio == &GPIOB)
+			RCC.AHBENR |= RCC_AHB_GPIOB;
+
+	#elif defined(STM32F7)
+
+		if(gpio == &GPIOA)
+			RCC.AHB1ENR |= RCC_AHB1_GPIOA;
+		else if(gpio == &GPIOB)
+			RCC.AHB1ENR |= RCC_AHB1_GPIOB;
+		else if(gpio == &GPIOC)
+			RCC.AHB1ENR |= RCC_AHB1_GPIOC;
+		else if(gpio == &GPIOD)
+			RCC.AHB1ENR |= RCC_AHB1_GPIOD;
+		else if(gpio == &GPIOE)
+			RCC.AHB1ENR |= RCC_AHB1_GPIOE;
+		else if(gpio == &GPIOF)
+			RCC.AHB1ENR |= RCC_AHB1_GPIOF;
+		else if(gpio == &GPIOG)
+			RCC.AHB1ENR |= RCC_AHB1_GPIOG;
+		else if(gpio == &GPIOH)
+			RCC.AHB1ENR |= RCC_AHB1_GPIOH;
+		else if(gpio == &GPIOI)
+			RCC.AHB1ENR |= RCC_AHB1_GPIOI;
+		else if(gpio == &GPIOJ)
+			RCC.AHB1ENR |= RCC_AHB1_GPIOJ;
+		else if(gpio == &GPIOK)
+			RCC.AHB1ENR |= RCC_AHB1_GPIOK;
+
+	#else
+		#error Unknown STM32 family
+	#endif
 }
 
 /**
@@ -46,31 +77,54 @@ void RCCHelper::Enable(volatile gpio_t* gpio)
  */
 void RCCHelper::Enable(volatile usart_t* uart)
 {
-	if(uart == &USART1)
-		RCC.APB2ENR |= RCC_APB2_USART1;
+	#if defined(STM32F0)
+
+		if(uart == &USART1)
+			RCC.APB2ENR |= RCC_APB2_USART1;
+
+	#elif defined(STM32F7)
+
+		if(uart == &USART2)
+			RCC.APB1ENR |= RCC_APB1_USART2;
+		else if(uart == &USART3)
+			RCC.APB1ENR |= RCC_APB1_USART3;
+		else if(uart == &UART4)
+			RCC.APB1ENR |= RCC_APB1_UART4;
+		else if(uart == &UART5)
+			RCC.APB1ENR |= RCC_APB1_UART5;
+
+
+	#else
+		#error Unknown STM32 family
+	#endif
 }
 
 /**
 	@brief Enable a SPI bus
  */
+#ifdef HAVE_SPI
 void RCCHelper::Enable(volatile spi_t* spi)
 {
 	if(spi == &SPI1)
 		RCC.APB2ENR |= RCC_APB2_SPI1;
 }
+#endif
 
 /**
 	@brief Enable an I2C bus
  */
+#ifdef HAVE_I2C
 void RCCHelper::Enable(volatile i2c_t* i2c)
 {
 	if(i2c == &I2C1)
 		RCC.APB1ENR |= RCC_APB1_I2C1;
 }
+#endif
 
 /**
 	@brief Enable a timer
  */
+#ifdef HAVE_TIM
 void RCCHelper::Enable(volatile tim_t* tim)
 {
 	if(tim == &TIM1)
@@ -86,6 +140,7 @@ void RCCHelper::Enable(volatile tim_t* tim)
 	else if(tim == &TIM17)
 		RCC.APB2ENR |= RCC_APB2_TIM17;
 }
+#endif
 
 #ifdef STM32F0
 
