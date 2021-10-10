@@ -1,8 +1,8 @@
 /***********************************************************************************************************************
 *                                                                                                                      *
-* STARSHIPRAIDER v0.1                                                                                                  *
+* stm32-cpp v0.1                                                                                                       *
 *                                                                                                                      *
-* Copyright (c) 2020 Andrew D. Zonenberg                                                                               *
+* Copyright (c) 2020-2021 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -119,6 +119,18 @@ public:
 		bool full = InternalIsFull();
 		LeaveCriticalSection(sr);
 		return full;
+	}
+
+	/**
+		@brief Resets the FIFO to an empty state
+	 */
+	void Reset()
+	{
+		uint32_t sr = EnterCriticalSection();
+		m_wptr = 0;
+		m_rptr = 0;
+		m_empty = true;
+		LeaveCriticalSection(sr);
 	}
 
 protected:
