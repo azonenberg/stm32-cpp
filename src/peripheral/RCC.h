@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP v0.1                                                                                                       *
 *                                                                                                                      *
-* Copyright (c) 2020 Andrew D. Zonenberg                                                                               *
+* Copyright (c) 2020-2021 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -64,6 +64,19 @@ public:
 		uint8_t mult,
 		uint16_t ahbdiv,
 		uint8_t apbdiv
+		);
+	#endif
+
+	#ifdef STM32F7
+	static void InitializePLLFromInternalOscillator(
+		uint8_t prediv,
+		uint16_t mult,
+		uint8_t pdiv,
+		uint8_t qdiv,
+		uint8_t rdiv,
+		uint16_t ahbdiv,
+		uint16_t apb1div,
+		uint16_t apb2div
 		);
 	#endif
 };

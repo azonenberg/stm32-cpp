@@ -27,122 +27,115 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef gpio_h
-#define gpio_h
+#include <stm32fxxx.h>
+#include "Flash.h"
 
-#include <peripheral/RCC.h>
+#ifdef STM32F7
 
 /**
-	@brief A GPIO pin
+	@brief Configures the flash cache, latency, and  prefetching for the specified operating frequency/voltage range
  */
-class GPIOPin
+void Flash::SetConfiguration(bool cacheEnable, bool prefetchEnable, int cpuFreqMHz, VoltageRange range)
 {
-public:
-
-	/**
-		@brief GPIO mode constants (must be same as STM32 MODER register)
-	 */
-	enum gpiomode_t
+	//Calculate the number of wait states to use
+	//Based on table 7 of RM0410, section 3.3.2
+	int waitStates = 0;
+	switch(range)
 	{
-		MODE_INPUT		= 0,
-		MODE_OUTPUT		= 1,
-		MODE_PERIPHERAL	= 2,
-		MODE_ANALOG		= 3
-	};
+		case RANGE_1V8:
+			if(cpuFreqMHz <= 20)
+				waitStates = 0;
+			else if(cpuFreqMHz <= 40)
+				waitStates = 1;
+			else if(cpuFreqMHz <= 60)
+				waitStates = 2;
+			else if(cpuFreqMHz <= 80)
+				waitStates = 3;
+			else if(cpuFreqMHz <= 100)
+				waitStates = 4;
+			else if(cpuFreqMHz <= 120)
+				waitStates = 5;
+			else if(cpuFreqMHz <= 140)
+				waitStates = 6;
+			else if(cpuFreqMHz <= 160)
+				waitStates = 7;
+			else
+				waitStates = 8;
+			break;
 
-#ifdef STM32F7
-	/**
-		GPIO slew constants (must be saame as STM32 OSPEEDR register)
-	 */
-	enum gpioslew_t
-	{
-		SLEW_SLOW 		= 0,
-		SLEW_MEDIUM 	= 1,
-		SLEW_FAST 		= 2,
-		SLEW_VERYFAST	= 3
-	};
-#endif
+		case RANGE_2V1:
+			if(cpuFreqMHz <= 22)
+				waitStates = 0;
+			else if(cpuFreqMHz <= 44)
+				waitStates = 1;
+			else if(cpuFreqMHz <= 66)
+				waitStates = 2;
+			else if(cpuFreqMHz <= 88)
+				waitStates = 3;
+			else if(cpuFreqMHz <= 110)
+				waitStates = 4;
+			else if(cpuFreqMHz <= 132)
+				waitStates = 5;
+			else if(cpuFreqMHz <= 154)
+				waitStates = 6;
+			else if(cpuFreqMHz <= 176)
+				waitStates = 7;
+			else if(cpuFreqMHz <= 198)
+				waitStates = 8;
+			else
+				waitStates = 9;
+			break;
 
-	/**
-		@brief Initializes the pin
-	 */
-	GPIOPin(
-		volatile gpio_t* gpio,
-		uint8_t pin,
-		gpiomode_t mode,
-		uint8_t altmode = 0,
-		bool open_drain = false)
-	: m_gpio(gpio)
-	, m_pin(pin)
-	, m_setmask(1 << pin)
-	, m_clearmask(~m_setmask)
-	{
-		//Make sure the bank we're part of is turned on
-		RCCHelper::Enable(gpio);
+		case RANGE_2V4:
+			if(cpuFreqMHz <= 24)
+				waitStates = 0;
+			else if(cpuFreqMHz <= 48)
+				waitStates = 1;
+			else if(cpuFreqMHz <= 72)
+				waitStates = 2;
+			else if(cpuFreqMHz <= 96)
+				waitStates = 3;
+			else if(cpuFreqMHz <= 120)
+				waitStates = 4;
+			else if(cpuFreqMHz <= 144)
+				waitStates = 5;
+			else if(cpuFreqMHz <= 168)
+				waitStates = 6;
+			else if(cpuFreqMHz <= 192)
+				waitStates = 7;
+			else
+				waitStates = 8;
+			break;
 
-		//Configure the pin
-		SetMode(mode, altmode, open_drain);
+		case RANGE_2V7:
+		default:
+			if(cpuFreqMHz <= 30)
+				waitStates = 0;
+			else if(cpuFreqMHz <= 60)
+				waitStates = 1;
+			else if(cpuFreqMHz <= 90)
+				waitStates = 2;
+			else if(cpuFreqMHz <= 120)
+				waitStates = 3;
+			else if(cpuFreqMHz <= 150)
+				waitStates = 4;
+			else if(cpuFreqMHz <= 180)
+				waitStates = 5;
+			else if(cpuFreqMHz <= 210)
+				waitStates = 6;
+			else
+				waitStates = 7;
+			break;
 	}
 
-#ifdef STM32F7
-	/**
-		@brief Initializes the pin
-	 */
-	GPIOPin(
-		volatile gpio_t* gpio,
-		uint8_t pin,
-		gpiomode_t mode,
-		gpioslew_t slew = SLEW_SLOW,
-		uint8_t altmode = 0,
-		bool open_drain = false)
-	: m_gpio(gpio)
-	, m_pin(pin)
-	, m_setmask(1 << pin)
-	, m_clearmask(~m_setmask)
-	{
-		//Make sure the bank we're part of is turned on
-		RCCHelper::Enable(gpio);
+	//Configure the access control register
+	FLASH.ACR = waitStates;
+	if(cacheEnable)
+		FLASH.ACR |= FLASH_ACR_ARTEN;
+	if(prefetchEnable)
+		FLASH.ACR |= FLASH_ACR_PREFETCHEN;
 
-		//Configure the pin
-		SetMode(mode, altmode, open_drain);
-		SetOutputSlew(slew);
-	}
-#endif
-
-	void SetMode(gpiomode_t mode, uint8_t altmode = 1, bool open_drain = false);
-
-	#ifdef STM32F7
-	void SetOutputSlew(gpioslew_t slew)
-	{ m_gpio->OSPEEDR = (m_gpio->OSPEEDR & ~(0x3 << 2*m_pin)) | (slew << (2*m_pin)); }
-	#endif
-
-	/**
-		@brief Drives a value out the pin
-	 */
-	void Set(bool b)
-	{
-		if(b)
-			m_gpio->ODR |= m_setmask;
-		else
-			m_gpio->ODR &= m_clearmask;
-	}
-
-	/**
-		@brief Reads the current value of the pin
-	 */
-	bool Get()
-	{
-		if(m_gpio->IDR & m_setmask)
-			return true;
-		else
-			return false;
-	}
-
-protected:
-	volatile gpio_t* 	m_gpio;
-	uint8_t				m_pin;
-	uint32_t			m_setmask;
-	uint32_t			m_clearmask;
-};
+	//TODO: set largest PSIZE possible with the selected voltage
+}
 
 #endif

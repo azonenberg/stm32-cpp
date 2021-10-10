@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP v0.1                                                                                                       *
 *                                                                                                                      *
-* Copyright (c) 2020 Andrew D. Zonenberg                                                                               *
+* Copyright (c) 2020-2021 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -238,6 +238,183 @@ void RCCHelper::InitializePLLFromInternalOscillator(uint8_t prediv, uint8_t mult
 	RCC.CFGR = (RCC.CFGR & 0xfffffffc) | 2;
 	while( (RCC.CFGR & 0xc) != 0x8)
 	{}
+}
+
+#endif
+
+#ifdef STM32F7
+
+/**
+	@brief Configures the PLL to use the internal 16 MHz oscillator, then selects it
+
+	@param prediv	pre-divider for input clock to PLL
+					Must be between 2 and 63
+					PLL input must be between 1 and 2 MHz; best jitter performance with 2 MHz
+
+	@param mult		Multiplier for PLL VCO
+					Must be between 50 and 432.
+					VCO must be between 100 and 432 MHz.
+
+	@param pdiv		Divider "P" from VCO to main system clock
+					Must be 2, 4, 6, or 8.
+					Cannot exceed 216 MHz.
+
+	@param qdiv		Divider "Q" from VCO to USB OTG, SD/MMC, and RNG
+					Must be between 2 and 15.
+					Cannot exceed 48 MHz, must be exactly 48 MHz if using USB
+
+	@param rdiv		Divider "R" from VCO to DSI
+					Must be between 2 and 7
+
+	@param ahbdiv	Divider from VCO to AHB bus
+					Must be 1, 2, 4, 8, 16, 64, 128, 256, or 512.
+					Must be at least 25 MHz if using Ethernet.
+
+	@param apb1div	Divider from AHB to APB1 (low speed) bus
+					Must be 1, 2, 4, 8, or 16.
+					Cannot exceed 45 MHz.
+
+	@param apb2div	Divider from AHB to APB2 (high speed) bus
+					Must be 1, 2, 4, 8, or 16.
+					Cannot exceed 90 MHz.
+ */
+void RCCHelper::InitializePLLFromInternalOscillator(
+	uint8_t prediv,
+	uint16_t mult,
+	uint8_t pdiv,
+	uint8_t qdiv,
+	uint8_t rdiv,
+	uint16_t ahbdiv,
+	uint16_t apb1div,
+	uint16_t apb2div
+	)
+{
+	//Shove all the PLL config bits into the right fields
+	uint32_t pllconfig = 0;
+	pllconfig |= (rdiv & 0x7) << 28;
+	pllconfig |= (qdiv & 0xf) << 24;
+	switch(pdiv)
+	{
+		case 2:
+			pllconfig |= 0x0 << 16;
+			break;
+
+		case 4:
+			pllconfig |= 0x1 << 16;
+			break;
+
+		case 6:
+			pllconfig |= 0x2 << 16;
+			break;
+
+		case 8:
+		default:
+			pllconfig |= 0x3 << 16;
+			break;
+	}
+	pllconfig |= (mult & 0x1ff) << 6;
+	pllconfig |= (prediv & 0x3f);
+
+	//Configure the PLL
+	RCC.PLLCFGR = (RCC.PLLCFGR & RCC_PLLCFGR_RESERVED_MASK) | pllconfig;
+
+	//Start the PLL and wait for it to lock
+	RCC.CR |= RCC_PLL_ENABLE;
+	while(0 == (RCC.CR & RCC_PLL_READY))
+	{}
+
+	//Configure main system clock dividers and PLL source
+	uint32_t cfg = 0;
+	switch(apb2div)
+	{
+		case 1:
+			cfg |= RCC_APB2_DIV1;
+			break;
+
+		case 2:
+			cfg |= RCC_APB2_DIV2;
+			break;
+
+		case 4:
+			cfg |= RCC_APB2_DIV4;
+			break;
+
+		case 8:
+			cfg |= RCC_APB2_DIV8;
+			break;
+
+		case 16:
+		default:
+			cfg |= RCC_APB2_DIV16;
+			break;
+	}
+
+	switch(apb1div)
+	{
+		case 1:
+			cfg |= RCC_APB1_DIV1;
+			break;
+
+		case 2:
+			cfg |= RCC_APB1_DIV2;
+			break;
+
+		case 4:
+			cfg |= RCC_APB1_DIV4;
+			break;
+
+		case 8:
+			cfg |= RCC_APB1_DIV8;
+			break;
+
+		case 16:
+		default:
+			cfg |= RCC_APB1_DIV16;
+			break;
+	}
+
+	switch(ahbdiv)
+	{
+		case 1:
+			cfg |= RCC_AHB_DIV1;
+			break;
+
+		case 2:
+			cfg |= RCC_AHB_DIV2;
+			break;
+
+		case 4:
+			cfg |= RCC_AHB_DIV4;
+			break;
+
+		case 8:
+			cfg |= RCC_AHB_DIV8;
+			break;
+
+		case 16:
+			cfg |= RCC_AHB_DIV16;
+			break;
+
+		case 64:
+			cfg |= RCC_AHB_DIV64;
+			break;
+
+		case 128:
+			cfg |= RCC_AHB_DIV128;
+			break;
+
+		case 256:
+			cfg |= RCC_AHB_DIV256;
+			break;
+
+		case 512:
+		default:
+			cfg |= RCC_AHB_DIV512;
+			break;
+	}
+
+	//Enable the PLL
+	RCC.CFGR = cfg | RCC_SYSCLK_PLL;
 }
 
 #endif

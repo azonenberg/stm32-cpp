@@ -27,122 +27,34 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef gpio_h
-#define gpio_h
-
-#include <peripheral/RCC.h>
+#include <stm32fxxx.h>
+#include "GPIO.h"
+#include "RCC.h"
 
 /**
-	@brief A GPIO pin
+	@brief Configure pin mode
  */
-class GPIOPin
+void GPIOPin::SetMode(gpiomode_t mode, uint8_t altmode, bool open_drain)
 {
-public:
+	m_gpio->MODER &= ~(0x3 << 2*m_pin);
+	m_gpio->MODER |= (mode << 2*m_pin);
 
-	/**
-		@brief GPIO mode constants (must be same as STM32 MODER register)
-	 */
-	enum gpiomode_t
+	if(mode == MODE_PERIPHERAL)
 	{
-		MODE_INPUT		= 0,
-		MODE_OUTPUT		= 1,
-		MODE_PERIPHERAL	= 2,
-		MODE_ANALOG		= 3
-	};
-
-#ifdef STM32F7
-	/**
-		GPIO slew constants (must be saame as STM32 OSPEEDR register)
-	 */
-	enum gpioslew_t
-	{
-		SLEW_SLOW 		= 0,
-		SLEW_MEDIUM 	= 1,
-		SLEW_FAST 		= 2,
-		SLEW_VERYFAST	= 3
-	};
-#endif
-
-	/**
-		@brief Initializes the pin
-	 */
-	GPIOPin(
-		volatile gpio_t* gpio,
-		uint8_t pin,
-		gpiomode_t mode,
-		uint8_t altmode = 0,
-		bool open_drain = false)
-	: m_gpio(gpio)
-	, m_pin(pin)
-	, m_setmask(1 << pin)
-	, m_clearmask(~m_setmask)
-	{
-		//Make sure the bank we're part of is turned on
-		RCCHelper::Enable(gpio);
-
-		//Configure the pin
-		SetMode(mode, altmode, open_drain);
-	}
-
-#ifdef STM32F7
-	/**
-		@brief Initializes the pin
-	 */
-	GPIOPin(
-		volatile gpio_t* gpio,
-		uint8_t pin,
-		gpiomode_t mode,
-		gpioslew_t slew = SLEW_SLOW,
-		uint8_t altmode = 0,
-		bool open_drain = false)
-	: m_gpio(gpio)
-	, m_pin(pin)
-	, m_setmask(1 << pin)
-	, m_clearmask(~m_setmask)
-	{
-		//Make sure the bank we're part of is turned on
-		RCCHelper::Enable(gpio);
-
-		//Configure the pin
-		SetMode(mode, altmode, open_drain);
-		SetOutputSlew(slew);
-	}
-#endif
-
-	void SetMode(gpiomode_t mode, uint8_t altmode = 1, bool open_drain = false);
-
-	#ifdef STM32F7
-	void SetOutputSlew(gpioslew_t slew)
-	{ m_gpio->OSPEEDR = (m_gpio->OSPEEDR & ~(0x3 << 2*m_pin)) | (slew << (2*m_pin)); }
-	#endif
-
-	/**
-		@brief Drives a value out the pin
-	 */
-	void Set(bool b)
-	{
-		if(b)
-			m_gpio->ODR |= m_setmask;
+		if(m_pin < 8)
+		{
+			m_gpio->AFRL &= ~(0xf << 4*m_pin);
+			m_gpio->AFRL |= (altmode << 4*m_pin);
+		}
 		else
-			m_gpio->ODR &= m_clearmask;
+		{
+			m_gpio->AFRH &= ~(0xf << 4*(m_pin-8));
+			m_gpio->AFRH |= (altmode << 4*(m_pin-8));
+		}
 	}
 
-	/**
-		@brief Reads the current value of the pin
-	 */
-	bool Get()
-	{
-		if(m_gpio->IDR & m_setmask)
-			return true;
-		else
-			return false;
-	}
-
-protected:
-	volatile gpio_t* 	m_gpio;
-	uint8_t				m_pin;
-	uint32_t			m_setmask;
-	uint32_t			m_clearmask;
-};
-
-#endif
+	if(open_drain)
+		m_gpio->OTYPER |= (1 << m_pin);
+	else
+		m_gpio->OTYPER &= ~(1 << m_pin);
+}

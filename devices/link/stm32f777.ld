@@ -43,9 +43,9 @@ SECTIONS
 	/* Stack goes in TCM to keep it fast. We probably won't be DMAing etc to/from it. */
 	.stack :
 	{
-		__stack = .;
-		. = ORIGIN(DTCM) + LENGTH(DTCM) - 4;
 		__end = .;
+		. = ORIGIN(DTCM) + LENGTH(DTCM) - 4;
+		__stack = .;
 	} > DTCM
 
 	/* BSS is pretty straightforward */
