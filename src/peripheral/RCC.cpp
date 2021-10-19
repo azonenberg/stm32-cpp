@@ -127,18 +127,51 @@ void RCCHelper::Enable(volatile i2c_t* i2c)
 #ifdef HAVE_TIM
 void RCCHelper::Enable(volatile tim_t* tim)
 {
-	if(tim == &TIM1)
-		RCC.APB2ENR |= RCC_APB2_TIM1;
-	else if(tim == &TIM2)
-		RCC.APB1ENR |= RCC_APB1_TIM2;
-	else if(tim == &TIM3)
-		RCC.APB1ENR |= RCC_APB1_TIM3;
-	else if(tim == &TIM14)
-		RCC.APB1ENR |= RCC_APB1_TIM14;
-	else if(tim == &TIM16)
-		RCC.APB2ENR |= RCC_APB2_TIM16;
-	else if(tim == &TIM17)
-		RCC.APB2ENR |= RCC_APB2_TIM17;
+	#if defined(STM32F031)
+		if(tim == &TIM1)
+			RCC.APB2ENR |= RCC_APB2_TIM1;
+		else if(tim == &TIM2)
+			RCC.APB1ENR |= RCC_APB1_TIM2;
+		else if(tim == &TIM3)
+			RCC.APB1ENR |= RCC_APB1_TIM3;
+		else if(tim == &TIM14)
+			RCC.APB1ENR |= RCC_APB1_TIM14;
+		else if(tim == &TIM16)
+			RCC.APB2ENR |= RCC_APB2_TIM16;
+		else if(tim == &TIM17)
+			RCC.APB2ENR |= RCC_APB2_TIM17;
+	#elif defined(STM32F777)
+		if(tim == &TIM1)
+			RCC.APB2ENR |= RCC_APB2_TIM1;
+		else if(tim == &TIM2)
+			RCC.APB1ENR |= RCC_APB1_TIM2;
+		else if(tim == &TIM3)
+			RCC.APB1ENR |= RCC_APB1_TIM3;
+		else if(tim == &TIM4)
+			RCC.APB1ENR |= RCC_APB1_TIM4;
+		else if(tim == &TIM5)
+			RCC.APB1ENR |= RCC_APB1_TIM5;
+		else if(tim == &TIM6)
+			RCC.APB1ENR |= RCC_APB1_TIM6;
+		else if(tim == &TIM7)
+			RCC.APB1ENR |= RCC_APB1_TIM7;
+		else if(tim == &TIM8)
+			RCC.APB2ENR |= RCC_APB2_TIM8;
+		else if(tim == &TIM9)
+			RCC.APB2ENR |= RCC_APB2_TIM9;
+		else if(tim == &TIM10)
+			RCC.APB2ENR |= RCC_APB2_TIM10;
+		else if(tim == &TIM11)
+			RCC.APB2ENR |= RCC_APB2_TIM11;
+		else if(tim == &TIM12)
+			RCC.APB1ENR |= RCC_APB1_TIM12;
+		else if(tim == &TIM13)
+			RCC.APB1ENR |= RCC_APB1_TIM13;
+		else if(tim == &TIM14)
+			RCC.APB1ENR |= RCC_APB1_TIM14;
+	#else
+		#error Unknown timer configuration (unsupported part)
+	#endif
 }
 #endif
 

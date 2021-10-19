@@ -80,7 +80,7 @@ Timer::Timer(volatile tim_t* chan, Features features, uint16_t prescale)
 	@param ticks		Number of ticks to wait
 	@param reset		If true, restart the counter from zero before starting the delay interval
  */
-void Timer::Sleep(uint16_t ticks, bool reset)
+void Timer::Sleep(uint32_t ticks, bool reset)
 {
 	if(reset)
 	{

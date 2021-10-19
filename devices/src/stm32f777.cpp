@@ -63,3 +63,18 @@ volatile edma_t EDMA __attribute__((section(".edma")));
 
 volatile syscfg_t SYSCFG __attribute__((section(".syscfg")));
 volatile dbgmcu_t DBGMCU __attribute__((section(".dbgmcu")));
+
+volatile tim_t TIM1 __attribute__((section(".tim1")));
+volatile tim_t TIM2 __attribute__((section(".tim2")));
+volatile tim_t TIM3 __attribute__((section(".tim3")));
+volatile tim_t TIM4 __attribute__((section(".tim4")));
+volatile tim_t TIM5 __attribute__((section(".tim5")));
+volatile tim_t TIM6 __attribute__((section(".tim6")));
+volatile tim_t TIM7 __attribute__((section(".tim7")));
+volatile tim_t TIM8 __attribute__((section(".tim8")));
+volatile tim_t TIM9 __attribute__((section(".tim9")));
+volatile tim_t TIM10 __attribute__((section(".tim10")));
+volatile tim_t TIM11 __attribute__((section(".tim11")));
+volatile tim_t TIM12 __attribute__((section(".tim12")));
+volatile tim_t TIM13 __attribute__((section(".tim13")));
+volatile tim_t TIM14 __attribute__((section(".tim14")));

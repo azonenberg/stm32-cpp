@@ -111,19 +111,33 @@ enum rcc_ahb1
 
 enum rcc_apb1
 {
-	RCC_APB1_UART5 = 0x100000,
-	RCC_APB1_UART4 = 0x080000,
-	RCC_APB1_USART3 = 0x040000,
-	RCC_APB1_USART2 = 0x020000
+	RCC_APB1_UART5		= 0x00100000,
+	RCC_APB1_UART4		= 0x00080000,
+	RCC_APB1_USART3		= 0x00040000,
+	RCC_APB1_USART2		= 0x00020000,
+	RCC_APB1_TIM14		= 0x00000100,
+	RCC_APB1_TIM13		= 0x00000080,
+	RCC_APB1_TIM12		= 0x00000040,
+	RCC_APB1_TIM7		= 0x00000020,
+	RCC_APB1_TIM6		= 0x00000010,
+	RCC_APB1_TIM5		= 0x00000008,
+	RCC_APB1_TIM4		= 0x00000004,
+	RCC_APB1_TIM3		= 0x00000002,
+	RCC_APB1_TIM2		= 0x00000001
 };
 
 enum rcc_apb2
 {
-	RCC_APB2_SPI1	= 0x1000,
-	RCC_APB2_SPI4	= 0x2000,
-	RCC_APB2_SYSCFG	= 0x4000,
-	RCC_APB2_SPI5	= 0x100000,
-	RCC_APB2_SPI6 	= 0x200000
+	RCC_APB2_SPI6 		= 0x00200000,
+	RCC_APB2_SPI5		= 0x00100000,
+	RCC_APB2_TIM11		= 0x00040000,
+	RCC_APB2_TIM10		= 0x00020000,
+	RCC_APB2_TIM9		= 0x00010000,
+	RCC_APB2_SYSCFG		= 0x00004000,
+	RCC_APB2_SPI4		= 0x00002000,
+	RCC_APB2_SPI1		= 0x00001000,
+	RCC_APB2_TIM8		= 0x00000002,
+	RCC_APB2_TIM1		= 0x00000001
 };
 
 typedef struct
@@ -388,9 +402,53 @@ typedef struct
 
 extern volatile dbgmcu_t DBGMCU;
 
+typedef struct
+{
+	uint32_t	CR1;
+	uint32_t	CR2;
+	uint32_t	SMCR;
+	uint32_t	DIER;
+	uint32_t	SR;
+	uint32_t	EGR;
+	uint32_t	CCMR1;
+	uint32_t	CCMR2;
+	uint32_t	CCER;
+	uint32_t	CNT;
+	uint32_t	PSC;
+	uint32_t	ARR;
+	uint32_t	RCR;
+	uint32_t	CCR1;
+	uint32_t	CCR2;
+	uint32_t	CCR3;
+	uint32_t	CCR4;
+	uint32_t	BDTR;
+	uint32_t	DCR;
+	uint32_t	DMAR;
+	uint32_t	CCMR3;
+	uint32_t	CCR5;
+	uint32_t	CCR6;
+	uint32_t	AF1;
+	uint32_t	AF2;
+} tim_t;
+
+extern volatile tim_t TIM1;
+extern volatile tim_t TIM2;
+extern volatile tim_t TIM3;
+extern volatile tim_t TIM4;
+extern volatile tim_t TIM5;
+extern volatile tim_t TIM6;
+extern volatile tim_t TIM7;
+extern volatile tim_t TIM8;
+extern volatile tim_t TIM9;
+extern volatile tim_t TIM10;
+extern volatile tim_t TIM11;
+extern volatile tim_t TIM12;
+extern volatile tim_t TIM13;
+extern volatile tim_t TIM14;
+
 //Defines for what peripherals are present / implemented
 //#define HAVE_I2C
-//#define HAVE_TIM
+#define HAVE_TIM
 //#define HAVE_SPI
 #define HAVE_EMAC
 

@@ -38,6 +38,7 @@ public:
 
 	enum Features
 	{
+		FEATURE_GENERAL_PURPOSE,
 		FEATURE_ADVANCED
 	};
 
@@ -46,7 +47,7 @@ public:
 	/**
 		@brief Gets the current counter value
 	 */
-	unsigned int GetCount()
+	uint32_t GetCount()
 	{ return m_chan->CNT; }
 
 	/**
@@ -55,7 +56,7 @@ public:
 	void Restart()
 	{ m_chan->EGR = 0x1; }
 
-	void Sleep(uint16_t ticks, bool reset = false);
+	void Sleep(uint32_t ticks, bool reset = false);
 
 protected:
 	volatile tim_t*	m_chan;

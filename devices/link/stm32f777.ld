@@ -128,15 +128,25 @@ SECTIONS
 
 	.sfr_apb1 :
 	{
-		. += 1024;		/* TIM2 not yet implemented */
-		. += 1024;		/* TIM3 not yet implemented */
-		. += 1024;		/* TIM4 not yet implemented */
-		. += 1024;		/* TIM5 not yet implemented */
-		. += 1024;		/* TIM6 not yet implemented */
-		. += 1024;		/* TIM7 not yet implemented */
-		. += 1024;		/* TIM12 not yet implemented */
-		. += 1024;		/* TIM13 not yet implemented */
-		. += 1024;		/* TIM14 not yet implemented */
+		*(.tim2)
+		. = ALIGN(1024);
+		*(.tim3)
+		. = ALIGN(1024);
+		*(.tim4)
+		. = ALIGN(1024);
+		*(.tim5)
+		. = ALIGN(1024);
+		*(.tim6)
+		. = ALIGN(1024);
+		*(.tim7)
+		. = ALIGN(1024);
+		*(.tim12)
+		. = ALIGN(1024);
+		*(.tim13)
+		. = ALIGN(1024);
+		*(.tim14)
+		. = ALIGN(1024);
+
 		. += 1024;		/* LPTIM1 not yet implemented */
 		. += 1024;		/* RTC not yet implemented */
 		. += 1024;		/* WWDG not yet implemented */
@@ -158,8 +168,10 @@ SECTIONS
 
 	.sfr_apb2 :
 	{
-		. += 1024;		/* TIM1 not yet implemented */
-		. += 1024;		/* TIM8 not yet implemented */
+		*(.tim1)
+		. = ALIGN(1024);
+		*(.tim8)
+		. = ALIGN(1024);
 		. += 2048;		/* reserved unimplemented */
 		. = ALIGN(1024);
 		*(.usart1)
@@ -177,9 +189,12 @@ SECTIONS
 		. = ALIGN(1024);
 		*(.syscfg)
 		. += 1024;		/* EXTI not yet implemented */
-		. += 1024;		/* TIM9 not yet implemented */
-		. += 1024;		/* TIM10 not yet implemented */
-		. += 1024;		/* TIM11 not yet implemented */
+		*(.tim9)
+		. = ALIGN(1024);
+		*(.tim10)
+		. = ALIGN(1024);
+		*(.tim11)
+		. = ALIGN(1024);
 		. += 1024;		/* reserved unimplemented */
 		. = ALIGN(1024);
 		*(.spi5)
