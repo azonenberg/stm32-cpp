@@ -27,119 +27,34 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef logger_h
-#define logger_h
+#include <stm32fxxx.h>
+#include <stdint.h>
+#include "Logger.h"
 
-#include "CharacterDevice.h"
-#include "../peripheral/Timer.h"
-
-/**
-	@brief Simple logging framework with uptime timestamps
- */
-class Logger
+void Logger::Timestamp(LogType type)
 {
-public:
+	//TODO: handle wrap at 49.7 days
+	//We're not Windows 95 though, it's just a status message. So not a priority to fix for now...
 
-	Logger()
-	: m_target(nullptr)
-	, m_timer(nullptr)
-	{}
-
-	/**
-		@brief Initializes a logger
-
-		@param target	The UART or other destination for log messages
-		@param timer	Timer with 1ms ticks since reset
-	 */
-	void Initialize(CharacterDevice* target, Timer* timer)
+	auto uptime = m_timer->GetCount();
+	switch(type)
 	{
-		m_target = target;
-		m_timer = timer;
+		case NORMAL:
+			m_target->Printf("[\033[32m%8d.%03d\033[0m] ", uptime / 1000, uptime % 1000);
+			break;
+
+		case WARNING:
+			m_target->Printf("[\033[33;1m%8d.%03d\033[0m] ", uptime / 1000, uptime % 1000);
+			break;
+
+		case ERROR:
+			m_target->Printf("[\033[31;1m%8d.%03d\033[0m] ", uptime / 1000, uptime % 1000);
+			break;
 	}
+}
 
-	enum LogType
-	{
-		NORMAL,
-		WARNING,
-		ERROR
-	};
-
-	/**
-		@brief Prints a log message
-	 */
-	void operator()(const char* format, ...)
-	{
-		if(!m_target)
-			return;
-
-		Timestamp(NORMAL);
-		PrintIndent();
-
-		__builtin_va_list list;
-		__builtin_va_start(list, format);
-		m_target->Printf(format, list);
-		__builtin_va_end(list);
-	}
-
-	/**
-		@brief Prints a log message
-	 */
-	void operator()(LogType type, const char* format, ...)
-	{
-		if(!m_target)
-			return;
-
-		Timestamp(type);
-		PrintIndent();
-
-		__builtin_va_list list;
-		__builtin_va_start(list, format);
-		m_target->Printf(format, list);
-		__builtin_va_end(list);
-	}
-
-	/**
-		@brief Increments the log level
-	 */
-	void Indent()
-	{ m_indentLevel ++; }
-
-	/**
-		@brief Decrements the log level
-	 */
-	void Unindent()
-	{
-		if(m_indentLevel > 0)
-			m_indentLevel --;
-	}
-
-protected:
-	void Timestamp();
-	void Timestamp(LogType type);
-	void PrintIndent();
-
-protected:
-	CharacterDevice* m_target;
-	Timer* m_timer;
-	uint32_t m_indentLevel;
-};
-
-/**
-	@brief Helper for auto indenting stuff in the log
- */
-class LogIndenter
+void Logger::PrintIndent()
 {
-public:
-	LogIndenter(Logger& log)
-	: m_logger(log)
-	{ log.Indent(); }
-
-	~LogIndenter()
-	{ m_logger.Unindent(); }
-
-protected:
-	Logger& m_logger;
-};
-
-
-#endif
+	for(int i=0; i<m_indentLevel; i++)
+		m_target->PrintBinary(' ');
+}
