@@ -51,7 +51,6 @@ enum flash_acr
 	FLASH_ACR_PREFETCHEN = 0x10,
 };
 
-
 typedef struct
 {
 	uint32_t MODER;
@@ -80,17 +79,34 @@ extern volatile gpio_t GPIOK;
 
 enum rcc_ahb1
 {
-	RCC_AHB1_GPIOA = 0x0001,
-	RCC_AHB1_GPIOB = 0x0002,
-	RCC_AHB1_GPIOC = 0x0004,
-	RCC_AHB1_GPIOD = 0x0008,
-	RCC_AHB1_GPIOE = 0x0010,
-	RCC_AHB1_GPIOF = 0x0020,
-	RCC_AHB1_GPIOG = 0x0040,
-	RCC_AHB1_GPIOH = 0x0080,
-	RCC_AHB1_GPIOI = 0x0100,
-	RCC_AHB1_GPIOJ = 0x0200,
-	RCC_AHB1_GPIOK = 0x0400
+	RCC_AHB1_GPIOA		= 0x00000001,
+	RCC_AHB1_GPIOB		= 0x00000002,
+	RCC_AHB1_GPIOC		= 0x00000004,
+	RCC_AHB1_GPIOD		= 0x00000008,
+	RCC_AHB1_GPIOE		= 0x00000010,
+	RCC_AHB1_GPIOF		= 0x00000020,
+	RCC_AHB1_GPIOG		= 0x00000040,
+	RCC_AHB1_GPIOH		= 0x00000080,
+	RCC_AHB1_GPIOI		= 0x00000100,
+	RCC_AHB1_GPIOJ		= 0x00000200,
+	RCC_AHB1_GPIOK		= 0x00000400,
+	//0x800 reserved
+	RCC_AHB1_CRC		= 0x00001000,
+	//0x00002000 to 0x00020000 reserved
+	RCC_AHB1_BBRAM		= 0x00040000,
+	//0x00080000 reserved
+	RCC_AHB1_DTCM		= 0x00100000,
+	RCC_AHB1_DMA1		= 0x00200000,
+	RCC_AHB1_DMA2		= 0x00400000,
+	RCC_AHB1_DMA2D		= 0x00800000,
+	//0x01000000 reserved
+	RCC_AHB1_EMAC		= 0x02000000,
+	RCC_AHB1_EMAC_TX	= 0x04000000,
+	RCC_AHB1_EMAC_RX	= 0x08000000,
+	RCC_AHB1_PTP		= 0x10000000,
+	RCC_AHB1_USB		= 0x20000000,
+	RCC_AHB1_USB_ULPI	= 0x40000000,
+	//0x80000000 reserved
 };
 
 enum rcc_apb1
@@ -103,10 +119,11 @@ enum rcc_apb1
 
 enum rcc_apb2
 {
-	RCC_APB2_SPI1 = 0x1000,
-	RCC_APB2_SPI4 = 0x2000,
-	RCC_APB2_SPI5 = 0x100000,
-	RCC_APB2_SPI6 = 0x200000
+	RCC_APB2_SPI1	= 0x1000,
+	RCC_APB2_SPI4	= 0x2000,
+	RCC_APB2_SYSCFG	= 0x4000,
+	RCC_APB2_SPI5	= 0x100000,
+	RCC_APB2_SPI6 	= 0x200000
 };
 
 typedef struct
@@ -250,9 +267,131 @@ typedef struct
 
 extern volatile nvic_t NVIC;
 
+typedef struct
+{
+	uint32_t	MACCR;
+	uint32_t	MACFFR;
+	uint32_t	MACHTHR;
+	uint32_t	MACHTLR;
+	uint32_t	MACMIIAR;
+	uint32_t	MACMIIDR;
+	uint32_t	MACFCR;
+	uint32_t	MACVLANTR;
+	uint32_t	field_20;
+	uint32_t	field_24;
+	uint32_t	MACRWUFFR;
+	uint32_t	MACPMTCSR;
+	uint32_t	field_30;
+	uint32_t	MACDBGR;
+	uint32_t	MACSR;
+	uint32_t	MACIMR;
+	uint32_t	MACA0HR;
+	uint32_t	MACA0LR;
+	uint32_t	MACA1HR;
+	uint32_t	MACA1LR;
+	uint32_t	MACA2HR;
+	uint32_t	MACA2LR;
+	uint32_t	MACA3HR;
+	uint32_t	MACA3LR;
+	uint32_t	padding_60[40];
+	uint32_t	MMCCR;				//offset 0x100
+	uint32_t	MMCRIR;
+	uint32_t	MMCTIR;
+	uint32_t	MMCRIMR;
+	uint32_t	MMCTIMR;
+	uint32_t	padding_114[15];
+	uint32_t	MMCTGFSCCR;
+	uint32_t	MMCTGFMSCCR;
+	uint32_t	padding_154[4];
+	uint32_t	MMCTGFCR;
+	uint32_t	padding_16c[10];
+	uint32_t	MMCRFCECR;
+	uint32_t	MMCRFAECR;
+	uint32_t	padding_19c[10];
+	uint32_t	MMCRGUFCR;
+} emac_t;
+
+typedef struct
+{
+	uint32_t	PTPTSCR;
+	uint32_t	PTPSSIR;
+	uint32_t	PTPTSHR;
+	uint32_t	PTPTSLR;
+	uint32_t	PTPTSHUR;
+	uint32_t	PTPTSLUR;
+	uint32_t	PTPTSAR;
+	uint32_t	PTPTTHR;
+	uint32_t	PTPTTLR;
+	uint32_t	field_724;
+	uint32_t	PTPTSSR;
+	uint32_t	PTPPPSCR;
+} ptp_t;
+
+typedef struct
+{
+	uint32_t RDES0;
+	uint32_t RDES1;
+	uint32_t RDES2;
+	uint32_t RDES3;
+} edma_rx_descriptor_t;
+
+typedef struct
+{
+	uint32_t	DMABMR;
+	uint32_t	DMATPDR;
+	uint32_t	DMARPDR;
+	volatile edma_rx_descriptor_t*		DMARDLAR;
+	volatile void*		DMATDLAR;
+	uint32_t	DMASR;
+	uint32_t	DMAOMR;
+	uint32_t	DMAIER;
+	uint32_t	DMAMFBOCR;
+	uint32_t	DMARSWTR;
+	uint32_t	padding_1028[8];
+	uint32_t	DMACHTDR;
+	uint32_t	DMACHRDR;
+	uint32_t	DMACHTBAR;
+	uint32_t	DMACHRBAR;
+} edma_t;
+
+extern volatile emac_t EMAC;
+extern volatile ptp_t PTP;
+extern volatile edma_t EDMA;
+
+typedef struct
+{
+	uint32_t	MEMRMP;
+	uint32_t	PMC;
+	uint32_t	EXTICR1;
+	uint32_t	EXTICR2;
+	uint32_t	EXTICR3;
+	uint32_t	EXTICR4;
+	uint32_t	reserved_18;
+	uint32_t	CBR;
+	uint32_t	CMPCR;
+} syscfg_t;
+
+enum syscfg_pmc
+{
+	ETH_MODE_RMII	= 0x00800000
+};
+
+extern volatile syscfg_t SYSCFG;
+
+typedef struct
+{
+	uint32_t	IDCODE;
+	uint32_t	CR;
+	uint32_t	APB1_FZ;
+	uint32_t	APB2_FZ;
+} dbgmcu_t;
+
+extern volatile dbgmcu_t DBGMCU;
+
 //Defines for what peripherals are present / implemented
 //#define HAVE_I2C
 //#define HAVE_TIM
 //#define HAVE_SPI
+#define HAVE_EMAC
 
 #endif

@@ -11,6 +11,7 @@ MEMORY
 	AHB1(RW):	ORIGIN = 0x40020000, LENGTH = 384K
 	APB2(RW):	ORIGIN = 0x40010000, LENGTH = 32K
 	APB1(RW):	ORIGIN = 0x40000000, LENGTH = 32K
+	MCU(RW):	ORIGIN = 0xe0000000, LENGTH = 512K
 }
 
 SECTIONS
@@ -111,7 +112,18 @@ SECTIONS
 		*(.rcc)
 		. = ALIGN(1024);
 		*(.flash)
-
+		. = ALIGN(1024);
+		. += 4096;		/* Backup SRAM not yet implemented */
+		. += 4096;		/* reserved 4002_5000 */
+		. += 1024;		/* DMA1 not yet implemented */
+		. += 1024;		/* DMA2 not yet implemented */
+		. += 6144;		/* reserved 4002_6800 */
+		*(.emac)
+		. = ALIGN(1024);
+		. += 768;
+		*(.ptp)
+		. = ALIGN(4096);
+		*(.edma)
 	} > AHB1
 
 	.sfr_apb1 :
@@ -162,7 +174,8 @@ SECTIONS
 		*(.spi1)
 		. = ALIGN(1024);
 		*(.spi4)
-		. += 1024;		/* SYSCFG not yet implemented */
+		. = ALIGN(1024);
+		*(.syscfg)
 		. += 1024;		/* EXTI not yet implemented */
 		. += 1024;		/* TIM9 not yet implemented */
 		. += 1024;		/* TIM10 not yet implemented */
@@ -180,4 +193,10 @@ SECTIONS
 		. += 1024;		/* DFSDM1 not yet implemented */
 		. += 1024;		/* MDIOS not yet implemented */
 	} > APB2
+
+	.sfr_mcu :
+	{
+		. += 0x42000;	/* skip early address space */
+		*(.dbgmcu)
+	} > MCU
 }

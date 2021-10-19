@@ -56,3 +56,10 @@ volatile usart_t USART3 __attribute__((section(".usart3")));
 volatile usart_t UART4 __attribute__((section(".uart4")));
 volatile usart_t UART5 __attribute__((section(".uart5")));
 volatile usart_t USART6 __attribute__((section(".usart6")));
+
+volatile emac_t EMAC __attribute__((section(".emac")));
+volatile ptp_t PTP __attribute__((section(".ptp")));
+volatile edma_t EDMA __attribute__((section(".edma")));
+
+volatile syscfg_t SYSCFG __attribute__((section(".syscfg")));
+volatile dbgmcu_t DBGMCU __attribute__((section(".dbgmcu")));
