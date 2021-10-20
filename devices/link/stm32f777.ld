@@ -8,6 +8,7 @@ MEMORY
 	SRAM2(RW):	ORIGIN = 0x2007c000, LENGTH = 16K
 
 	/* SFRs */
+	SIG(RW):	ORIGIN = 0x1ff00000, LENGTH = 1024K
 	AHB1(RW):	ORIGIN = 0x40020000, LENGTH = 384K
 	APB2(RW):	ORIGIN = 0x40010000, LENGTH = 32K
 	APB1(RW):	ORIGIN = 0x40000000, LENGTH = 32K
@@ -229,4 +230,14 @@ SECTIONS
 		. += 0x42000;	/* skip early address space */
 		*(.dbgmcu)
 	} > MCU
+
+	.sfr_sig :
+	{
+		. += 0xf420;
+		*(.uid)
+		. += 0x16;
+		*(.fid)
+		. += 0xe87ac;
+		*(.pkg)
+	} > SIG
 }

@@ -483,6 +483,10 @@ extern volatile tim_t TIM12;
 extern volatile tim_t TIM13;
 extern volatile tim_t TIM14;
 
+extern volatile uint32_t U_ID[3];
+extern volatile uint16_t F_ID;
+extern volatile uint16_t PKG_ID;
+
 //Defines for what peripherals are present / implemented
 //#define HAVE_I2C
 #define HAVE_TIM
