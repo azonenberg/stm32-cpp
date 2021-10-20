@@ -49,9 +49,9 @@ SPI::SPI(volatile spi_t* lane, bool fullDuplex, uint16_t baudDiv)
 {
 	RCCHelper::Enable(lane);
 
-	//8-bit word size
-	//TODO: make this configurable
-	lane->CR2 = 7 << 8;
+	//8-bit word size, set RXNE as soon as we have a byte in the FIFO
+	//TODO: make word size configurable?
+	lane->CR2 = (7 << 8) | SPI_FRXTH;
 
 	//Turn on the peripheral in master mode.
 	//To prevent problems, we need to have the internal CS# pulled high.
@@ -107,6 +107,33 @@ void SPI::BlockingWrite(uint8_t data)
 
 	//Send it
 	m_lane->DR = data;
+
+	//If there's anything in the RX buffer, discard it
+	DiscardRxData();
+}
+
+uint8_t SPI::BlockingRead()
+{
+	//Wait for previous events to complete
+	WaitForWrites();
+	DiscardRxData();
+
+	//In half-duplex mode, select input mode
+	if(!m_fullDuplex)
+	{
+		m_lane->CR1 &= !SPI_BIDI_OE;
+		m_lane->CR1 |= SPI_RX_ONLY;
+	}
+
+	//Write a dummy byte
+	m_lane->DR = 0x0;
+
+	//Wait for data to be ready
+	while( (m_lane->SR & SPI_RX_NOT_EMPTY) == 0)
+	{}
+
+	//Done, return it
+	return m_lane->DR;
 }
 
 /**
@@ -114,13 +141,19 @@ void SPI::BlockingWrite(uint8_t data)
  */
 void SPI::WaitForWrites()
 {
-	//Wait for FIFO to empty
-	while( (m_lane->SR & SPI_TX_FIFO_MASK) != 0)
+	//Wait for busy flag to clear
+	while(m_lane->SR & SPI_BUSY)
 	{}
+}
 
-	//Wait for transmit buffer to empty
-	while(!(m_lane->SR & SPI_TX_EMPTY))
-	{}
+/**
+	@brief Discards any data in the RX FIFO
+ */
+void SPI::DiscardRxData()
+{
+	volatile int unused;
+	while(m_lane->SR & SPI_RX_NOT_EMPTY)
+		unused = m_lane->DR;
 }
 
 /**

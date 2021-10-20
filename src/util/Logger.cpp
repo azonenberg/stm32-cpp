@@ -56,5 +56,5 @@ void Logger::Timestamp(LogType type)
 void Logger::PrintIndent()
 {
 	for(int i=0; i<m_indentLevel; i++)
-		m_target->PrintBinary(' ');
+		m_target->PrintString("    ");
 }

@@ -146,16 +146,16 @@ SECTIONS
 		. = ALIGN(1024);
 		*(.tim14)
 		. = ALIGN(1024);
-
 		. += 1024;		/* LPTIM1 not yet implemented */
 		. += 1024;		/* RTC not yet implemented */
 		. += 1024;		/* WWDG not yet implemented */
 		. += 1024;		/* IWDG not yet implemented */
 		. += 1024;		/* CAN3 not yet implemented */
-		. += 1024;		/* SPI2 not yet implemented */
-		. += 1024;		/* SPI3 not yet implemented */
+		*(.spi2)
+		. = ALIGN(1024);
+		*(.spi3)
+		. = ALIGN(1024);
 		. += 1024;		/* SPDIFRX not yet implemented */
-
 		. = ALIGN(1024);
 		*(.usart2)
 		. = ALIGN(1024);
@@ -164,6 +164,20 @@ SECTIONS
 		*(.uart4)
 		. = ALIGN(1024);
 		*(.uart5)
+		. = ALIGN(1024);
+		. += 1024;		/* I2C1 not yet implemented */
+		. += 1024;		/* I2C2 not yet implemented */
+		. += 1024;		/* I2C3 not yet implemented */
+		. += 1024;		/* I2C4 not yet implemented */
+		. += 1024;		/* CAM1 not yet implemented */
+		. += 1024;		/* CAN2 not yet implemented */
+		. += 1024;		/* HDMI-CEC not yet implemented */
+		. += 1024;		/* PWR not yet implemented */
+		. += 1024;		/* DAC not yet implemented */
+		*(.uart7)
+		. = ALIGN(1024);
+		*(.uart8)
+		. = ALIGN(1024);
 	} > APB1
 
 	.sfr_apb2 :
@@ -188,6 +202,7 @@ SECTIONS
 		*(.spi4)
 		. = ALIGN(1024);
 		*(.syscfg)
+		. = ALIGN(1024);
 		. += 1024;		/* EXTI not yet implemented */
 		*(.tim9)
 		. = ALIGN(1024);

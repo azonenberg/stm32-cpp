@@ -84,7 +84,9 @@ void RCCHelper::Enable(volatile usart_t* uart)
 
 	#elif defined(STM32F7)
 
-		if(uart == &USART2)
+		if(uart == &USART1)
+			RCC.APB2ENR |= RCC_APB2_USART1;
+		else if(uart == &USART2)
 			RCC.APB1ENR |= RCC_APB1_USART2;
 		else if(uart == &USART3)
 			RCC.APB1ENR |= RCC_APB1_USART3;
@@ -92,6 +94,12 @@ void RCCHelper::Enable(volatile usart_t* uart)
 			RCC.APB1ENR |= RCC_APB1_UART4;
 		else if(uart == &UART5)
 			RCC.APB1ENR |= RCC_APB1_UART5;
+		else if(uart == &USART6)
+			RCC.APB2ENR |= RCC_APB2_USART6;
+		else if(uart == &UART7)
+			RCC.APB1ENR |= RCC_APB1_UART7;
+		else if(uart == &UART8)
+			RCC.APB1ENR |= RCC_APB1_UART8;
 
 
 	#else
@@ -105,8 +113,29 @@ void RCCHelper::Enable(volatile usart_t* uart)
 #ifdef HAVE_SPI
 void RCCHelper::Enable(volatile spi_t* spi)
 {
-	if(spi == &SPI1)
-		RCC.APB2ENR |= RCC_APB2_SPI1;
+	#if defined(STM32F031)
+
+		if(spi == &SPI1)
+			RCC.APB2ENR |= RCC_APB2_SPI1;
+
+	#elif defined(STM32F777)
+
+		if(spi == &SPI1)
+			RCC.APB2ENR |= RCC_APB2_SPI1;
+		else if(spi == &SPI2)
+			RCC.APB1ENR |= RCC_APB1_SPI2;
+		else if(spi == &SPI3)
+			RCC.APB1ENR |= RCC_APB1_SPI3;
+		else if(spi == &SPI4)
+			RCC.APB2ENR |= RCC_APB2_SPI4;
+		else if(spi == &SPI5)
+			RCC.APB2ENR |= RCC_APB2_SPI5;
+		else if(spi == &SPI6)
+			RCC.APB2ENR |= RCC_APB2_SPI6;
+
+	#else
+		#error Unknown STM32 family
+	#endif
 }
 #endif
 

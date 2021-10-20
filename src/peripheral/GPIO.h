@@ -127,6 +127,10 @@ public:
 			m_gpio->ODR &= m_clearmask;
 	}
 
+	//Convenience helper for assigning GPIOs
+	void operator=(bool b)
+	{ Set(b); }
+
 	/**
 		@brief Reads the current value of the pin
 	 */

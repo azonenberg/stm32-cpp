@@ -111,10 +111,14 @@ enum rcc_ahb1
 
 enum rcc_apb1
 {
+	RCC_APB1_UART8		= 0x80000000,
+	RCC_APB1_UART7		= 0x40000000,
 	RCC_APB1_UART5		= 0x00100000,
 	RCC_APB1_UART4		= 0x00080000,
 	RCC_APB1_USART3		= 0x00040000,
 	RCC_APB1_USART2		= 0x00020000,
+	RCC_APB1_SPI3		= 0x00008000,
+	RCC_APB1_SPI2		= 0x00004000,
 	RCC_APB1_TIM14		= 0x00000100,
 	RCC_APB1_TIM13		= 0x00000080,
 	RCC_APB1_TIM12		= 0x00000040,
@@ -136,6 +140,8 @@ enum rcc_apb2
 	RCC_APB2_SYSCFG		= 0x00004000,
 	RCC_APB2_SPI4		= 0x00002000,
 	RCC_APB2_SPI1		= 0x00001000,
+	RCC_APB2_USART6		= 0x00000020,
+	RCC_APB2_USART1		= 0x00000010,
 	RCC_APB2_TIM8		= 0x00000002,
 	RCC_APB2_TIM1		= 0x00000001
 };
@@ -243,6 +249,8 @@ extern volatile usart_t USART3;
 extern volatile usart_t UART4;
 extern volatile usart_t UART5;
 extern volatile usart_t USART6;
+extern volatile usart_t UART7;
+extern volatile usart_t UART8;
 
 typedef struct
 {
@@ -268,9 +276,38 @@ typedef struct
 } spi_t;
 
 extern volatile spi_t SPI1;
+extern volatile spi_t SPI2;
+extern volatile spi_t SPI3;
 extern volatile spi_t SPI4;
 extern volatile spi_t SPI5;
 extern volatile spi_t SPI6;
+
+enum spi_cr1_bits
+{
+	SPI_BIDI_MODE	= 0x8000,
+	SPI_BIDI_OE		= 0x4000,
+	SPI_RX_ONLY		= 0x0400,
+	SPI_SOFT_CS		= 0x0200,
+	SPI_INTERNAL_CS	= 0x0100,
+	SPI_LSB_FIRST	= 0x0080,
+	SPI_ENABLE		= 0x0040,
+	SPI_MASTER		= 0x0004,
+	SPI_CPOL		= 0x0002
+};
+
+enum spi_cr2_bits
+{
+	SPI_FRXTH		= 0x1000
+};
+
+enum spi_sr_bits
+{
+	SPI_TX_FIFO_MASK	= 0x1800,
+	SPI_RX_FIFO_MASK	= 0x0600,
+	SPI_BUSY			= 0x0080,
+	SPI_TX_EMPTY		= 0x0002,
+	SPI_RX_NOT_EMPTY	= 0x0001,
+};
 
 typedef struct
 {
@@ -449,7 +486,7 @@ extern volatile tim_t TIM14;
 //Defines for what peripherals are present / implemented
 //#define HAVE_I2C
 #define HAVE_TIM
-//#define HAVE_SPI
+#define HAVE_SPI
 #define HAVE_EMAC
 
 #endif

@@ -46,6 +46,8 @@ volatile rcc_t RCC __attribute__((section(".rcc")));
 volatile flash_t FLASH __attribute__((section(".flash")));
 
 volatile spi_t SPI1 __attribute__((section(".spi1")));
+volatile spi_t SPI2 __attribute__((section(".spi2")));
+volatile spi_t SPI3 __attribute__((section(".spi3")));
 volatile spi_t SPI4 __attribute__((section(".spi4")));
 volatile spi_t SPI5 __attribute__((section(".spi5")));
 volatile spi_t SPI6 __attribute__((section(".spi6")));
@@ -56,6 +58,8 @@ volatile usart_t USART3 __attribute__((section(".usart3")));
 volatile usart_t UART4 __attribute__((section(".uart4")));
 volatile usart_t UART5 __attribute__((section(".uart5")));
 volatile usart_t USART6 __attribute__((section(".usart6")));
+volatile usart_t UART7 __attribute__((section(".uart7")));
+volatile usart_t UART8 __attribute__((section(".uart8")));
 
 volatile emac_t EMAC __attribute__((section(".emac")));
 volatile ptp_t PTP __attribute__((section(".ptp")));
