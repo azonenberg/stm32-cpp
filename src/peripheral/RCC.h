@@ -56,6 +56,10 @@ public:
 	static void Enable(volatile tim_t* tim);
 	#endif
 
+	#ifdef HAVE_EMAC
+	static void Enable(volatile emac_t* mac);
+	#endif
+
 	static void Enable(volatile usart_t* uart);
 
 	#ifdef STM32F0

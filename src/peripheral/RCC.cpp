@@ -139,6 +139,27 @@ void RCCHelper::Enable(volatile spi_t* spi)
 }
 #endif
 
+#ifdef HAVE_EMAC
+void RCCHelper::Enable(volatile emac_t* /*ignored*/)
+{
+	//TODO: take argument for MII or RMII mode
+
+	//Select RMII mode
+	//Disable all Ethernet clocks (except 1588 which we don't need, leave it off to save power), reset MAC
+	RCC.AHB1ENR &= ~(RCC_AHB1_EMAC | RCC_AHB1_EMAC_TX | RCC_AHB1_EMAC_RX);
+	RCC.AHB1RSTR |= RCC_AHB1_EMAC;
+
+	//Enable RMII
+	SYSCFG.PMC |= ETH_MODE_RMII;
+
+	//Enable Ethernet clocks (except 1588 since we don't use that)
+	RCC.AHB1ENR |= RCC_AHB1_EMAC | RCC_AHB1_EMAC_TX | RCC_AHB1_EMAC_RX | RCC_AHB1_PTP;
+
+	//Clear resets
+	RCC.AHB1RSTR &= ~RCC_AHB1_EMAC;
+}
+#endif
+
 /**
 	@brief Enable an I2C bus
  */

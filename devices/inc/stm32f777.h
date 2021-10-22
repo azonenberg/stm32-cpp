@@ -382,27 +382,35 @@ typedef struct
 {
 	uint32_t RDES0;
 	uint32_t RDES1;
-	uint32_t RDES2;
-	uint32_t RDES3;
+	uint8_t* RDES2;
+	uint8_t* RDES3;
 } edma_rx_descriptor_t;
 
 typedef struct
 {
-	uint32_t	DMABMR;
-	uint32_t	DMATPDR;
-	uint32_t	DMARPDR;
-	volatile edma_rx_descriptor_t*		DMARDLAR;
-	volatile void*		DMATDLAR;
-	uint32_t	DMASR;
-	uint32_t	DMAOMR;
-	uint32_t	DMAIER;
-	uint32_t	DMAMFBOCR;
-	uint32_t	DMARSWTR;
-	uint32_t	padding_1028[8];
-	uint32_t	DMACHTDR;
-	uint32_t	DMACHRDR;
-	uint32_t	DMACHTBAR;
-	uint32_t	DMACHRBAR;
+	uint32_t TDES0;
+	uint32_t TDES1;
+	uint8_t* TDES2;
+	uint8_t* TDES3;
+} edma_tx_descriptor_t;
+
+typedef struct
+{
+	uint32_t						DMABMR;
+	uint32_t						DMATPDR;
+	uint32_t						DMARPDR;
+	volatile edma_rx_descriptor_t*	DMARDLAR;
+	volatile edma_tx_descriptor_t*	DMATDLAR;
+	uint32_t						DMASR;
+	uint32_t						DMAOMR;
+	uint32_t						DMAIER;
+	uint32_t						DMAMFBOCR;
+	uint32_t						DMARSWTR;
+	uint32_t						padding_1028[8];
+	volatile edma_tx_descriptor_t*	DMACHTDR;
+	volatile edma_rx_descriptor_t*	DMACHRDR;
+	uint32_t						DMACHTBAR;
+	uint32_t						DMACHRBAR;
 } edma_t;
 
 extern volatile emac_t EMAC;
