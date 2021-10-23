@@ -423,6 +423,14 @@ typedef struct
 	uint32_t						DMACHRBAR;
 } edma_t;
 
+typedef enum
+{
+	DMA_FATAL_BUS_ERROR				= 0x00002000,
+	DMA_ERROR_TXDMA					= 0x00800000,
+	DMA_ERROR_RXDMA					= 0x01000000,
+	DMA_ERROR_DESCRIPTOR			= 0x02000000
+} dmasr_t;
+
 extern volatile emac_t EMAC;
 extern volatile ptp_t PTP;
 extern volatile edma_t EDMA;
