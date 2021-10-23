@@ -9,6 +9,7 @@ MEMORY
 
 	/* SFRs */
 	SIG(RW):	ORIGIN = 0x1ff00000, LENGTH = 1024K
+	AHB2(RW):	ORIGIN = 0x50000000, LENGTH = 387K
 	AHB1(RW):	ORIGIN = 0x40020000, LENGTH = 384K
 	APB2(RW):	ORIGIN = 0x40010000, LENGTH = 32K
 	APB1(RW):	ORIGIN = 0x40000000, LENGTH = 32K
@@ -126,6 +127,20 @@ SECTIONS
 		. = ALIGN(4096);
 		*(.edma)
 	} > AHB1
+
+	.sfr_ahb2 :
+	{
+		. += 262144;	/* USB not yet implemented */
+		. += 65536;		/* reserved */
+		. += 1024;		/* DCMI not yet implemented */
+		. += 3072;		/* reserved - not listed in datasheet rev 6 so easy to miss */
+		. += 4096;		/* JPEG not yet implemented */
+		. += 57344;		/* reserved */
+		*(.cryp)
+		. = ALIGN(1024);
+		. += 1024;		/* HASH not yet implemented */
+		*(.rng)
+	} > AHB2
 
 	.sfr_apb1 :
 	{

@@ -60,6 +60,10 @@ public:
 	static void Enable(volatile emac_t* mac);
 	#endif
 
+	#ifdef HAVE_RNG
+	static void Enable(volatile rng_t* rng);
+	#endif
+
 	static void Enable(volatile usart_t* uart);
 
 	#ifdef STM32F0

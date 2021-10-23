@@ -109,6 +109,16 @@ enum rcc_ahb1
 	//0x80000000 reserved
 };
 
+enum rcc_ahb2
+{
+	RCC_AHB2_USB		= 0x00000080,
+	RCC_AHB2_RNG		= 0x00000040,
+	RCC_AHB2_HASH		= 0x00000020,
+	RCC_AHB2_CRYP		= 0x00000010,
+	RCC_AHB2_JPEG		= 0x00000002,
+	RCC_AHB2_DCMI		= 0x00000001
+};
+
 enum rcc_apb1
 {
 	RCC_APB1_UART8		= 0x80000000,
@@ -495,10 +505,61 @@ extern volatile uint32_t U_ID[3];
 extern volatile uint16_t F_ID;
 extern volatile uint16_t PKG_ID;
 
+typedef struct
+{
+	uint32_t	CR;
+	uint32_t	SR;
+	uint32_t	DIN;
+	uint32_t	DOUT;
+	uint32_t	DMACR;
+	uint32_t	IMSCR;
+	uint32_t	RISR;
+	uint32_t	MISR;
+	uint32_t	K0LR;
+	uint32_t	K0RR;
+	uint32_t	K1LR;
+	uint32_t	K1RR;
+	uint32_t	K2LR;
+	uint32_t	K2RR;
+	uint32_t	K3LR;
+	uint32_t	K3RR;
+	uint32_t	IV0LR;
+	uint32_t	IV0RR;
+	uint32_t	IV1LR;
+	uint32_t	IV1RR;
+} cryp_t;
+
+extern volatile cryp_t CRYP;
+
+typedef struct
+{
+	uint32_t	CR;
+	uint32_t	SR;
+	uint32_t	DR;
+} rng_t;
+
+enum rng_cr
+{
+	RNG_CED	= 0x20,
+	RNG_IE	= 0x08,
+	RNG_EN	= 0x04
+};
+
+enum rng_sr
+{
+	RNG_SECS	= 0x4,
+	RNG_CECS	= 0x2,
+	RNG_DRDY	= 0x1
+};
+
+extern volatile rng_t RNG;
+
 //Defines for what peripherals are present / implemented
 //#define HAVE_I2C
 #define HAVE_TIM
 #define HAVE_SPI
 #define HAVE_EMAC
+#define HAVE_CRYP
+#define HAVE_RNG
 
 #endif
