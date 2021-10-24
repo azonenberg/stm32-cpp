@@ -138,7 +138,7 @@ SECTIONS
 		. += 57344;		/* reserved */
 		*(.cryp)
 		. = ALIGN(1024);
-		*(.hash)
+		*(.chash)
 		. = ALIGN(1024);
 		*(.rng)
 	} > AHB2

@@ -33,10 +33,10 @@
 
 void Logger::Timestamp(LogType type)
 {
-	//TODO: handle wrap at 49.7 days
+	//TODO: handle wrap at 4.97 days
 	//We're not Windows 95 though, it's just a status message. So not a priority to fix for now...
 
-	auto uptime = m_timer->GetCount();
+	auto uptime = m_timer->GetCount() / 10;
 	switch(type)
 	{
 		case NORMAL:
