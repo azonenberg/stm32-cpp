@@ -171,6 +171,16 @@ void RCCHelper::Enable(volatile rng_t* /*ignored*/)
 #endif
 
 /**
+	@brief Enable the hash engine
+ */
+#ifdef HAVE_HASH
+void RCCHelper::Enable(volatile hash_t* /*ignored*/)
+{
+	RCC.AHB2ENR |= RCC_AHB2_HASH;
+}
+#endif
+
+/**
 	@brief Enable an I2C bus
  */
 #ifdef HAVE_I2C

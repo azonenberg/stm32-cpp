@@ -562,6 +562,27 @@ enum rng_sr
 
 extern volatile rng_t RNG;
 
+typedef struct
+{
+	uint32_t	CR;
+	uint32_t	DIN;
+	uint32_t	STR;
+	uint32_t	HR_low[5];	//duplicates of HR, for backward compat with older IP versions probably?
+	uint32_t	IMR;
+	uint32_t	SR;
+	uint32_t	padding_28[52];
+	uint32_t	CSR[54];
+	uint32_t	padding_1d0[80];
+	uint32_t	HR[8];
+} hash_t;
+
+enum hash_sr
+{
+	HASH_BUSY	= 0x8
+};
+
+extern volatile hash_t HASH;
+
 //Defines for what peripherals are present / implemented
 //#define HAVE_I2C
 #define HAVE_TIM
@@ -569,5 +590,6 @@ extern volatile rng_t RNG;
 #define HAVE_EMAC
 #define HAVE_CRYP
 #define HAVE_RNG
+#define HAVE_HASH
 
 #endif

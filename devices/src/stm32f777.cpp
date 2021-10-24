@@ -89,3 +89,4 @@ volatile uint16_t PKG_ID __attribute__((section(".pkg")));
 
 volatile cryp_t CRYP __attribute__((section(".cryp")));
 volatile rng_t RNG __attribute__((section(".rng")));
+volatile hash_t HASH __attribute__((section(".hash")));

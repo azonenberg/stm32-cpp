@@ -64,6 +64,10 @@ public:
 	static void Enable(volatile rng_t* rng);
 	#endif
 
+	#ifdef HAVE_HASH
+	static void Enable(volatile hash_t* hash);
+	#endif
+
 	static void Enable(volatile usart_t* uart);
 
 	#ifdef STM32F0
