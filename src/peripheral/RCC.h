@@ -68,6 +68,10 @@ public:
 	static void Enable(volatile hash_t* hash);
 	#endif
 
+	#ifdef HAVE_CRYP
+	static void Enable(volatile cryp_t* cryp);
+	#endif
+
 	static void Enable(volatile usart_t* uart);
 
 	#ifdef STM32F0

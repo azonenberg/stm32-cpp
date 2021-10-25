@@ -181,6 +181,16 @@ void RCCHelper::Enable(volatile hash_t* /*ignored*/)
 #endif
 
 /**
+	@brief Enable the crypto engine
+ */
+#ifdef HAVE_CRYP
+void RCCHelper::Enable(volatile cryp_t* /*ignored*/)
+{
+	RCC.AHB2ENR |= RCC_AHB2_CRYP;
+}
+#endif
+
+/**
 	@brief Enable an I2C bus
  */
 #ifdef HAVE_I2C

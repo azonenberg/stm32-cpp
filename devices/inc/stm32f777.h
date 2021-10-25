@@ -537,6 +537,26 @@ typedef struct
 	uint32_t	IV1RR;
 } cryp_t;
 
+enum cryp_cr
+{
+	CRYP_ALG_AES_GCM	= 0x80000,
+	CRYP_EN				= 0x8000,
+	CRYP_GCM_PHASE_INIT	= 0x0,
+	CRYP_GCM_PHASE_AAD	= 0x10000,
+	CRYP_GCM_PHASE_DATA	= 0x20000,
+	CRYP_GCM_PHASE_TAG	= 0x30000,
+	CRYP_GCM_PHASE_MASK	= 0x30000,
+	CRYP_BSWAP_BYTE		= 0x80,
+	CRYP_DECRYPT		= 0x0004,
+	CRYP_KEY_128		= 0x0
+};
+
+enum cryp_sr
+{
+	CRYP_BUSY = 0x10,
+	CRYP_OFNE = 0x4
+};
+
 extern volatile cryp_t CRYP;
 
 typedef struct
