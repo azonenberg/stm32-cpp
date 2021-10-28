@@ -30,9 +30,6 @@
 #include <stm32fxxx.h>
 #include "Flash.h"
 
-#include <util/Logger.h>
-extern Logger g_log;
-
 uint32_t Flash::m_maxPsize = FLASH_CR_PSIZE_X8;
 
 #ifdef STM32F7
