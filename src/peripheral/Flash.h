@@ -54,6 +54,18 @@ public:
 	static void SetConfiguration(bool cacheEnable, bool prefetchEnable, int cpuFreqMHz, VoltageRange range);
 
 	#endif
+
+	static bool BlockErase(uint8_t* address);
+	static bool Write(uint8_t* address, uint8_t* data, uint32_t len);
+
+protected:
+	static void Unlock()
+	{
+		FLASH.KEYR = 0x45670123;
+		FLASH.KEYR = 0xCDEF89AB;
+	}
+
+	static uint32_t m_maxPsize;
 };
 
 #endif

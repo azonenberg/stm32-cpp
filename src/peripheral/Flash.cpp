@@ -30,6 +30,11 @@
 #include <stm32fxxx.h>
 #include "Flash.h"
 
+#include <util/Logger.h>
+extern Logger g_log;
+
+uint32_t Flash::m_maxPsize = FLASH_CR_PSIZE_X8;
+
 #ifdef STM32F7
 
 /**
@@ -135,7 +140,136 @@ void Flash::SetConfiguration(bool cacheEnable, bool prefetchEnable, int cpuFreqM
 	if(prefetchEnable)
 		FLASH.ACR |= FLASH_ACR_PREFETCHEN;
 
-	//TODO: set largest PSIZE possible with the selected voltage
+	//Set largest PSIZE possible with the selected voltage
+	switch(range)
+	{
+		case RANGE_1V8:
+			m_maxPsize = FLASH_CR_PSIZE_X8;
+			break;
+
+		case RANGE_2V1:
+		case RANGE_2V4:
+			m_maxPsize = FLASH_CR_PSIZE_X16;
+			break;
+
+		case RANGE_2V7:
+		default:
+			m_maxPsize = FLASH_CR_PSIZE_X32;
+			break;
+	}
 }
 
 #endif
+
+/**
+	@brief Erases the block of flash containing the specified address
+ */
+bool Flash::BlockErase(uint8_t* address)
+{
+	//Sector number isn't simple math because sector size isn't uniform!
+	uint32_t addr = reinterpret_cast<uint32_t>(address);
+	int numSector = 0;
+
+	#ifdef STM32F777
+
+		//TODO: dual bank support
+		static const uint32_t sectorEndsSingleBank[12] =
+		{
+			0x08007fff,	//32 kB
+			0x0800ffff,	//32 kB
+			0x08017fff,	//32 kB
+			0x0801ffff,	//32 kB
+			0x0803ffff,	//128 kB
+			0x0807ffff,	//256 kB
+			0x080bffff,	//256 kB
+			0x080fffff,	//256 kB
+			0x0813ffff,	//256 kB
+			0x0817ffff,	//256 kB
+			0x081bffff,	//256 kB
+			0x081fffff,	//256 kB
+		};
+
+		numSector = -1;
+		for(int i=0; i<12; i++)
+		{
+			if(addr < sectorEndsSingleBank[i])
+			{
+				numSector = i;
+				break;
+			}
+		}
+		if( (addr < 0x08000000) || (numSector < 0) )
+			return false;
+
+	#else
+
+		//not implemented for this target device
+		return false;
+	#endif
+
+	//Block until flash is free
+	while(FLASH.SR & FLASH_SR_BUSY)
+	{}
+
+	//Enable writing
+	Unlock();
+
+	//Set maximum PSIZE to get fast erase
+	FLASH.CR = (FLASH.CR & ~FLASH_CR_PSIZE_MASK) | m_maxPsize;
+
+	//Select the sector being erased
+	FLASH.CR = (FLASH.CR & ~FLASH_CR_SECTOR_MASK) | (numSector << 3) | FLASH_CR_SER;
+
+	//Do the erase
+	FLASH.CR |= FLASH_CR_STRT;
+
+	//Block until flash is free
+	asm("dmb st");
+	while(FLASH.SR & FLASH_SR_BUSY)
+	{}
+
+	//Re-lock the control register
+	FLASH.CR |= FLASH_CR_LOCK;
+
+	//Check for errors
+	if(FLASH.SR & FLASH_SR_ERR_MASK)
+		return false;
+	return true;
+}
+
+bool Flash::Write(uint8_t* address, uint8_t* data, uint32_t len)
+{
+	//Block until flash is free
+	while(FLASH.SR & FLASH_SR_BUSY)
+	{}
+
+	//Enable writing
+	Unlock();
+
+	//Set PSIZE to byte regardless of our maximum
+	//TODO: enable fast writes for large, aligned data?
+	FLASH.CR = (FLASH.CR & ~FLASH_CR_PSIZE_MASK) | FLASH_CR_PSIZE_X8;
+
+	//Write the data one byte at a time
+	for(uint32_t i=0; i<len; i++)
+	{
+		//Enable programming
+		FLASH.CR |= FLASH_CR_PG;
+
+		//Do the actual write
+		address[i] = data[i];
+
+		//Wait until done, then check for errors
+		asm("dmb st");
+		while(FLASH.SR & FLASH_SR_BUSY)
+		{}
+		if(FLASH.SR & FLASH_SR_ERR_MASK)
+			return false;
+	}
+
+	//Done
+	//Re-lock the control register
+	FLASH.CR |= FLASH_CR_LOCK;
+
+	return true;
+}
