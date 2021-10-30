@@ -243,7 +243,12 @@ SECTIONS
 
 	.sfr_mcu :
 	{
-		. += 0x42000;	/* skip early address space */
+		. += 0xed00;
+		*(.scb)
+		. += 0x4;
+		*(.cpuid)
+		. = ALIGN(1024);
+		. += 0x33000;
 		*(.dbgmcu)
 	} > MCU
 

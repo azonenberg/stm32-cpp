@@ -67,6 +67,8 @@ volatile edma_t EDMA __attribute__((section(".edma")));
 
 volatile syscfg_t SYSCFG __attribute__((section(".syscfg")));
 volatile dbgmcu_t DBGMCU __attribute__((section(".dbgmcu")));
+volatile scb_t SCB __attribute__((section(".scb")));
+volatile cpuid_t CPUID __attribute__((section(".cpuid")));
 
 volatile tim_t TIM1 __attribute__((section(".tim1")));
 volatile tim_t TIM2 __attribute__((section(".tim2")));
