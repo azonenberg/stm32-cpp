@@ -56,7 +56,7 @@ public:
 	#endif
 
 	static bool BlockErase(uint8_t* address);
-	static bool Write(uint8_t* address, uint8_t* data, uint32_t len);
+	static bool Write(uint8_t* address, const uint8_t* data, uint32_t len);
 
 protected:
 	static void Unlock()

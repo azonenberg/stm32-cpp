@@ -234,7 +234,7 @@ bool Flash::BlockErase(uint8_t* address)
 	return true;
 }
 
-bool Flash::Write(uint8_t* address, uint8_t* data, uint32_t len)
+bool Flash::Write(uint8_t* address, const uint8_t* data, uint32_t len)
 {
 	//Block until flash is free
 	while(FLASH.SR & FLASH_SR_BUSY)
