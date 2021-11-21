@@ -176,10 +176,18 @@ enum spi_cr1_bits
 	SPI_CPOL		= 0x0002
 };
 
+enum spi_cr2_bits
+{
+	SPI_FRXTH		= 0x1000
+};
+
 enum spi_sr_bits
 {
 	SPI_TX_FIFO_MASK	= 0x1800,
-	SPI_TX_EMPTY		= 0x0002
+	SPI_RX_FIFO_MASK	= 0x0600,
+	SPI_BUSY			= 0x0080,
+	SPI_TX_EMPTY		= 0x0002,
+	SPI_RX_NOT_EMPTY	= 0x0001,
 };
 
 extern volatile spi_t SPI1;
@@ -247,6 +255,50 @@ typedef struct
 } i2c_t;
 
 extern volatile i2c_t I2C1;
+
+typedef struct
+{
+	uint32_t ACR;
+	uint32_t KEYR;
+	uint32_t OPTKEYR;
+	uint32_t SR;
+	uint32_t CR;
+	uint32_t AR;
+	uint32_t OBR;
+	uint32_t WRPR;
+} flash_t;
+
+extern volatile flash_t FLASH;
+
+enum flash_acr
+{
+	FLASH_ACR_ARTEN = 0x20,
+	FLASH_ACR_PREFETCHEN = 0x10,
+};
+
+enum flash_cr
+{
+	FLASH_CR_LOCK			= 0x80000000,
+	FLASH_CR_STRT			= 0x10000,
+
+	FLASH_CR_PSIZE_MASK		= 0x300,
+	FLASH_CR_PSIZE_X8		= 0x000,
+	FLASH_CR_PSIZE_X16		= 0x100,
+	FLASH_CR_PSIZE_X32		= 0x200,
+	FLASH_CR_PSIZE_X64		= 0x300,
+
+	FLASH_CR_SECTOR_MASK	= 0xf8,
+
+	FLASH_CR_SER			= 0x2,
+	FLASH_CR_PG				= 0x1
+};
+
+enum flash_sr
+{
+	FLASH_SR_BUSY			= 0x10000,
+
+	FLASH_SR_ERR_MASK		= 0xf2
+};
 
 //Defines for what peripherals are present / implemented
 #define HAVE_I2C

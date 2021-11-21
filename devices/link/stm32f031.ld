@@ -56,6 +56,9 @@ SECTIONS
 		. += 3072;		/* Reserved */
 		. = ALIGN(1024);
 		*(.rcc)
+		. = ALIGN(1024);
+		. += 3072;		/* Reserved */
+		*(.flash)
 	} > AHB1
 
 	.sfr_ahb2 :

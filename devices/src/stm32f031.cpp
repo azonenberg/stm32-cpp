@@ -35,7 +35,7 @@ volatile gpio_t GPIOC __attribute__((section(".gpioc")));
 
 volatile rcc_t RCC __attribute__((section(".rcc")));
 
-//volatile flash_t FLASH __attribute__((section(".flash")));
+volatile flash_t FLASH __attribute__((section(".flash")));
 
 volatile i2c_t I2C1 __attribute__((section(".i2c1")));
 
