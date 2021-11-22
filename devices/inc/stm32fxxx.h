@@ -72,4 +72,9 @@ extern "C" uint32_t EnterCriticalSection();
  */
 extern "C" void LeaveCriticalSection(uint32_t cpu_sr);
 
+//Linker variables
+extern uint8_t __data_romstart;
+extern uint8_t __data_start;
+extern uint8_t __data_end;
+
 #endif
