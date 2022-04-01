@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP v0.1                                                                                                       *
 *                                                                                                                      *
-* Copyright (c) 2020-2021 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2022 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -131,16 +131,32 @@ public:
 	void operator=(bool b)
 	{ Set(b); }
 
+	//Convenience helper for reading GPIOs
+	operator bool() const
+	{ return Get(); }
+
 	/**
 		@brief Reads the current value of the pin
 	 */
-	bool Get()
+	bool Get() const
 	{
 		if(m_gpio->IDR & m_setmask)
 			return true;
 		else
 			return false;
 	}
+
+	enum PullMode
+	{
+		PULL_NONE,
+		PULL_UP,
+		PULL_DOWN
+	};
+
+	/**
+		@brief Set the pullup/down mode
+	 */
+	void SetPullMode(PullMode mode);
 
 protected:
 	volatile gpio_t* 	m_gpio;
