@@ -27,123 +27,35 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef logger_h
-#define logger_h
+#ifndef stm32_common_h
+#define stm32_common_h
 
-#include "CharacterDevice.h"
-#include "../peripheral/Timer.h"
-
-#ifdef HAVE_TIM
+#include <stdint.h>
 
 /**
-	@brief Simple logging framework with uptime timestamps
+	@brief Disables interrupts without saving the previous enable state
  */
-class Logger
-{
-public:
-
-	Logger()
-	: m_target(nullptr)
-	, m_timer(nullptr)
-	{}
-
-	/**
-		@brief Initializes a logger
-
-		@param target	The UART or other destination for log messages
-		@param timer	Timer with 1ms ticks since reset
-	 */
-	void Initialize(CharacterDevice* target, Timer* timer)
-	{
-		m_target = target;
-		m_timer = timer;
-	}
-
-	enum LogType
-	{
-		NORMAL,
-		WARNING,
-		ERROR
-	};
-
-	/**
-		@brief Prints a log message
-	 */
-	void operator()(const char* format, ...)
-	{
-		if(!m_target)
-			return;
-
-		Timestamp(NORMAL);
-		PrintIndent();
-
-		__builtin_va_list list;
-		__builtin_va_start(list, format);
-		m_target->Printf(format, list);
-		__builtin_va_end(list);
-	}
-
-	/**
-		@brief Prints a log message
-	 */
-	void operator()(LogType type, const char* format, ...)
-	{
-		if(!m_target)
-			return;
-
-		Timestamp(type);
-		PrintIndent();
-
-		__builtin_va_list list;
-		__builtin_va_start(list, format);
-		m_target->Printf(format, list);
-		__builtin_va_end(list);
-	}
-
-	/**
-		@brief Increments the log level
-	 */
-	void Indent()
-	{ m_indentLevel ++; }
-
-	/**
-		@brief Decrements the log level
-	 */
-	void Unindent()
-	{
-		if(m_indentLevel > 0)
-			m_indentLevel --;
-	}
-
-protected:
-	void Timestamp();
-	void Timestamp(LogType type);
-	void PrintIndent();
-
-protected:
-	CharacterDevice* m_target;
-	Timer* m_timer;
-	uint32_t m_indentLevel;
-};
+extern "C" void DisableInterrupts();
 
 /**
-	@brief Helper for auto indenting stuff in the log
+	@brief Enables interrupts without saving the previous enable state
  */
-class LogIndenter
-{
-public:
-	LogIndenter(Logger& log)
-	: m_logger(log)
-	{ log.Indent(); }
+extern "C" void EnableInterrupts();
 
-	~LogIndenter()
-	{ m_logger.Unindent(); }
+/**
+	@brief Enters a critical section, disables interrupts, and returns the previous PRIMASK value
+ */
+extern "C" uint32_t EnterCriticalSection();
 
-protected:
-	Logger& m_logger;
-};
+/**
+	@brief Leaves a critical section and restores the previous PRIMASK value
+ */
+extern "C" void LeaveCriticalSection(uint32_t cpu_sr);
+
+//Linker variables
+extern uint8_t __data_romstart;
+extern uint8_t __data_start;
+extern uint8_t __data_end;
 
 #endif
 
-
-#endif

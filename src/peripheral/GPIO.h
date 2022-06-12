@@ -50,7 +50,7 @@ public:
 		MODE_ANALOG		= 3
 	};
 
-#ifdef STM32F7
+#if defined(STM32F7) || defined(STM32H7)
 	/**
 		GPIO slew constants (must be saame as STM32 OSPEEDR register)
 	 */

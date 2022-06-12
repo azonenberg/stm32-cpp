@@ -27,123 +27,68 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef logger_h
-#define logger_h
+#include <stm32h735.h>
 
-#include "CharacterDevice.h"
-#include "../peripheral/Timer.h"
+volatile gpio_t GPIOA __attribute__((section(".gpioa")));
+volatile gpio_t GPIOB __attribute__((section(".gpiob")));
+volatile gpio_t GPIOC __attribute__((section(".gpioc")));
+volatile gpio_t GPIOD __attribute__((section(".gpiod")));
+volatile gpio_t GPIOE __attribute__((section(".gpioe")));
+volatile gpio_t GPIOF __attribute__((section(".gpiof")));
+volatile gpio_t GPIOG __attribute__((section(".gpiog")));
+volatile gpio_t GPIOH __attribute__((section(".gpioh")));
+volatile gpio_t GPIOJ __attribute__((section(".gpioj")));
+volatile gpio_t GPIOK __attribute__((section(".gpiok")));
 
-#ifdef HAVE_TIM
+volatile rcc_t RCC __attribute__((section(".rcc")));
 
-/**
-	@brief Simple logging framework with uptime timestamps
- */
-class Logger
-{
-public:
+volatile flash_t FLASH __attribute__((section(".flash")));
+/*
+volatile spi_t SPI1 __attribute__((section(".spi1")));
+volatile spi_t SPI2 __attribute__((section(".spi2")));
+volatile spi_t SPI3 __attribute__((section(".spi3")));
+volatile spi_t SPI4 __attribute__((section(".spi4")));
+volatile spi_t SPI5 __attribute__((section(".spi5")));
+volatile spi_t SPI6 __attribute__((section(".spi6")));
 
-	Logger()
-	: m_target(nullptr)
-	, m_timer(nullptr)
-	{}
+volatile usart_t USART1 __attribute__((section(".usart1")));
+volatile usart_t USART2 __attribute__((section(".usart2")));
+volatile usart_t USART3 __attribute__((section(".usart3")));
+volatile usart_t UART4 __attribute__((section(".uart4")));
+volatile usart_t UART5 __attribute__((section(".uart5")));
+volatile usart_t USART6 __attribute__((section(".usart6")));
+volatile usart_t UART7 __attribute__((section(".uart7")));
+volatile usart_t UART8 __attribute__((section(".uart8")));
 
-	/**
-		@brief Initializes a logger
+volatile emac_t EMAC __attribute__((section(".emac")));
+volatile ptp_t PTP __attribute__((section(".ptp")));
+volatile edma_t EDMA __attribute__((section(".edma")));
 
-		@param target	The UART or other destination for log messages
-		@param timer	Timer with 1ms ticks since reset
-	 */
-	void Initialize(CharacterDevice* target, Timer* timer)
-	{
-		m_target = target;
-		m_timer = timer;
-	}
+volatile syscfg_t SYSCFG __attribute__((section(".syscfg")));
+volatile dbgmcu_t DBGMCU __attribute__((section(".dbgmcu")));
+volatile scb_t SCB __attribute__((section(".scb")));
+volatile cpuid_t CPUID __attribute__((section(".cpuid")));
 
-	enum LogType
-	{
-		NORMAL,
-		WARNING,
-		ERROR
-	};
+volatile tim_t TIM1 __attribute__((section(".tim1")));
+volatile tim_t TIM2 __attribute__((section(".tim2")));
+volatile tim_t TIM3 __attribute__((section(".tim3")));
+volatile tim_t TIM4 __attribute__((section(".tim4")));
+volatile tim_t TIM5 __attribute__((section(".tim5")));
+volatile tim_t TIM6 __attribute__((section(".tim6")));
+volatile tim_t TIM7 __attribute__((section(".tim7")));
+volatile tim_t TIM8 __attribute__((section(".tim8")));
+volatile tim_t TIM9 __attribute__((section(".tim9")));
+volatile tim_t TIM10 __attribute__((section(".tim10")));
+volatile tim_t TIM11 __attribute__((section(".tim11")));
+volatile tim_t TIM12 __attribute__((section(".tim12")));
+volatile tim_t TIM13 __attribute__((section(".tim13")));
+volatile tim_t TIM14 __attribute__((section(".tim14")));
 
-	/**
-		@brief Prints a log message
-	 */
-	void operator()(const char* format, ...)
-	{
-		if(!m_target)
-			return;
+volatile uint32_t U_ID[3] __attribute__((section(".uid")));
+volatile uint16_t F_ID __attribute__((section(".fid")));
+volatile uint16_t PKG_ID __attribute__((section(".pkg")));
 
-		Timestamp(NORMAL);
-		PrintIndent();
-
-		__builtin_va_list list;
-		__builtin_va_start(list, format);
-		m_target->Printf(format, list);
-		__builtin_va_end(list);
-	}
-
-	/**
-		@brief Prints a log message
-	 */
-	void operator()(LogType type, const char* format, ...)
-	{
-		if(!m_target)
-			return;
-
-		Timestamp(type);
-		PrintIndent();
-
-		__builtin_va_list list;
-		__builtin_va_start(list, format);
-		m_target->Printf(format, list);
-		__builtin_va_end(list);
-	}
-
-	/**
-		@brief Increments the log level
-	 */
-	void Indent()
-	{ m_indentLevel ++; }
-
-	/**
-		@brief Decrements the log level
-	 */
-	void Unindent()
-	{
-		if(m_indentLevel > 0)
-			m_indentLevel --;
-	}
-
-protected:
-	void Timestamp();
-	void Timestamp(LogType type);
-	void PrintIndent();
-
-protected:
-	CharacterDevice* m_target;
-	Timer* m_timer;
-	uint32_t m_indentLevel;
-};
-
-/**
-	@brief Helper for auto indenting stuff in the log
- */
-class LogIndenter
-{
-public:
-	LogIndenter(Logger& log)
-	: m_logger(log)
-	{ log.Indent(); }
-
-	~LogIndenter()
-	{ m_logger.Unindent(); }
-
-protected:
-	Logger& m_logger;
-};
-
-#endif
-
-
-#endif
+volatile cryp_t CRYP __attribute__((section(".cryp")));
+volatile rng_t RNG __attribute__((section(".rng")));
+volatile hash_t HASH __attribute__((section(".chash")));
+*/

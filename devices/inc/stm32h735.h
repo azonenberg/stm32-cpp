@@ -27,8 +27,8 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef stm32f777_h
-#define stm32f777_h
+#ifndef stm32h735_h
+#define stm32h735_h
 
 #include <stdint.h>
 
@@ -37,42 +37,57 @@ typedef struct
 	uint32_t ACR;
 	uint32_t KEYR;
 	uint32_t OPTKEYR;
-	uint32_t SR;
 	uint32_t CR;
+	uint32_t SR;
+	uint32_t CCR;
 	uint32_t OPTCR;
-	uint32_t OPTCR1;
+	uint32_t OPTSR_CUR;
+	uint32_t OPTSR_PRG;
+	uint32_t OPTCCR;
+	uint32_t PRAR_CUR;
+	uint32_t PRAR_PRG;
+	uint32_t SCAR_CUR;
+	uint32_t SCAR_PRG;
+	uint32_t WPSN_CUR;
+	uint32_t WPSN_PRG;
+	uint32_t BOOT_CUR;
+	uint32_t BOOT_PRG;
+	uint32_t padding1[2];
+	uint32_t CRCCR;
+	uint32_t CRCSADDR;
+	uint32_t CRCEADDR;
+	uint32_t CRCDATAR;
+	uint32_t ECC_FAR;
+	uint32_t padding2[3];
+	uint32_t OPTSR2_CUR;
+	uint32_t OPTSR2_PRG;
 } flash_t;
 
 extern volatile flash_t FLASH;
 
-enum flash_acr
-{
-	FLASH_ACR_ARTEN = 0x20,
-	FLASH_ACR_PREFETCHEN = 0x10,
-};
-
 enum flash_cr
 {
-	FLASH_CR_LOCK			= 0x80000000,
-	FLASH_CR_STRT			= 0x10000,
+	FLASH_CR_LOCK			= 0x1,
+	FLASH_CR_STRT			= 0x80,
 
-	FLASH_CR_PSIZE_MASK		= 0x300,
-	FLASH_CR_PSIZE_X8		= 0x000,
-	FLASH_CR_PSIZE_X16		= 0x100,
-	FLASH_CR_PSIZE_X32		= 0x200,
-	FLASH_CR_PSIZE_X64		= 0x300,
+	FLASH_CR_PSIZE_MASK		= 0x30,
+	FLASH_CR_PSIZE_X8		= 0x00,
+	FLASH_CR_PSIZE_X16		= 0x10,
+	FLASH_CR_PSIZE_X32		= 0x20,
+	FLASH_CR_PSIZE_X64		= 0x30,
 
-	FLASH_CR_SECTOR_MASK	= 0xf8,
+	FLASH_CR_SECTOR_MASK	= 0x300,
 
-	FLASH_CR_SER			= 0x2,
-	FLASH_CR_PG				= 0x1
+	FLASH_CR_SER			= 0x4,
+	FLASH_CR_PG				= 0x2
+
 };
 
 enum flash_sr
 {
-	FLASH_SR_BUSY			= 0x10000,
+	FLASH_SR_BUSY			= 0x1,
 
-	FLASH_SR_ERR_MASK		= 0xf2
+	FLASH_SR_ERR_MASK		= 0x7EE0400
 };
 
 typedef struct
@@ -97,130 +112,34 @@ extern volatile gpio_t GPIOE;
 extern volatile gpio_t GPIOF;
 extern volatile gpio_t GPIOG;
 extern volatile gpio_t GPIOH;
-extern volatile gpio_t GPIOI;
 extern volatile gpio_t GPIOJ;
 extern volatile gpio_t GPIOK;
 
-enum rcc_ahb1
+enum rcc_ahb4
 {
-	RCC_AHB1_GPIOA		= 0x00000001,
-	RCC_AHB1_GPIOB		= 0x00000002,
-	RCC_AHB1_GPIOC		= 0x00000004,
-	RCC_AHB1_GPIOD		= 0x00000008,
-	RCC_AHB1_GPIOE		= 0x00000010,
-	RCC_AHB1_GPIOF		= 0x00000020,
-	RCC_AHB1_GPIOG		= 0x00000040,
-	RCC_AHB1_GPIOH		= 0x00000080,
-	RCC_AHB1_GPIOI		= 0x00000100,
-	RCC_AHB1_GPIOJ		= 0x00000200,
-	RCC_AHB1_GPIOK		= 0x00000400,
-	//0x800 reserved
-	RCC_AHB1_CRC		= 0x00001000,
-	//0x00002000 to 0x00020000 reserved
-	RCC_AHB1_BBRAM		= 0x00040000,
-	//0x00080000 reserved
-	RCC_AHB1_DTCM		= 0x00100000,
-	RCC_AHB1_DMA1		= 0x00200000,
-	RCC_AHB1_DMA2		= 0x00400000,
-	RCC_AHB1_DMA2D		= 0x00800000,
-	//0x01000000 reserved
-	RCC_AHB1_EMAC		= 0x02000000,
-	RCC_AHB1_EMAC_TX	= 0x04000000,
-	RCC_AHB1_EMAC_RX	= 0x08000000,
-	RCC_AHB1_PTP		= 0x10000000,
-	RCC_AHB1_USB		= 0x20000000,
-	RCC_AHB1_USB_ULPI	= 0x40000000,
-	//0x80000000 reserved
+	RCC_AHB4_GPIOA		= 0x00000001,
+	RCC_AHB4_GPIOB		= 0x00000002,
+	RCC_AHB4_GPIOC		= 0x00000004,
+	RCC_AHB4_GPIOD		= 0x00000008,
+	RCC_AHB4_GPIOE		= 0x00000010,
+	RCC_AHB4_GPIOF		= 0x00000020,
+	RCC_AHB4_GPIOG		= 0x00000040,
+	RCC_AHB4_GPIOH		= 0x00000080,
+	//0x100 reserved
+	RCC_AHB4_GPIOJ		= 0x00000200,
+	RCC_AHB4_GPIOK		= 0x00000400,
+	//0x0000_0800 to 0x0004_0000 reserved
+	RCC_AHB4_CRC		= 0x00080000,
+	//0x0010_0000 reserved
+	RCC_AHB4_BDMA		= 0x00200000,
+	//0x0040_0000 to 0x0080_0000 reserved
+	RCC_AHB4_ADC3		= 0x01000000,
+	RCC_AHB4_HSEM		= 0x02000000,
+	//0x0400_0000 to 0x0800_0000 reserved
+	RCC_AHB4_BKPRAM		= 0x10000000
+	//0x2000_0000 to 0x8000_0000 reserved
 };
-
-enum rcc_ahb2
-{
-	RCC_AHB2_USB		= 0x00000080,
-	RCC_AHB2_RNG		= 0x00000040,
-	RCC_AHB2_HASH		= 0x00000020,
-	RCC_AHB2_CRYP		= 0x00000010,
-	RCC_AHB2_JPEG		= 0x00000002,
-	RCC_AHB2_DCMI		= 0x00000001
-};
-
-enum rcc_apb1
-{
-	RCC_APB1_UART8		= 0x80000000,
-	RCC_APB1_UART7		= 0x40000000,
-	RCC_APB1_UART5		= 0x00100000,
-	RCC_APB1_UART4		= 0x00080000,
-	RCC_APB1_USART3		= 0x00040000,
-	RCC_APB1_USART2		= 0x00020000,
-	RCC_APB1_SPI3		= 0x00008000,
-	RCC_APB1_SPI2		= 0x00004000,
-	RCC_APB1_TIM14		= 0x00000100,
-	RCC_APB1_TIM13		= 0x00000080,
-	RCC_APB1_TIM12		= 0x00000040,
-	RCC_APB1_TIM7		= 0x00000020,
-	RCC_APB1_TIM6		= 0x00000010,
-	RCC_APB1_TIM5		= 0x00000008,
-	RCC_APB1_TIM4		= 0x00000004,
-	RCC_APB1_TIM3		= 0x00000002,
-	RCC_APB1_TIM2		= 0x00000001
-};
-
-enum rcc_apb2
-{
-	RCC_APB2_SPI6 		= 0x00200000,
-	RCC_APB2_SPI5		= 0x00100000,
-	RCC_APB2_TIM11		= 0x00040000,
-	RCC_APB2_TIM10		= 0x00020000,
-	RCC_APB2_TIM9		= 0x00010000,
-	RCC_APB2_SYSCFG		= 0x00004000,
-	RCC_APB2_SPI4		= 0x00002000,
-	RCC_APB2_SPI1		= 0x00001000,
-	RCC_APB2_USART6		= 0x00000020,
-	RCC_APB2_USART1		= 0x00000010,
-	RCC_APB2_TIM8		= 0x00000002,
-	RCC_APB2_TIM1		= 0x00000001
-};
-
-typedef struct
-{
-	uint32_t CR;
-	uint32_t PLLCFGR;
-	uint32_t CFGR;
-	uint32_t CIR;
-	uint32_t AHB1RSTR;
-	uint32_t AHB2RSTR;
-	uint32_t AHB3RSTR;
-	uint32_t field_1c;
-	uint32_t APB1RSTR;
-	uint32_t APB2RSTR;
-	uint32_t field_28;
-	uint32_t field_2c;
-	uint32_t AHB1ENR;
-	uint32_t AHB2ENR;
-	uint32_t AHB3ENR;
-	uint32_t field_3c;
-	uint32_t APB1ENR;
-	uint32_t APB2ENR;
-	uint32_t field_48;
-	uint32_t field_4c;
-	uint32_t AHB1LPENR;
-	uint32_t AHB2LPENR;
-	uint32_t AHB3LPENR;
-	uint32_t field_5c;
-	uint32_t APB1LPENR;
-	uint32_t APB2LPENR;
-	uint32_t field_68;
-	uint32_t field_6c;
-	uint32_t BDCR;
-	uint32_t CSR;
-	uint32_t field_78;
-	uint32_t field_7c;
-	uint32_t SSCGR;
-	uint32_t PLLI2SCFGR;
-	uint32_t PLLSAICFGR;
-	uint32_t DCKCFGR1;
-	uint32_t DCKCFGR2;
-} rcc_t;
-
+/*
 enum rcc_pll_bits
 {
 	RCC_PLL_READY	= 0x2000000,
@@ -253,9 +172,99 @@ enum rcc_pll_bits
 
 	RCC_PLLCFGR_RESERVED_MASK = 0x80BC8000
 };
+*/
+typedef struct
+{
+	uint32_t CR;
+	uint32_t HSICFGR;
+	uint32_t CRCCR;
+	uint32_t CSICFGR;
+	uint32_t CFGR;
+	uint32_t field_14;
+	uint32_t D1CFGR;
+	uint32_t D2CFGR;
+	uint32_t D3CFGR;
+	uint32_t field_24;
+	uint32_t PLLCKSELR;
+	uint32_t PLLCFGR;
+	uint32_t PLL1DIVR;
+	uint32_t PLL1FRACR;
+	uint32_t PLL2DIVR;
+	uint32_t PLL2FRACR;
+	uint32_t PLL3DIVR;
+	uint32_t PLL3FRACR;
+	uint32_t field_48;
+	uint32_t D1CCIPR;
+	uint32_t D2CCIP1R;
+	uint32_t D2CCIP2R;
+	uint32_t D3CCIPR;
+	uint32_t field_5c;
+	uint32_t CIER;
+	uint32_t CIFR;
+	uint32_t CICR;
+	uint32_t field_6c;
+	uint32_t BDCR;
+	uint32_t CSR;
+	uint32_t field_78;
+	uint32_t AHB3RSTR;
+	uint32_t AHB1RSTR;
+	uint32_t AHB2RSTR;
+	uint32_t AHB4RSTR;
+	uint32_t APB3RSTR;
+	uint32_t APB1LRSTR;
+	uint32_t APB1HRSTR;
+	uint32_t APB2RSTR;
+	uint32_t APB4RSTR;
+	uint32_t GCR;
+	uint32_t field_a4;
+	uint32_t D3AMR;
+	uint32_t field_ac[9];
+	uint32_t RSR;
+	uint32_t AHB3ENR;
+	uint32_t AHB1ENR;
+	uint32_t AHB2ENR;
+	uint32_t AHB4ENR;
+	uint32_t APB3ENR;
+	uint32_t APB1LENR;
+	uint32_t APB1HENR;
+	uint32_t APB2ENR;
+	uint32_t APB4ENR;
+	uint32_t field_f8;
+	uint32_t AHB3LPENR;
+	uint32_t AHB1LPENR;
+	uint32_t AHB2LPENR;
+	uint32_t AHB4LPENR;
+	uint32_t APB3LPENR;
+	uint32_t APB1LLPENR;
+	uint32_t APB1HLPENR;
+	uint32_t APB2LPENR;
+	uint32_t APB4LPENR;
+	uint32_t field_120[4];
+	uint32_t C1_RSR;
+	uint32_t C1_AHB3ENR;
+	uint32_t C1_AHB1ENR;
+	uint32_t C1_AHB2ENR;
+	uint32_t C1_AHB4ENR;
+	uint32_t C1_APB3ENR;
+	uint32_t C1_APB1LENR;
+	uint32_t C1_APB1HENR;
+	uint32_t C1_APB2ENR;
+	uint32_t C1_APB4ENR;
+	uint32_t field_158;
+	uint32_t C1_AHB3LPENR;
+	uint32_t C1_AHB1LPENR;
+	uint32_t C1_AHB2LPENR;
+	uint32_t C1_AHB4LPENR;
+	uint32_t C1_APB3LPENR;
+	uint32_t C1_APB1LLPENR;
+	uint32_t C1_APB1HLPENR;
+	uint32_t C1_APB2LPENR;
+	uint32_t C1_APB4LPENR;
+} rcc_t;
 
 extern volatile rcc_t RCC;
 
+/*
 typedef struct
 {
 	uint32_t CR1;
@@ -671,5 +680,6 @@ extern volatile cpuid_t CPUID;
 #define HAVE_RNG
 #define HAVE_HASH
 #define HAVE_UART
+*/
 
 #endif

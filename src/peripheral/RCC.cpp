@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP v0.1                                                                                                       *
 *                                                                                                                      *
-* Copyright (c) 2020-2021 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2022 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -27,7 +27,7 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#include <stm32fxxx.h>
+#include <stm32.h>
 #include <peripheral/RCC.h>
 
 /**
@@ -41,6 +41,29 @@ void RCCHelper::Enable(volatile gpio_t* gpio)
 			RCC.AHBENR |= RCC_AHB_GPIOA;
 		else if(gpio == &GPIOB)
 			RCC.AHBENR |= RCC_AHB_GPIOB;
+
+	#elif defined(STM32H7)
+
+		if(gpio == &GPIOA)
+			RCC.AHB4ENR |= RCC_AHB4_GPIOA;
+		else if(gpio == &GPIOB)
+			RCC.AHB4ENR |= RCC_AHB4_GPIOB;
+		else if(gpio == &GPIOC)
+			RCC.AHB4ENR |= RCC_AHB4_GPIOC;
+		else if(gpio == &GPIOD)
+			RCC.AHB4ENR |= RCC_AHB4_GPIOD;
+		else if(gpio == &GPIOE)
+			RCC.AHB4ENR |= RCC_AHB4_GPIOE;
+		else if(gpio == &GPIOF)
+			RCC.AHB4ENR |= RCC_AHB4_GPIOF;
+		else if(gpio == &GPIOG)
+			RCC.AHB4ENR |= RCC_AHB4_GPIOG;
+		else if(gpio == &GPIOH)
+			RCC.AHB4ENR |= RCC_AHB4_GPIOH;
+		else if(gpio == &GPIOJ)
+			RCC.AHB4ENR |= RCC_AHB4_GPIOJ;
+		else if(gpio == &GPIOK)
+			RCC.AHB4ENR |= RCC_AHB4_GPIOK;
 
 	#elif defined(STM32F7)
 
@@ -71,6 +94,8 @@ void RCCHelper::Enable(volatile gpio_t* gpio)
 		#error Unknown STM32 family
 	#endif
 }
+
+#ifdef HAVE_UART
 
 /**
 	@brief Enable a UART
@@ -106,6 +131,8 @@ void RCCHelper::Enable(volatile usart_t* uart)
 		#error Unknown STM32 family
 	#endif
 }
+
+#endif
 
 /**
 	@brief Enable a SPI bus

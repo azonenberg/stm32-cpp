@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP v0.1                                                                                                       *
 *                                                                                                                      *
-* Copyright (c) 2020-2021 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2022 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -31,6 +31,8 @@
 #include <stdint.h>
 #include "Logger.h"
 
+#ifdef HAVE_TIM
+
 void Logger::Timestamp(LogType type)
 {
 	//TODO: handle wrap at 4.97 days
@@ -58,3 +60,5 @@ void Logger::PrintIndent()
 	for(int i=0; i<m_indentLevel; i++)
 		m_target->PrintString("    ");
 }
+
+#endif
