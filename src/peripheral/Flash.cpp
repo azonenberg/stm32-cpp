@@ -32,6 +32,72 @@
 
 uint32_t Flash::m_maxPsize = FLASH_CR_PSIZE_X8;
 
+#ifdef STM32H7
+
+/**
+	@brief Configures the flash cache, latency, and  prefetching for the specified operating frequency/voltage range
+ */
+void Flash::SetConfiguration(int axiClockFreqMHz, VoltageRange range)
+{
+	//Calculate the number of wait states to use
+	//Based on table 16 of RM0468, section 4.3.8
+	int waitStates = 0;
+	switch(range)
+	{
+		case RANGE_VOS0:
+			if(axiClockFreqMHz <= 70)
+				waitStates = 0;
+			else if(axiClockFreqMHz <= 140)
+				waitStates = 1;
+			else if(axiClockFreqMHz <= 210)
+				waitStates = 2;
+			else //if(axiClockFreqMHz <= 275)
+				waitStates = 3;
+			break;
+
+		case RANGE_VOS1:
+			if(axiClockFreqMHz <= 67)
+				waitStates = 0;
+			else if(axiClockFreqMHz <= 133)
+				waitStates = 1;
+			else// if(axiClockFreqMHz <= 200)
+				waitStates = 2;
+			break;
+
+		case RANGE_VOS2:
+			if(axiClockFreqMHz <= 50)
+				waitStates = 0;
+			else if(axiClockFreqMHz <= 100)
+				waitStates = 1;
+			else// if(axiClockFreqMHz <= 150)
+				waitStates = 2;
+			break;
+
+		case RANGE_VOS3:
+		default:
+			if(axiClockFreqMHz <= 35)
+				waitStates = 0;
+			else if(axiClockFreqMHz <= 70)
+				waitStates = 1;
+			else// if(axiClockFreqMHz <= 85)
+				waitStates = 2;
+			break;
+	}
+
+	//Configure the access control register
+	//Wait states and programming delay are the same
+	FLASH.ACR = waitStates | (waitStates << 4);
+
+	//Read back to verify write took effect
+	while( (FLASH.ACR & 0xf) != waitStates)
+	{}
+
+	//No hardware limits on PSIZE in STM32H7
+	m_maxPsize = FLASH_CR_PSIZE_X64;
+}
+
+#endif
+
 #ifdef STM32F7
 
 /**

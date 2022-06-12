@@ -137,7 +137,7 @@ SECTIONS
 		. = ALIGN(1024);
 		*(.rcc)
 		. = ALIGN(1024);
-		. += 1024;		/* PWR not yet implemented */
+		*(.pwr)
 		. = ALIGN(1024);
 		. += 1024;		/* CRC not yet implemented */
 
@@ -156,7 +156,6 @@ SECTIONS
 
 	.sfr_mcu :
 	{
-		/*
 		. += 0xed00;
 		*(.scb)
 		. += 0x4;
@@ -164,7 +163,6 @@ SECTIONS
 		. = ALIGN(1024);
 		. += 0x33000;
 		*(.dbgmcu)
-		*/
 	} > MCU
 
 	.sfr_sig :

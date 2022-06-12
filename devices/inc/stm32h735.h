@@ -34,6 +34,41 @@
 
 typedef struct
 {
+	uint32_t CR1;
+	uint32_t CSR1;
+	uint32_t CR2;
+	uint32_t CR3;
+	uint32_t CPUCR;
+	uint32_t field_14;
+	uint32_t D3CR;
+	uint32_t WKUPCR;
+	uint32_t WKUPFR;
+	uint32_t WKUPEPR;
+} pwr_t;
+extern volatile pwr_t PWR;
+
+enum VoltageRange
+{
+	RANGE_VOS3 = 1,	//0.95 - 1.05V
+	RANGE_VOS2 = 2,	//1.05 - 1.15V
+	RANGE_VOS1 = 3,	//1.15 - 1.26V
+	RANGE_VOS0 = 0	//1.26 - 1.4V
+};
+
+enum pwr_csr1
+{
+	PWR_CSR1_ACTVOSRDY = 0x2000
+};
+
+enum pwr_d3cr
+{
+	PWR_D3CR_VOSRDY = 0x2000,
+
+	PWR_D3CR_VOSMASK = 0xc000
+};
+
+typedef struct
+{
 	uint32_t ACR;
 	uint32_t KEYR;
 	uint32_t OPTKEYR;
@@ -487,7 +522,7 @@ enum syscfg_pmc
 };
 
 extern volatile syscfg_t SYSCFG;
-
+*/
 typedef struct
 {
 	uint32_t	IDCODE;
@@ -497,7 +532,7 @@ typedef struct
 } dbgmcu_t;
 
 extern volatile dbgmcu_t DBGMCU;
-
+/*
 typedef struct
 {
 	uint32_t	CR1;
@@ -635,7 +670,7 @@ enum hash_sr
 };
 
 extern volatile hash_t HASH;
-
+*/
 typedef struct
 {
 	uint32_t	CPUID;
@@ -670,7 +705,7 @@ typedef struct
 } cpuid_t;
 
 extern volatile cpuid_t CPUID;
-
+/*
 //Defines for what peripherals are present / implemented
 //#define HAVE_I2C
 #define HAVE_TIM
@@ -681,5 +716,6 @@ extern volatile cpuid_t CPUID;
 #define HAVE_HASH
 #define HAVE_UART
 */
+#define HAVE_PWR
 
 #endif
