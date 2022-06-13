@@ -68,9 +68,9 @@ volatile usart_t UART8 __attribute__((section(".uart8")));
 volatile emac_t EMAC __attribute__((section(".emac")));
 volatile ptp_t PTP __attribute__((section(".ptp")));
 volatile edma_t EDMA __attribute__((section(".edma")));
-
-volatile syscfg_t SYSCFG __attribute__((section(".syscfg")));
 */
+volatile syscfg_t SYSCFG __attribute__((section(".syscfg")));
+
 volatile dbgmcu_t DBGMCU __attribute__((section(".dbgmcu")));
 volatile scb_t SCB __attribute__((section(".scb")));
 volatile cpuid_t CPUID __attribute__((section(".cpuid")));
@@ -89,11 +89,12 @@ volatile tim_t TIM7 __attribute__((section(".tim7")));
 volatile tim_t TIM12 __attribute__((section(".tim12")));
 volatile tim_t TIM13 __attribute__((section(".tim13")));
 volatile tim_t TIM14 __attribute__((section(".tim14")));
-/*
+
 volatile uint32_t U_ID[3] __attribute__((section(".uid")));
 volatile uint16_t F_ID __attribute__((section(".fid")));
 volatile uint16_t PKG_ID __attribute__((section(".pkg")));
-
+volatile uint32_t L_ID __attribute__((section(".lid")));
+/*
 volatile cryp_t CRYP __attribute__((section(".cryp")));
 volatile rng_t RNG __attribute__((section(".rng")));
 volatile hash_t HASH __attribute__((section(".chash")));

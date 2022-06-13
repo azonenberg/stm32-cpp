@@ -867,3 +867,25 @@ uint8_t RCCHelper::GetDivider16Code(uint8_t div)
 	}
 }
 #endif
+
+#ifdef STM32H7
+void RCCHelper::EnableSyscfg()
+{
+	RCC.APB4ENR |= RCC_APB4_SYSCFG;
+}
+
+void RCCHelper::EnableSram2()
+{
+	RCC.AHB2ENR |= RCC_AHB2_SRAM2;
+}
+
+void RCCHelper::EnableSram1()
+{
+	RCC.AHB2ENR |= RCC_AHB2_SRAM1;
+}
+
+void RCCHelper::EnableBackupSram()
+{
+	RCC.AHB4ENR |= RCC_AHB4_BKPRAM;
+}
+#endif

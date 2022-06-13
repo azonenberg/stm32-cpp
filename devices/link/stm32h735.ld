@@ -37,7 +37,8 @@ MEMORY
 	AHB1(RW):	ORIGIN = 0x40020000, LENGTH = 384K
 	APB2(RW):	ORIGIN = 0x40010000, LENGTH = 32K
 	APB1(RW):	ORIGIN = 0x40000000, LENGTH = 58K
-	MCU(RW):	ORIGIN = 0xe0000000, LENGTH = 512K
+	MCU(RW):	ORIGIN = 0xe0000000, LENGTH = 1024K
+	MCU2(RW):	ORIGIN = 0x5c001000, LENGTH = 4K
 	SIG(RW):	ORIGIN = 0x1ff00000, LENGTH = 1024K
 }
 
@@ -185,6 +186,10 @@ SECTIONS
 
 	.sfr_apb4 :
 	{
+		. += 1024;	/* EXTI not yet implemented */
+		. = ALIGN(1024);
+		*(.syscfg)
+
 		/*
 			TODO: EXTI, SYSCFG, LPUART1, SPI/I2S6, I2C4, LPTIM2, LPTIM3, LPTIM4, LPTIM5, COMP1/2, VREF, RTC/BKP, IWDG,
 			reserved, SAI4, DTS
@@ -198,19 +203,20 @@ SECTIONS
 		. += 0x4;
 		*(.cpuid)
 		. = ALIGN(1024);
-		. += 0x33000;
-		*(.dbgmcu)
 	} > MCU
+
+	.sfr_mcu2 :
+	{
+		*(.dbgmcu)
+	} > MCU2
 
 	.sfr_sig :
 	{
-		/*
-		. += 0xf420;
+		. += 0x1e800;
 		*(.uid)
-		. += 0x16;
+		. += 0x74;
 		*(.fid)
-		. += 0xe87ac;
-		*(.pkg)
-		*/
+		. += 0x3c;
+		*(.lid)
 	} > SIG
 }

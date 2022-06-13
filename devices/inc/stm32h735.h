@@ -175,6 +175,20 @@ enum rcc_ahb4
 	//0x2000_0000 to 0x8000_0000 reserved
 };
 
+enum rcc_ahb2
+{
+	RCC_AHB2_SRAM2		= 0x40000000,
+	RCC_AHB2_SRAM1		= 0x20000000,
+	RCC_AHB2_RNG		= 0x00000040,
+	RCC_AHB2_HASH		= 0x00000020,
+	RCC_AHB2_CRYPT		= 0x00000010
+};
+
+enum rcc_apb4
+{
+	RCC_APB4_SYSCFG		= 0x00000002
+};
+
 enum rcc_apb1l
 {
 	RCC_APB1L_TIM2		= 0x00000001,
@@ -530,27 +544,52 @@ typedef enum
 extern volatile emac_t EMAC;
 extern volatile ptp_t PTP;
 extern volatile edma_t EDMA;
-
+*/
 typedef struct
 {
-	uint32_t	MEMRMP;
-	uint32_t	PMC;
-	uint32_t	EXTICR1;
-	uint32_t	EXTICR2;
-	uint32_t	EXTICR3;
-	uint32_t	EXTICR4;
-	uint32_t	reserved_18;
-	uint32_t	CBR;
-	uint32_t	CMPCR;
+	uint32_t field_0;
+	uint32_t PMCR;
+	uint32_t EXTICR1;
+	uint32_t EXTICR2;
+	uint32_t EXTICR3;
+	uint32_t EXTICR4;
+	uint32_t CFGR;
+	uint32_t field_1c;
+	uint32_t CCCSR;
+	uint32_t CCVR;
+	uint32_t CCCR;
+	uint32_t field_2c;
+	uint32_t ADC2ALT;
+	uint32_t field_34[60];
+	uint32_t PKGR;
+	uint32_t field_128[118];
+	uint32_t UR0;
+	uint32_t field_304;
+	uint32_t UR2;
+	uint32_t UR3;
+	uint32_t UR4;
+	uint32_t UR5;
+	uint32_t UR6;
+	uint32_t UR7;
+	uint32_t field_320;
+	uint32_t field_324;
+	uint32_t field_328;
+	uint32_t UR11;
+	uint32_t UR12;
+	uint32_t UR13;
+	uint32_t UR14;
+	uint32_t UR15;
+	uint32_t UR16;
+	uint32_t UR17;
 } syscfg_t;
 
-enum syscfg_pmc
+enum syscfg_pmcr
 {
 	ETH_MODE_RMII	= 0x00800000
 };
 
 extern volatile syscfg_t SYSCFG;
-*/
+
 typedef struct
 {
 	uint32_t	IDCODE;
@@ -606,11 +645,12 @@ extern volatile tim_t TIM7;
 extern volatile tim_t TIM12;
 extern volatile tim_t TIM13;
 extern volatile tim_t TIM14;
-/*
+
 extern volatile uint32_t U_ID[3];
 extern volatile uint16_t F_ID;
+extern volatile uint32_t L_ID;
 extern volatile uint16_t PKG_ID;
-
+/*
 typedef struct
 {
 	uint32_t	CR;
