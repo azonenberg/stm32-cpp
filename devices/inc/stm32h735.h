@@ -113,6 +113,7 @@ enum flash_cr
 
 	FLASH_CR_SECTOR_MASK	= 0x300,
 
+	FLASH_CR_FW				= 0x40,
 	FLASH_CR_SER			= 0x4,
 	FLASH_CR_PG				= 0x2
 

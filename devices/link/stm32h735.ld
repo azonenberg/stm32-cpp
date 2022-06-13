@@ -144,6 +144,16 @@ SECTIONS
 		/* TODO: I2C etc */
 	} > APB1
 
+	.sfr_ahb3 :
+	{
+		. += 1048576;		/* GPV not implemented */
+		. += 15728640;		/* 5110_0000 - 51ffffff reserved */
+		. += 4096;			/* MDMA not implemented */
+		. += 4096;			/* DMA2D not implemented */
+		. = ALIGN(1024);
+		*(.flash)
+	} > AHB3
+
 	.sfr_ahb4 :
 	{
 		. = ALIGN(1024);

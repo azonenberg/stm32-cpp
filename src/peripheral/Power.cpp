@@ -40,6 +40,7 @@
 /**
 	@brief Configures the supply in Mode 3 (SMPS supplies LDO)
  */
+__attribute__((optimize("O2")))
 void Power::ConfigureSMPSToLDOCascade(SmpsVoltage vsmps, VoltageRange vcore)
 {
 	//SMPS enabled in normal mode, LDO enabled, not bypassed

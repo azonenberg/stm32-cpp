@@ -29,6 +29,7 @@
 
 #include <stm32.h>
 #include "Flash.h"
+#include <string.h>
 
 uint32_t Flash::m_maxPsize = FLASH_CR_PSIZE_X8;
 
@@ -264,10 +265,38 @@ bool Flash::BlockErase(uint8_t* address)
 		if( (addr < 0x08000000) || (numSector < 0) )
 			return false;
 
+	#elif defined(STM32H735)
+
+		//uniform 128 kB sectors
+		static const uint32_t sectorEnds[8] =
+		{
+			0x0801ffff,
+			0x0803ffff,
+			0x0805ffff,
+			0x0807ffff,
+			0x0809ffff,
+			0x080bffff,
+			0x080dffff,
+			0x080fffff
+		};
+
+		numSector = -1;
+		for(int i=0; i<8; i++)
+		{
+			if(addr < sectorEnds[i])
+			{
+				numSector = i;
+				break;
+			}
+		}
+		if( (addr < 0x08000000) || (numSector < 0) )
+			return false;
+
 	#else
 
 		//not implemented for this target device
-		return false;
+		while(1)
+		{}
 	#endif
 
 	//Block until flash is free
@@ -281,7 +310,15 @@ bool Flash::BlockErase(uint8_t* address)
 	FLASH.CR = (FLASH.CR & ~FLASH_CR_PSIZE_MASK) | m_maxPsize;
 
 	//Select the sector being erased
-	FLASH.CR = (FLASH.CR & ~FLASH_CR_SECTOR_MASK) | (numSector << 3) | FLASH_CR_SER;
+	#ifdef STM32F777
+		FLASH.CR = (FLASH.CR & ~FLASH_CR_SECTOR_MASK) | (numSector << 3) | FLASH_CR_SER;
+	#elif defined(STM32H735)
+		FLASH.CR = (FLASH.CR & ~FLASH_CR_SECTOR_MASK) | (numSector << 8) | FLASH_CR_SER;
+	#else
+		//not implemented for this target device
+		while(1)
+		{}
+	#endif
 
 	//Do the erase
 	FLASH.CR |= FLASH_CR_STRT;
@@ -309,26 +346,63 @@ bool Flash::Write(uint8_t* address, const uint8_t* data, uint32_t len)
 	//Enable writing
 	Unlock();
 
-	//Set PSIZE to byte regardless of our maximum
-	//TODO: enable fast writes for large, aligned data?
-	FLASH.CR = (FLASH.CR & ~FLASH_CR_PSIZE_MASK) | FLASH_CR_PSIZE_X8;
+	#ifdef STM32H735
 
-	//Write the data one byte at a time
-	for(uint32_t i=0; i<len; i++)
-	{
-		//Enable programming
-		FLASH.CR |= FLASH_CR_PG;
+		//Set PSIZE to our maximu
+		FLASH.CR = (FLASH.CR & ~FLASH_CR_PSIZE_MASK) | m_maxPsize;
 
-		//Do the actual write
-		address[i] = data[i];
+		//Write the data in blocks of 32 bytes; force write after the last one
+		for(uint32_t i=0; i<len; i+=32)
+		{
+			//Enable programming
+			FLASH.CR |= FLASH_CR_PG;
 
-		//Wait until done, then check for errors
-		asm("dmb st");
-		while(FLASH.SR & FLASH_SR_BUSY)
-		{}
-		if(FLASH.SR & FLASH_SR_ERR_MASK)
-			return false;
-	}
+			//Put stuff in write buffer
+			uint32_t blocksize = 32;
+			bool partialblock = false;
+			if(i+32 > len)
+			{
+				partialblock = true;
+				blocksize = len - i;
+			}
+			memcpy(address+i, data+i, blocksize);
+
+			//Force write if partial block
+			if(partialblock)
+				FLASH.CR |= FLASH_CR_FW;
+
+			//Wait until done, then check for errors
+			asm("dmb st");
+			while(FLASH.SR & FLASH_SR_BUSY)
+			{}
+			if(FLASH.SR & FLASH_SR_ERR_MASK)
+				return false;
+		}
+
+	#else
+
+		//Set PSIZE to byte regardless of our maximum
+		//TODO: enable fast writes for large, aligned data?
+		FLASH.CR = (FLASH.CR & ~FLASH_CR_PSIZE_MASK) | FLASH_CR_PSIZE_X8;
+
+		//Write the data one byte at a time
+		for(uint32_t i=0; i<len; i++)
+		{
+			//Enable programming
+			FLASH.CR |= FLASH_CR_PG;
+
+			//Do the actual write
+			address[i] = data[i];
+
+			//Wait until done, then check for errors
+			asm("dmb st");
+			while(FLASH.SR & FLASH_SR_BUSY)
+			{}
+			if(FLASH.SR & FLASH_SR_ERR_MASK)
+				return false;
+		}
+
+	#endif
 
 	//Done
 	//Re-lock the control register
