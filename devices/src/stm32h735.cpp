@@ -55,10 +55,12 @@ volatile spi_t SPI5 __attribute__((section(".spi5")));
 volatile spi_t SPI6 __attribute__((section(".spi6")));
 
 volatile usart_t USART1 __attribute__((section(".usart1")));
+*/
 volatile usart_t USART2 __attribute__((section(".usart2")));
 volatile usart_t USART3 __attribute__((section(".usart3")));
 volatile usart_t UART4 __attribute__((section(".uart4")));
 volatile usart_t UART5 __attribute__((section(".uart5")));
+/*
 volatile usart_t USART6 __attribute__((section(".usart6")));
 volatile usart_t UART7 __attribute__((section(".uart7")));
 volatile usart_t UART8 __attribute__((section(".uart8")));
@@ -72,22 +74,22 @@ volatile syscfg_t SYSCFG __attribute__((section(".syscfg")));
 volatile dbgmcu_t DBGMCU __attribute__((section(".dbgmcu")));
 volatile scb_t SCB __attribute__((section(".scb")));
 volatile cpuid_t CPUID __attribute__((section(".cpuid")));
-/*
-volatile tim_t TIM1 __attribute__((section(".tim1")));
+
+//volatile tim_t TIM1 __attribute__((section(".tim1")));
 volatile tim_t TIM2 __attribute__((section(".tim2")));
 volatile tim_t TIM3 __attribute__((section(".tim3")));
 volatile tim_t TIM4 __attribute__((section(".tim4")));
 volatile tim_t TIM5 __attribute__((section(".tim5")));
 volatile tim_t TIM6 __attribute__((section(".tim6")));
 volatile tim_t TIM7 __attribute__((section(".tim7")));
-volatile tim_t TIM8 __attribute__((section(".tim8")));
-volatile tim_t TIM9 __attribute__((section(".tim9")));
-volatile tim_t TIM10 __attribute__((section(".tim10")));
-volatile tim_t TIM11 __attribute__((section(".tim11")));
+//volatile tim_t TIM8 __attribute__((section(".tim8")));
+//volatile tim_t TIM9 __attribute__((section(".tim9")));
+//volatile tim_t TIM10 __attribute__((section(".tim10")));
+//volatile tim_t TIM11 __attribute__((section(".tim11")));
 volatile tim_t TIM12 __attribute__((section(".tim12")));
 volatile tim_t TIM13 __attribute__((section(".tim13")));
 volatile tim_t TIM14 __attribute__((section(".tim14")));
-
+/*
 volatile uint32_t U_ID[3] __attribute__((section(".uid")));
 volatile uint16_t F_ID __attribute__((section(".fid")));
 volatile uint16_t PKG_ID __attribute__((section(".pkg")));

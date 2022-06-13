@@ -84,7 +84,7 @@ public:
 		SetMode(mode, altmode, open_drain);
 	}
 
-#ifdef STM32F7
+#if defined(STM32F7) || defined(STM32H7)
 	/**
 		@brief Initializes the pin
 	 */
@@ -111,7 +111,7 @@ public:
 
 	void SetMode(gpiomode_t mode, uint8_t altmode = 1, bool open_drain = false);
 
-	#ifdef STM32F7
+	#if defined(STM32F7) || defined(STM32H7)
 	void SetOutputSlew(gpioslew_t slew)
 	{ m_gpio->OSPEEDR = (m_gpio->OSPEEDR & ~(0x3 << 2*m_pin)) | (slew << (2*m_pin)); }
 	#endif

@@ -97,6 +97,30 @@ public:
 		uint16_t apb2div
 		);
 	#endif
+
+	#ifdef STM32H7
+	static void EnableHighSpeedExternalClock();
+	static void InitializePLL(
+		uint8_t npll,
+		float in_mhz,
+		uint8_t prediv,
+		uint16_t mult,
+		uint8_t divP,
+		uint8_t divQ,
+		uint8_t divR
+		);
+	static void SelectSystemClockFromPLL1();
+	static void InitializeSystemClocks(
+		uint16_t sysckdiv,
+		uint16_t ahbdiv,
+		uint8_t apb1div,
+		uint8_t apb2div,
+		uint8_t apb3div,
+		uint8_t apb4div
+		);
+	static uint8_t GetDivider512Code(uint16_t div);
+	static uint8_t GetDivider16Code(uint8_t div);
+	#endif
 };
 
 #endif

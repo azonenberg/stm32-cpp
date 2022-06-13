@@ -102,12 +102,23 @@ void RCCHelper::Enable(volatile gpio_t* gpio)
  */
 void RCCHelper::Enable(volatile usart_t* uart)
 {
-	#if defined(STM32F0)
+	#if defined(STM32F031)
 
 		if(uart == &USART1)
 			RCC.APB2ENR |= RCC_APB2_USART1;
 
-	#elif defined(STM32F7)
+	#elif defined(STM32H735)
+
+		if(uart == &USART2)
+			RCC.APB1LENR |= RCC_APB1L_USART2;
+		else if(uart == &USART3)
+			RCC.APB1LENR |= RCC_APB1L_USART3;
+		else if(uart == &UART4)
+			RCC.APB1LENR |= RCC_APB1L_UART4;
+		else if(uart == &UART5)
+			RCC.APB1LENR |= RCC_APB1L_UART5;
+
+	#elif defined(STM32F777)
 
 		if(uart == &USART1)
 			RCC.APB2ENR |= RCC_APB2_USART1;
@@ -247,6 +258,28 @@ void RCCHelper::Enable(volatile tim_t* tim)
 			RCC.APB2ENR |= RCC_APB2_TIM16;
 		else if(tim == &TIM17)
 			RCC.APB2ENR |= RCC_APB2_TIM17;
+
+	#elif defined(STM32H735)
+
+		if(tim == &TIM2)
+			RCC.APB1LENR |= RCC_APB1L_TIM2;
+		else if(tim == &TIM3)
+			RCC.APB1LENR |= RCC_APB1L_TIM3;
+		else if(tim == &TIM4)
+			RCC.APB1LENR |= RCC_APB1L_TIM4;
+		else if(tim == &TIM5)
+			RCC.APB1LENR |= RCC_APB1L_TIM5;
+		else if(tim == &TIM6)
+			RCC.APB1LENR |= RCC_APB1L_TIM6;
+		else if(tim == &TIM7)
+			RCC.APB1LENR |= RCC_APB1L_TIM7;
+		else if(tim == &TIM12)
+			RCC.APB1LENR |= RCC_APB1L_TIM12;
+		else if(tim == &TIM13)
+			RCC.APB1LENR |= RCC_APB1L_TIM13;
+		else if(tim == &TIM14)
+			RCC.APB1LENR |= RCC_APB1L_TIM14;
+
 	#elif defined(STM32F777)
 		if(tim == &TIM1)
 			RCC.APB2ENR |= RCC_APB2_TIM1;
@@ -276,8 +309,11 @@ void RCCHelper::Enable(volatile tim_t* tim)
 			RCC.APB1ENR |= RCC_APB1_TIM13;
 		else if(tim == &TIM14)
 			RCC.APB1ENR |= RCC_APB1_TIM14;
+
 	#else
+
 		#error Unknown timer configuration (unsupported part)
+
 	#endif
 }
 #endif
@@ -557,4 +593,277 @@ void RCCHelper::InitializePLLFromInternalOscillator(
 	RCC.CFGR = cfg | RCC_SYSCLK_PLL;
 }
 
+#endif
+
+#ifdef STM32H7
+/**
+	@brief Enable the high speed external oscillator in bypass mode (external clock)
+
+	@param x
+ */
+void RCCHelper::EnableHighSpeedExternalClock()
+{
+	RCC.CR = RCC.CR | RCC_CR_HSEON | RCC_CR_HSEBYP;
+
+	while( (RCC.CR & RCC_CR_HSERDY) == 0)
+	{}
+}
+
+/**
+	@brief Initialize and starts a PLL
+
+	For now, the input must come from the HSE oscillator
+
+	Input frequency at PFD must be 1 to 16 MHz
+	VCO frequency must be 150 to 836 MHz
+	VCO frequencies >420 MHz only available if PFD frequency >= 2 MHz
+	VCO frequencies <150 MHz only available if PFD frequency < 2 MHz
+
+	@param npll				PLL to configure (1-3)
+	@param in_mhz			Input frequency, in MHz
+	@param prediv			Pre-divider (1 to 63)
+	@param mult				VCO multiplier (4 - 512)
+	@param divP				Divider for output P (1 - 128)
+	@param divQ				Divider for output Q (1 - 128)
+	@param divR				Divider for output R (1 - 128)
+ */
+void RCCHelper::InitializePLL(
+	uint8_t npll,
+	float in_mhz,
+	uint8_t prediv,
+	uint16_t mult,
+	uint8_t divP,
+	uint8_t divQ,
+	uint8_t divR
+	)
+{
+	//TODO: fractional N support: multiplier = DIVN + (FRACN / 2^13)
+
+	//Select PLL source
+	//(for now, hard code HSE)
+	RCC.PLLCKSELR = (RCC.PLLCKSELR & RCC_PLLCKSELR_SRC_MASK) | RCC_PLLCKSELR_SRC_HSE;
+
+	//Prescaler is not shifted
+	//div 0 = disabled
+	uint32_t divm = prediv;
+
+	//R/P/Q/N dividers are shifted by one
+	uint8_t r = divR - 1;
+	uint8_t q = divQ - 1;
+	uint8_t p = divP - 1;
+	uint16_t n = mult - 1;
+
+	//Validate input frequency
+	float pll_fin_mhz = in_mhz / prediv;
+	if( (pll_fin_mhz < 1) || (pll_fin_mhz > 16) )
+	{
+		//ERROR if we get here: PLL input after predivider must be 1 to 16 MHz
+		while(1)
+		{}
+	}
+
+	//Figure out frequency ranges
+	//Use low range VCO when 1-2 MHz
+	//Use wide range when 2 to 16 MHz
+	bool low_range_vco = (pll_fin_mhz < 2);
+	uint32_t in_range;
+	if(pll_fin_mhz < 2)
+		in_range = 0;
+	else if(pll_fin_mhz < 4)
+		in_range = 1;
+	else if(pll_fin_mhz < 8)
+		in_range = 2;
+	else //if(pll_fin_mhz < 16)
+		in_range = 3;
+
+	//Validate VCO frequency
+	float fvco = pll_fin_mhz * mult;
+	if(low_range_vco)
+	{
+		if( (fvco < 150) || (fvco > 420) )
+		{
+			//ERROR if we get here: VCO frequency out of range
+			while(1)
+			{}
+		}
+	}
+	else
+	{
+		if( (fvco < 192) || (fvco > 836) )
+		{
+			//ERROR if we get here: VCO frequency out of range
+			while(1)
+			{}
+		}
+	}
+
+
+	//Final config
+	switch(npll)
+	{
+		case 1:
+			RCC.PLLCKSELR = (RCC.PLLCKSELR & 0xfffffc0f) | (divm << 4);
+			RCC.PLLCFGR |= (RCC_PLLCFGR_DIV1PEN | RCC_PLLCFGR_DIV1QEN | RCC_PLLCFGR_DIV1REN );
+			RCC.PLLCFGR &= ~RCC_PLLCFGR_PLL1RGE_MASK;
+			RCC.PLLCFGR |= (in_range << 2) | (low_range_vco << 1);
+			RCC.PLL1DIVR = (r << 24) | (q << 16) | (p << 9) | n;
+			//fractional mode not supported for now
+
+			RCC.CR |= RCC_CR_PLL1ON;
+			while( (RCC.CR & RCC_CR_PLL1RDY) == 0)
+			{}
+			break;
+
+		case 2:
+			RCC.PLLCKSELR = (RCC.PLLCKSELR & 0xfffc0fff) | (divm << 12);
+			RCC.PLLCFGR |= (RCC_PLLCFGR_DIV2PEN | RCC_PLLCFGR_DIV2QEN | RCC_PLLCFGR_DIV2REN );
+			RCC.PLLCFGR &= ~RCC_PLLCFGR_PLL2RGE_MASK;
+			RCC.PLLCFGR |= (in_range << 6) | (low_range_vco << 5);
+			RCC.PLL2DIVR = (r << 24) | (q << 16) | (p << 9) | n;
+			//fractional mode not supported for now
+
+			RCC.CR |= RCC_CR_PLL2ON;
+			while( (RCC.CR & RCC_CR_PLL2RDY) == 0)
+			{}
+			break;
+
+		case 3:
+			RCC.PLLCKSELR = (RCC.PLLCKSELR & 0xfc0fffff) | (divm << 20);
+			RCC.PLLCFGR |= (RCC_PLLCFGR_DIV3PEN | RCC_PLLCFGR_DIV3QEN | RCC_PLLCFGR_DIV3REN );
+			RCC.PLLCFGR &= ~RCC_PLLCFGR_PLL3RGE_MASK;
+			RCC.PLLCFGR |= (in_range << 10) | (low_range_vco << 9);
+			RCC.PLL3DIVR = (r << 24) | (q << 16) | (p << 9) | n;
+			//fractional mode not supported for now
+
+			RCC.CR |= RCC_CR_PLL3ON;
+			while( (RCC.CR & RCC_CR_PLL3RDY) == 0)
+			{}
+			break;
+
+		//ignore invalid
+		default:
+			break;
+	}
+}
+
+/**
+	@brief Selects PLL1 as the system clock source
+ */
+void RCCHelper::SelectSystemClockFromPLL1()
+{
+	RCC.CFGR = (RCC.CFGR & RCC_CFGR_SW_MASK) | RCC_CFGR_SW_PLL1;
+
+	while( ((RCC.CFGR >> 3) & 0x7) != RCC_CFGR_SW_PLL1)
+	{}
+}
+
+/**
+	@brief Initializes the system clock dividers
+
+	All dividers must be powers of two.
+
+	@param sysckdiv		D1CPRE (root divider for everything). Range [1, 512] except 32
+						Output must be <= 550 MHz
+
+	@param ahbdiv		HPRE (divider from CPU clock to AHB clock). Range [1, 512] except 32
+						Output must be <= 275 MHz
+
+	@param apb1div		D2PPRE1 (divider from AHB clock to APB1 clock). Range [1, 16]
+	@param apb2div		D2PPRE2 (divider from AHB clock to APB2 clock). Range [1, 16]
+	@param apb3div		D1PPRE (divider from AHB clock to APB3 clock). Range [1, 16]
+	@param apb4div		D3PPRE (divider from AHB clock to APB4 clock). Range [1, 16]
+
+	Input clock tree (see RM0468 figure 49):
+		/ D1CPRE = sys_d1cpre_clk (550 MHz max core clock)
+			= rcc_c_ck (CPU)
+			= rcc_fclk_c
+			= sys_d1cpre_ck
+			/8
+				= systick
+			/HPRE (275 MHz max)
+				= rcc_aclk (AXI peripherals)
+				= rcc_hclk3 (AHB3 peripherals)
+				/ D1PPRE
+					= rcc_pclk3 (APB3 peripherals)
+				= rcc_hclk2 (AHB2 peripherals)
+				= rcc_hclk1 (AHB1 peripherals)
+				/ D2PPRE1
+					= rcc_pclk1 (APB1 peripherals)
+					= rcc_timx_ker_ck (timer precaler)
+				/ D2PPRE2
+					= rcc_pclk2 (APB2 peripherals)
+					= rcc_timy_ker_ck (timer prescale)
+				= rcc_hclk4 (AHB4 peripherals)
+				= rcc_fclk_d3
+				/ D3PPRE
+					= rcc_pclk4 (APB4 peripherals)
+ */
+void RCCHelper::InitializeSystemClocks(
+	uint16_t sysckdiv,
+	uint16_t ahbdiv,
+	uint8_t apb1div,
+	uint8_t apb2div,
+	uint8_t apb3div,
+	uint8_t apb4div)
+{
+	//Power domain D1 divider config
+	RCC.D1CFGR = (GetDivider512Code(sysckdiv) << 8) | (GetDivider16Code(apb3div) << 4) | GetDivider512Code(ahbdiv);
+
+	//Power domain D2 divider config
+	RCC.D2CFGR = (GetDivider16Code(apb2div) << 8) | (GetDivider16Code(apb1div) << 4);
+
+	//Power domain D3 divider config
+	RCC.D3CFGR = GetDivider16Code(apb4div) << 4;
+}
+
+/**
+	@brief Get divider config value for a 1-to-512 divider
+ */
+uint8_t RCCHelper::GetDivider512Code(uint16_t div)
+{
+	switch(div)
+	{
+		case 1:
+			return 0x0;
+		case 2:
+			return 0x8;
+		case 4:
+			return 0x9;
+		case 8:
+			return 0xa;
+		case 16:
+			return 0xb;
+		//div 32 is not legal
+		case 64:
+			return 0xc;
+		case 128:
+			return 0xd;
+		case 256:
+			return 0xe;
+		case 512:
+		default:
+			return 0xf;
+	}
+}
+
+/**
+	@brief Get divider config value for a 1-to-16 divider
+ */
+uint8_t RCCHelper::GetDivider16Code(uint8_t div)
+{
+	switch(div)
+	{
+		case 1:
+			return 0x0;
+		case 2:
+			return 0x4;
+		case 4:
+			return 0x5;
+		case 8:
+			return 0x6;
+		case 16:
+		default:
+			return 0x7;
+	}
+}
 #endif

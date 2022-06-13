@@ -27,14 +27,14 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifdef HAVE_UART
-
 #include <stm32.h>
 #include <ctype.h>
 #include <string.h>
 #include <peripheral/UART.h>
 #include <peripheral/RCC.h>
 #include <util/StringHelpers.h>
+
+#ifdef HAVE_UART
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // UART driver class

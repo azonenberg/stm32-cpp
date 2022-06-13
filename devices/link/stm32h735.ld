@@ -106,6 +106,43 @@ SECTIONS
 	} > AXISRAM
 
 	/* SFRs */
+	.sfr_apb1 :
+	{
+		. = ALIGN(1024);
+		*(.tim2)
+		. = ALIGN(1024);
+		*(.tim3)
+		. = ALIGN(1024);
+		*(.tim4)
+		. = ALIGN(1024);
+		*(.tim5)
+		. = ALIGN(1024);
+		*(.tim6)
+		. = ALIGN(1024);
+		*(.tim7)
+		. = ALIGN(1024);
+		*(.tim12)
+		. = ALIGN(1024);
+		*(.tim13)
+		. = ALIGN(1024);
+		*(.tim14)
+		. = ALIGN(1024);
+		. += 1024;			/* LPTIM1 not implemented */
+		. += 4096;			/* 4000_2800 - 4000_37ff reserved */
+		. += 1024;			/* SPI2 not implemented */
+		. += 1024;			/* SPI3 not implemented */
+		. += 1024;			/* SPDIFRX1 not implemented */
+		. = ALIGN(1024);
+		*(.usart2)
+		. = ALIGN(1024);
+		*(.usart3)
+		. = ALIGN(1024);
+		*(.uart4)
+		. = ALIGN(1024);
+		*(.uart5)
+		/* TODO: I2C etc */
+	} > APB1
+
 	.sfr_ahb4 :
 	{
 		. = ALIGN(1024);

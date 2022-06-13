@@ -62,7 +62,9 @@ Timer::Timer(volatile tim_t* chan, Features features, uint16_t prescale)
 	chan->CCR3 = 0x0;
 	chan->CCR4 = 0x0;
 	chan->CCER = 0x0;
+#ifndef STM32H7
 	chan->BDTR = 0x0;
+#endif
 	chan->DCR = 0x0;
 	chan->DMAR = 0x0;
 

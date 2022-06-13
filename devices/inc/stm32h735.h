@@ -174,40 +174,67 @@ enum rcc_ahb4
 	RCC_AHB4_BKPRAM		= 0x10000000
 	//0x2000_0000 to 0x8000_0000 reserved
 };
-/*
-enum rcc_pll_bits
+
+enum rcc_apb1l
 {
-	RCC_PLL_READY	= 0x2000000,
-	RCC_PLL_ENABLE 	= 0x1000000,
-
-	RCC_APB2_DIV1 	= 0x0000,
-	RCC_APB2_DIV2 	= 0x8000,
-	RCC_APB2_DIV4 	= 0xA000,
-	RCC_APB2_DIV8 	= 0xC000,
-	RCC_APB2_DIV16 	= 0xE000,
-
-	RCC_APB1_DIV1	= 0x0000,
-	RCC_APB1_DIV2	= 0x1000,
-	RCC_APB1_DIV4	= 0x1400,
-	RCC_APB1_DIV8	= 0x1800,
-	RCC_APB1_DIV16	= 0x1c00,
-
-	RCC_AHB_DIV1	= 0x0000,
-	RCC_AHB_DIV2	= 0x0080,
-	RCC_AHB_DIV4	= 0x0090,
-	RCC_AHB_DIV8	= 0x00a0,
-	RCC_AHB_DIV16	= 0x00b0,
-	//No divider setting for divide-by-32
-	RCC_AHB_DIV64	= 0x00c0,
-	RCC_AHB_DIV128	= 0x00d0,
-	RCC_AHB_DIV256	= 0x00e0,
-	RCC_AHB_DIV512	= 0x00f0,
-
-	RCC_SYSCLK_PLL	= 0x2,
-
-	RCC_PLLCFGR_RESERVED_MASK = 0x80BC8000
+	RCC_APB1L_TIM2		= 0x00000001,
+	RCC_APB1L_TIM3		= 0x00000002,
+	RCC_APB1L_TIM4		= 0x00000004,
+	RCC_APB1L_TIM5		= 0x00000008,
+	RCC_APB1L_TIM6		= 0x00000010,
+	RCC_APB1L_TIM7		= 0x00000020,
+	RCC_APB1L_TIM12		= 0x00000040,
+	RCC_APB1L_TIM13		= 0x00000080,
+	RCC_APB1L_TIM14		= 0x00000100,
+	RCC_APB1L_USART2	= 0x00020000,
+	RCC_APB1L_USART3	= 0x00040000,
+	RCC_APB1L_UART4		= 0x00080000,
+	RCC_APB1L_UART5		= 0x00100000,
 };
-*/
+
+enum rcc_cr
+{
+	RCC_CR_HSEON 		= 0x00010000,
+	RCC_CR_HSERDY		= 0x00020000,
+	RCC_CR_HSEBYP		= 0x00040000,
+
+	RCC_CR_PLL3RDY		= 0x20000000,
+	RCC_CR_PLL3ON		= 0x10000000,
+	RCC_CR_PLL2RDY		= 0x08000000,
+	RCC_CR_PLL2ON		= 0x04000000,
+	RCC_CR_PLL1RDY		= 0x02000000,
+	RCC_CR_PLL1ON		= 0x01000000
+};
+
+enum rcc_cfgr
+{
+	RCC_CFGR_SW_MASK	= 0xfffffff8,
+	RCC_CFGR_SW_PLL1	= 0x3
+};
+
+enum rcc_pllckselr
+{
+	RCC_PLLCKSELR_SRC_MASK	= 0xfffffffc,
+	RCC_PLLCKSELR_SRC_HSE	= 0x00000002,
+};
+
+enum rcc_pllcfgr
+{
+	RCC_PLLCFGR_DIV3REN			= 0x01000000,
+	RCC_PLLCFGR_DIV3QEN			= 0x00800000,
+	RCC_PLLCFGR_DIV3PEN			= 0x00400000,
+	RCC_PLLCFGR_DIV2REN			= 0x00200000,
+	RCC_PLLCFGR_DIV2QEN			= 0x00100000,
+	RCC_PLLCFGR_DIV2PEN			= 0x00080000,
+	RCC_PLLCFGR_DIV1REN			= 0x00040000,
+	RCC_PLLCFGR_DIV1QEN			= 0x00020000,
+	RCC_PLLCFGR_DIV1PEN			= 0x00010000,
+
+	RCC_PLLCFGR_PLL3RGE_MASK	= 0x00000c00,
+	RCC_PLLCFGR_PLL2RGE_MASK	= 0x000000c0,
+	RCC_PLLCFGR_PLL1RGE_MASK	= 0x0000000c
+};
+
 typedef struct
 {
 	uint32_t CR;
@@ -299,7 +326,6 @@ typedef struct
 
 extern volatile rcc_t RCC;
 
-/*
 typedef struct
 {
 	uint32_t CR1;
@@ -313,6 +339,7 @@ typedef struct
 	uint32_t ICR;
 	uint32_t RDR;
 	uint32_t TDR;
+	uint32_t PRESC;
 } usart_t;
 
 enum usart_bits
@@ -321,11 +348,12 @@ enum usart_bits
 	USART_ISR_RXNE = 0x20
 };
 
-extern volatile usart_t USART1;
+//extern volatile usart_t USART1;
 extern volatile usart_t USART2;
 extern volatile usart_t USART3;
 extern volatile usart_t UART4;
 extern volatile usart_t UART5;
+/*
 extern volatile usart_t USART6;
 extern volatile usart_t UART7;
 extern volatile usart_t UART8;
@@ -532,7 +560,7 @@ typedef struct
 } dbgmcu_t;
 
 extern volatile dbgmcu_t DBGMCU;
-/*
+
 typedef struct
 {
 	uint32_t	CR1;
@@ -547,36 +575,38 @@ typedef struct
 	uint32_t	CNT;
 	uint32_t	PSC;
 	uint32_t	ARR;
-	uint32_t	RCR;
+	uint32_t	field_30;
 	uint32_t	CCR1;
 	uint32_t	CCR2;
 	uint32_t	CCR3;
 	uint32_t	CCR4;
-	uint32_t	BDTR;
+	uint32_t	field_44;
 	uint32_t	DCR;
 	uint32_t	DMAR;
-	uint32_t	CCMR3;
-	uint32_t	CCR5;
-	uint32_t	CCR6;
+	uint32_t	field_50;
+	uint32_t	field_54;
+	uint32_t	field_58;
+	uint32_t	field_5c;
 	uint32_t	AF1;
-	uint32_t	AF2;
+	uint32_t	field_64;
+	uint32_t	TISEL;
 } tim_t;
 
-extern volatile tim_t TIM1;
+//extern volatile tim_t TIM1;
 extern volatile tim_t TIM2;
 extern volatile tim_t TIM3;
 extern volatile tim_t TIM4;
 extern volatile tim_t TIM5;
 extern volatile tim_t TIM6;
 extern volatile tim_t TIM7;
-extern volatile tim_t TIM8;
-extern volatile tim_t TIM9;
-extern volatile tim_t TIM10;
-extern volatile tim_t TIM11;
+//extern volatile tim_t TIM8;
+//extern volatile tim_t TIM9;
+//extern volatile tim_t TIM10;
+//extern volatile tim_t TIM11;
 extern volatile tim_t TIM12;
 extern volatile tim_t TIM13;
 extern volatile tim_t TIM14;
-
+/*
 extern volatile uint32_t U_ID[3];
 extern volatile uint16_t F_ID;
 extern volatile uint16_t PKG_ID;
@@ -705,17 +735,18 @@ typedef struct
 } cpuid_t;
 
 extern volatile cpuid_t CPUID;
-/*
+
 //Defines for what peripherals are present / implemented
 //#define HAVE_I2C
 #define HAVE_TIM
+/*
 #define HAVE_SPI
 #define HAVE_EMAC
 #define HAVE_CRYP
 #define HAVE_RNG
 #define HAVE_HASH
-#define HAVE_UART
 */
+#define HAVE_UART
 #define HAVE_PWR
 
 #endif
