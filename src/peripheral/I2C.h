@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP v0.1                                                                                                       *
 *                                                                                                                      *
-* Copyright (c) 2020-2021 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2022 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -37,21 +37,23 @@ class I2C
 public:
 	I2C(volatile i2c_t* lane, uint8_t prescale, uint8_t clkdiv);
 
-	void BlockingRead(uint8_t addr, uint8_t* data, uint8_t len);
+	void Start();
 
-	void BlockingWrite(uint8_t addr, const uint8_t* data, uint8_t len);
+	bool BlockingRead(uint8_t addr, uint8_t* data, uint8_t len);
 
-	void BlockingWrite8(uint8_t addr, uint8_t data)
-	{ BlockingWrite(addr, &data, 1); }
+	bool BlockingWrite(uint8_t addr, const uint8_t* data, uint8_t len);
 
-	void BlockingWrite16(uint8_t addr, uint16_t data)
+	bool BlockingWrite8(uint8_t addr, uint8_t data)
+	{ return BlockingWrite(addr, &data, 1); }
+
+	bool BlockingWrite16(uint8_t addr, uint16_t data)
 	{
 		uint8_t buf[2] =
 		{
 			static_cast<uint8_t>(data >> 8),
 			static_cast<uint8_t>(data & 0xff)
 		};
-		BlockingWrite(addr, buf, 2);
+		return BlockingWrite(addr, buf, 2);
 	}
 
 protected:

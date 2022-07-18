@@ -187,7 +187,8 @@ enum rcc_ahb2
 
 enum rcc_apb4
 {
-	RCC_APB4_SYSCFG		= 0x00000002
+	RCC_APB4_SYSCFG		= 0x00000002,
+	RCC_APB4_I2C4		= 0x00000080
 };
 
 enum rcc_apb1l
@@ -205,6 +206,12 @@ enum rcc_apb1l
 	RCC_APB1L_USART3	= 0x00040000,
 	RCC_APB1L_UART4		= 0x00080000,
 	RCC_APB1L_UART5		= 0x00100000,
+	RCC_APB1L_I2C1		= 0x00200000,
+	RCC_APB1L_I2C2		= 0x00400000,
+	RCC_APB1L_I2C3		= 0x00800000,
+	//I2C 4 is on APB4, not here
+	//(corresponding bit is reserved)
+	RCC_APB1L_I2C5		= 0x02000000
 };
 
 enum rcc_cr
@@ -372,7 +379,48 @@ extern volatile usart_t UART5;
 extern volatile usart_t USART6;
 extern volatile usart_t UART7;
 extern volatile usart_t UART8;
+*/
 
+enum i2c_cr2_bits
+{
+	I2C_AUTO_END	= 0x02000000,
+	I2C_STOP		= 0x00004000,
+	I2C_START		= 0x00002000,
+	I2C_READ		= 0x00000400
+};
+
+enum i2c_isr_bits
+{
+	I2C_BUSY				= 0x8000,
+	I2C_TRANSFER_COMPLETE	= 0x0040,
+	I2C_NACK 				= 0x0010,
+	I2C_RX_READY			= 0x0004,
+	I2C_TX_EMPTY			= 0x0001
+};
+
+
+typedef struct
+{
+	uint32_t CR1;
+	uint32_t CR2;
+	uint32_t OAR1;
+	uint32_t OAR2;
+	uint32_t TIMINGR;
+	uint32_t TIMEOUTR;
+	uint32_t ISR;
+	uint32_t ICR;
+	uint32_t PECR;
+	uint32_t RXDR;
+	uint32_t TXDR;
+} i2c_t;
+
+extern volatile i2c_t I2C5;
+extern volatile i2c_t I2C4;
+extern volatile i2c_t I2C3;
+extern volatile i2c_t I2C2;
+extern volatile i2c_t I2C1;
+
+/*
 typedef struct
 {
 	uint16_t CR1;
@@ -479,7 +527,23 @@ typedef struct
 	uint32_t	padding_16c[10];
 	uint32_t	MMCRFCECR;
 	uint32_t	MMCRFAECR;
-	uint32_t	padding_19c[10];
+	uint32_t	padding_1
+enum i2c_cr2_bits
+{
+	I2C_AUTO_END	= 0x02000000,
+	I2C_STOP		= 0x00004000,
+	I2C_START		= 0x00002000,
+	I2C_READ		= 0x00000400
+};
+
+enum i2c_isr_bits
+{
+	I2C_BUSY				= 0x8000,
+	I2C_TRANSFER_COMPLETE	= 0x0040,
+	I2C_RX_READY			= 0x0004,
+	I2C_TX_EMPTY			= 0x0001
+};
+9c[10];
 	uint32_t	MMCRGUFCR;
 } emac_t;
 
@@ -778,7 +842,7 @@ typedef struct
 extern volatile cpuid_t CPUID;
 
 //Defines for what peripherals are present / implemented
-//#define HAVE_I2C
+#define HAVE_I2C
 #define HAVE_TIM
 /*
 #define HAVE_SPI

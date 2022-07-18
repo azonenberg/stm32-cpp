@@ -141,7 +141,15 @@ SECTIONS
 		*(.uart4)
 		. = ALIGN(1024);
 		*(.uart5)
-		/* TODO: I2C etc */
+		. = ALIGN(1024);
+		*(.i2c1)
+		. = ALIGN(1024);
+		*(.i2c2)
+		. = ALIGN(1024);
+		*(.i2c3)
+		/* I2C4 is elsewhere */
+		. = ALIGN(1024);
+		*(.i2c5)
 	} > APB1
 
 	.sfr_ahb3 :
@@ -199,10 +207,17 @@ SECTIONS
 		. += 1024;	/* EXTI not yet implemented */
 		. = ALIGN(1024);
 		*(.syscfg)
+		. = ALIGN(1024);
+		. += 1024;	/* reserved 5800_0800 */
+		. += 1024;	/* LPUART1 not implemented */
+		. += 1024;	/* reserved 5800_1000 */
+		. += 1024;	/* SPI/I2S6 not implemented */
+		. += 1024;	/* reserved 5800_1800 */
+		. = ALIGN(1024);
+		*(.i2c4);
 
 		/*
-			TODO: EXTI, SYSCFG, LPUART1, SPI/I2S6, I2C4, LPTIM2, LPTIM3, LPTIM4, LPTIM5, COMP1/2, VREF, RTC/BKP, IWDG,
-			reserved, SAI4, DTS
+			TODO: LPTIM2, LPTIM3, LPTIM4, LPTIM5, COMP1/2, VREF, RTC/BKP, IWDG, reserved, SAI4, DTS
 		 */
 	} > APB4
 

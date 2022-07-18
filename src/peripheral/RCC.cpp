@@ -234,8 +234,27 @@ void RCCHelper::Enable(volatile cryp_t* /*ignored*/)
 #ifdef HAVE_I2C
 void RCCHelper::Enable(volatile i2c_t* i2c)
 {
-	if(i2c == &I2C1)
-		RCC.APB1ENR |= RCC_APB1_I2C1;
+	#if defined(STM32F031)
+
+		if(i2c == &I2C1)
+			RCC.APB1ENR |= RCC_APB1_I2C1;
+
+	#elif defined(STM32H735)
+
+		if(i2c == &I2C1)
+			RCC.APB1LENR |= RCC_APB1L_I2C1;
+		else if(i2c == &I2C2)
+			RCC.APB1LENR |= RCC_APB1L_I2C2;
+		else if(i2c == &I2C3)
+			RCC.APB1LENR |= RCC_APB1L_I2C3;
+		else if(i2c == &I2C4)
+			RCC.APB4ENR |= RCC_APB4_I2C4;
+		else if(i2c == &I2C5)
+			RCC.APB1LENR |= RCC_APB1L_I2C5;
+
+	#else
+		#error Unknown I2C configuration (unsupported part)
+	#endif
 }
 #endif
 

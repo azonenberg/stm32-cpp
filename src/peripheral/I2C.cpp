@@ -61,23 +61,41 @@ I2C::I2C(volatile i2c_t* lane, uint8_t prescale, uint8_t clkdiv)
 }
 
 /**
+	@brief Sends a start (or restart) command
+ */
+void I2C::Start()
+{
+	m_lane->CR2 |= I2C_START;
+	while(m_lane->CR2 & I2C_START)
+	{}
+}
+
+/**
 	@brief Sends a write command
 
 	@param addr		8-bit device address (LSB ignored)
 	@param data		Data to send
 	@param len		Number of bytes to send
  */
-void I2C::BlockingWrite(uint8_t addr, const uint8_t* data, uint8_t len)
+bool I2C::BlockingWrite(uint8_t addr, const uint8_t* data, uint8_t len)
 {
 	//Auto end, specified length
-	m_lane->CR2 = I2C_AUTO_END | (len << 16) | I2C_START | addr;
+	m_lane->CR2 = I2C_AUTO_END | (len << 16) | addr;
+	Start();
 
 	//Send the data
 	for(uint8_t i=0; i<len; i++)
 	{
 		//Wait for last byte to finish
 		while(!(m_lane->ISR & I2C_TX_EMPTY))
-		{}
+		{
+			//If we got a NACK, abort
+			if(m_lane->ISR & I2C_NACK)
+			{
+				m_lane->ICR = I2C_NACK;
+				return false;
+			}
+		}
 
 		//Send it
 		m_lane->TXDR = data[i];
@@ -85,27 +103,46 @@ void I2C::BlockingWrite(uint8_t addr, const uint8_t* data, uint8_t len)
 
 	//Wait for send to finish
 	while((m_lane->ISR & I2C_TX_EMPTY) == 0)
-	{}
+	{
+		//If we got a NACK, abort
+		if(m_lane->ISR & I2C_NACK)
+		{
+			m_lane->ICR = I2C_NACK;
+			return false;
+		}
+	}
+
+	return true;
 }
 
 /**
 	@brief Sends a read command
  */
-void I2C::BlockingRead(uint8_t addr, uint8_t* data, uint8_t len)
+bool I2C::BlockingRead(uint8_t addr, uint8_t* data, uint8_t len)
 {
 	//Auto end, specified length
-	m_lane->CR2 = I2C_AUTO_END | (len << 16) | I2C_START | addr | I2C_READ;
+	m_lane->CR2 = I2C_AUTO_END | (len << 16) | addr | I2C_READ;
+	Start();
 
 	//Read the data
 	for(uint8_t i=0; i<len; i++)
 	{
 		//Wait for data to be ready
 		while(!(m_lane->ISR & I2C_RX_READY))
-		{}
+		{
+			//If we got a NACK, abort
+			if(m_lane->ISR & I2C_NACK)
+			{
+				m_lane->ICR = I2C_NACK;
+				return false;
+			}
+		}
 
 		//Read it
 		data[i] = m_lane->RXDR;
 	}
+
+	return true;
 }
 
 #endif
