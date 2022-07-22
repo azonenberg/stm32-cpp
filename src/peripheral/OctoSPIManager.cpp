@@ -27,110 +27,67 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef RCC_h
-#define RCC_h
-
-#include <stm32fxxx.h>
+#include <stm32.h>
+#include <peripheral/OctoSPIManager.h>
 
 /**
-	@brief Reset and Clock Control
+	@brief Enables or disables mux mode
 
-	Helper class for enabling various devices.
-
-	All functions are static because there's only one RCC in the device.
+	@param muxEnable		True to enable mux mode, false to disable muix
+	@param busTurnaround	Bus turnaround time, in clock cycles. ignored if muxEnable is false.
  */
-class RCCHelper
+void OctoSPIManager::ConfigureMux(
+	bool			muxEnable,
+	int				busTurnaround
+	)
 {
-public:
-	static void Enable(volatile gpio_t* gpio);
+	uint8_t turn = busTurnaround - 1;
+	OCTOSPIM.CR = (turn << 16);
+	if(muxEnable)
+		OCTOSPIM.CR |= 1;
+}
 
-	#ifdef HAVE_I2C
-	static void Enable(volatile i2c_t* i2c);
-	#endif
+/**
+	@brief Configures a single port's I/O pins
 
-	#ifdef HAVE_SPI
-	static void Enable(volatile spi_t* spi);
-	#endif
+	@param port				The port to configure
+	@param dq74Enabled		True if DQ pins 7:4 are used
+	@param dq74Source		Data source for DQ pins 7:4. Ignored if dq74Enabled is false.
+	@param dq30Enabled		True if DQ pins 3:0 are used
+	@param dq30Source		Data source for DQ pins 3:0. Ignored if dq30Enabled is false.
+	@param csEnabled		True if CS# pin is used
+	@param csSource			Selector for CS# pin
+	@param dqsEnabled		True if DQS pin is used
+	@param dqsSource		Selector for DQS pin
+	@param clkEnabled		True if CLK pin is used
+	@param clkSource		Selector for CLK pin
+ */
+void OctoSPIManager::ConfigurePort(
+	int				port,
+	bool			dq74Enabled,
+	halfport_t		dq74Source,
+	bool			dq30Enabled,
+	halfport_t		dq30Source,
+	bool			csEnabled,
+	channel_t		csSource,
+	bool			dqsEnabled,
+	channel_t		dqsSource,
+	bool			clkEnabled,
+	channel_t		clkSource)
+{
+	uint32_t val = 0;
 
-	#ifdef HAVE_TIM
-	static void Enable(volatile tim_t* tim);
-	#endif
+	if(dq74Enabled)
+		val |= 0x01000000 | (dq74Source << 25);
+	if(dq30Enabled)
+		val |= 0x00010000 | (dq30Source << 17);
+	if(csEnabled)
+		val |= 0x00000100 | (csSource << 9);
+	if(clkEnabled)
+		val |= 0x00000001 | (clkSource << 1);
 
-	#ifdef HAVE_EMAC
-	static void Enable(volatile emac_t* mac);
-	#endif
-
-	#ifdef HAVE_RNG
-	static void Enable(volatile rng_t* rng);
-	#endif
-
-	#ifdef HAVE_HASH
-	static void Enable(volatile hash_t* hash);
-	#endif
-
-	#ifdef HAVE_CRYP
-	static void Enable(volatile cryp_t* cryp);
-	#endif
-
-	#ifdef HAVE_UART
-	static void Enable(volatile usart_t* uart);
-	#endif
-
-	#ifdef HAVE_OCTOSPI
-	static void Enable(volatile octospim_t* octospim);
-	static void Enable(volatile octospi_t* octospi);
-	#endif
-
-	#ifdef STM32F0
-	static void InitializePLLFromInternalOscillator(
-		uint8_t prediv,
-		uint8_t mult,
-		uint16_t ahbdiv,
-		uint8_t apbdiv
-		);
-	#endif
-
-	#ifdef STM32F7
-	static void InitializePLLFromInternalOscillator(
-		uint8_t prediv,
-		uint16_t mult,
-		uint8_t pdiv,
-		uint8_t qdiv,
-		uint8_t rdiv,
-		uint16_t ahbdiv,
-		uint16_t apb1div,
-		uint16_t apb2div
-		);
-	#endif
-
-	#ifdef STM32H7
-	static void EnableHighSpeedExternalClock();
-	static void InitializePLL(
-		uint8_t npll,
-		float in_mhz,
-		uint8_t prediv,
-		uint16_t mult,
-		uint8_t divP,
-		uint8_t divQ,
-		uint8_t divR
-		);
-	static void SelectSystemClockFromPLL1();
-	static void InitializeSystemClocks(
-		uint16_t sysckdiv,
-		uint16_t ahbdiv,
-		uint8_t apb1div,
-		uint8_t apb2div,
-		uint8_t apb3div,
-		uint8_t apb4div
-		);
-	static uint8_t GetDivider512Code(uint16_t div);
-	static uint8_t GetDivider16Code(uint8_t div);
-
-	static void EnableSyscfg();
-	static void EnableSram2();
-	static void EnableSram1();
-	static void EnableBackupSram();
-	#endif
-};
-
-#endif
+	if(port == 1)
+		OCTOSPIM.P1CR = val;
+	else
+		OCTOSPIM.P2CR = val;
+}

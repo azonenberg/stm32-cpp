@@ -258,6 +258,23 @@ void RCCHelper::Enable(volatile i2c_t* i2c)
 }
 #endif
 
+#ifdef HAVE_OCTOSPI
+
+void RCCHelper::Enable(volatile octospim_t* /*octospim*/)
+{
+	RCC.AHB3ENR |= RCC_AHB3_OCTOSPIM;
+}
+
+void RCCHelper::Enable(volatile octospi_t* octospi)
+{
+	if(octospi == &OCTOSPI1)
+		RCC.AHB3ENR |= RCC_AHB3_OCTOSPI1;
+	else if(octospi == &OCTOSPI2)
+		RCC.AHB3ENR |= RCC_AHB3_OCTOSPI2;
+}
+
+#endif
+
 /**
 	@brief Enable a timer
  */

@@ -52,6 +52,11 @@ volatile i2c_t I2C3 __attribute__((section(".i2c3")));
 volatile i2c_t I2C4 __attribute__((section(".i2c4")));
 volatile i2c_t I2C5 __attribute__((section(".i2c5")));
 
+volatile octospi_t OCTOSPI1 __attribute__((section(".octospi1")));
+volatile octospi_t OCTOSPI2 __attribute__((section(".octospi2")));
+
+volatile octospim_t OCTOSPIM __attribute__((section(".octospim")));
+
 /*
 volatile spi_t SPI1 __attribute__((section(".spi1")));
 volatile spi_t SPI2 __attribute__((section(".spi2")));

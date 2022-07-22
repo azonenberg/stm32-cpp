@@ -176,6 +176,13 @@ enum rcc_ahb4
 	//0x2000_0000 to 0x8000_0000 reserved
 };
 
+enum rcc_ahb3
+{
+	RCC_AHB3_OCTOSPIM	= 0x00200000,
+	RCC_AHB3_OCTOSPI2	= 0x00080000,
+	RCC_AHB3_OCTOSPI1	= 0x00004000
+};
+
 enum rcc_ahb2
 {
 	RCC_AHB2_SRAM2		= 0x40000000,
@@ -841,6 +848,71 @@ typedef struct
 
 extern volatile cpuid_t CPUID;
 
+typedef struct
+{
+	uint32_t		CR;
+	uint32_t		field_4;
+	uint32_t		DCR1;
+	uint32_t		DCR2;
+	uint32_t		DCR3;
+	uint32_t		DCR4;
+	uint32_t		field_18[2];
+	uint32_t		SR;
+	uint32_t		FCR;
+	uint32_t		field_28[6];
+	uint32_t		DLR;
+	uint32_t		field_44;
+	uint32_t		AR;
+	uint32_t		field_4c;
+	uint32_t		DR;
+	uint32_t		field_54[11];
+	uint32_t		PSMKR;
+	uint32_t		field_84;
+	uint32_t		PSMAR;
+	uint32_t		field_8c;
+	uint32_t		PIR;
+	uint32_t		field_94[27];
+	uint32_t		CCR;
+	uint32_t		field_104;
+	uint32_t		TCR;
+	uint32_t		field_10c;
+	uint32_t		IR;
+	uint32_t		field_114[3];
+	uint32_t		ABR;
+	uint32_t		field_124[3];
+	uint32_t		LPTR;
+	uint32_t		field_134[3];
+	uint32_t		WPCCR;
+	uint32_t		field_144;
+	uint32_t		WPTCR;
+	uint32_t		field_14c;
+	uint32_t		WPIR;
+	uint32_t		field_154[3];
+	uint32_t		WPABR;
+	uint32_t		field_164[3];
+	uint32_t		WCCR;
+	uint32_t		field_184;
+	uint32_t		WTCR;
+	uint32_t		field_18c;
+	uint32_t		WIR;
+	uint32_t		field_194[3];
+	uint32_t		WABR;
+	uint32_t		field_1a4[23];
+	uint32_t		HLCR;
+} octospi_t;
+
+extern volatile octospi_t OCTOSPI1;
+extern volatile octospi_t OCTOSPI2;
+
+typedef struct
+{
+	uint32_t		CR;
+	uint32_t		P1CR;
+	uint32_t		P2CR;
+} octospim_t;
+
+extern volatile octospim_t OCTOSPIM;
+
 //Defines for what peripherals are present / implemented
 #define HAVE_I2C
 #define HAVE_TIM
@@ -853,5 +925,6 @@ extern volatile cpuid_t CPUID;
 */
 #define HAVE_UART
 #define HAVE_PWR
+#define HAVE_OCTOSPI
 
 #endif

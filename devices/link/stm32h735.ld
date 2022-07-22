@@ -155,11 +155,25 @@ SECTIONS
 	.sfr_ahb3 :
 	{
 		. += 1048576;		/* GPV not implemented */
-		. += 15728640;		/* 5110_0000 - 51ffffff reserved */
+		. += 15728640;		/* 5110_0000 - 51ff_ffff reserved */
 		. += 4096;			/* MDMA not implemented */
 		. += 4096;			/* DMA2D not implemented */
 		. = ALIGN(1024);
 		*(.flash)
+		. = ALIGN(1024);
+		. += 11264;
+		*(.octospi1);
+		. = ALIGN(4096);
+		. += 4096;			/* DLYB not implemented */
+		. += 4096;			/* SDMMC1 not implemented */
+		. += 4096;			/* DLYB not implemented */
+		. += 1024;			/* RAMECC not implemented */
+		. += 3072;			/* 5200_9400 - 5200_9fff reserved */
+		*(.octospi2);
+		. = ALIGN(4096);
+		. += 1024;			/* DLYB not implemented */
+		*(.octospim);
+		/* TODO: OTFDEC */
 	} > AHB3
 
 	.sfr_ahb4 :
