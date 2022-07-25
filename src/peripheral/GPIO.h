@@ -52,7 +52,7 @@ public:
 
 #if defined(STM32F7) || defined(STM32H7)
 	/**
-		GPIO slew constants (must be saame as STM32 OSPEEDR register)
+		GPIO slew constants (must be same as STM32 OSPEEDR register)
 	 */
 	enum gpioslew_t
 	{

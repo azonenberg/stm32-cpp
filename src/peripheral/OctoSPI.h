@@ -35,19 +35,34 @@
 class OctoSPI
 {
 public:
-/*	SPI(volatile spi_t* lane, bool fullDuplex, uint16_t baudDiv);
 
-	void BlockingWrite(uint8_t data);
-	void WaitForWrites();
-	uint8_t BlockingRead();
-	void DiscardRxData();
+	enum mode_t
+	{
+		MODE_NONE	= 0,
+		MODE_SINGLE = 1,
+		MODE_DUAL	= 2,
+		MODE_QUAD	= 3,
+		MODE_OCTAL	= 4
+	};
 
-	void SetClockInvert(bool invert);
+	OctoSPI(volatile octospi_t* lane, uint32_t sizeBytes, uint8_t prescale);
+
+	void SetDoubleRateMode(bool ddr);
+	void SetInstructionMode(mode_t mode = MODE_SINGLE, uint8_t nbytes = 0);
+	void SetAddressMode(mode_t mode = MODE_SINGLE, uint8_t nbytes = 0);
+	void SetAltBytesMode(mode_t mode = MODE_SINGLE, uint8_t nbytes = 0);
+	void SetDataMode(mode_t mode = MODE_SINGLE);
+	void SetDummyCycleCount(uint8_t ncycles);
+	void SetDeselectTime(uint8_t ncycles);
+
+	void SetDQSEnable(bool enable);
+
+	void SetFifoThreshold(uint8_t threshold);
+
+	void BlockingWrite(uint32_t insn, uint32_t addr, uint8_t* data, uint32_t len);
 
 protected:
-	volatile spi_t*	m_lane;
-	bool m_fullDuplex;
-	*/
+	volatile octospi_t*	m_lane;
 };
 
 #endif
