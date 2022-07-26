@@ -177,7 +177,15 @@ void OctoSPI::SetFifoThreshold(uint8_t threshold)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Indirect bus access
 
-void OctoSPI::BlockingWrite(uint32_t insn, uint32_t addr, uint8_t* data, uint32_t len)
+/**
+	@brief Simple blocking write operation
+
+	@param insn		Instruction to send (if enabled)
+	@param addr		Address to send (if enabled)
+	@param data		Data to send
+	@param len		Number of bytes of data to send
+ */
+void OctoSPI::BlockingWrite(uint32_t insn, uint32_t addr, const uint8_t* data, uint32_t len)
 {
 	//Block until the previous operation completes
 	while(m_lane->SR & OCTOSPI_BUSY)
@@ -192,4 +200,29 @@ void OctoSPI::BlockingWrite(uint32_t insn, uint32_t addr, uint8_t* data, uint32_
 	volatile uint8_t* buf = reinterpret_cast<volatile uint8_t*>(&m_lane->DR);
 	for(uint32_t i=0; i<len; i++)
 		*buf = data[i];
+}
+
+/**
+	@brief Simple blocking read operation
+
+	@param insn		Instruction to send (if enabled)
+	@param addr		Address to send (if enabled)
+	@param data		Data to send
+	@param len		Number of bytes of data to send
+ */
+void OctoSPI::BlockingRead(uint32_t insn, uint32_t addr, uint8_t* data, uint32_t len)
+{
+	//Block until the previous operation completes
+	while(m_lane->SR & OCTOSPI_BUSY)
+	{}
+
+	m_lane->CR = (m_lane->CR & ~OCTOSPI_FMODE_MASK) | OCTOSPI_FMODE_INDIRECT_READ;
+	m_lane->DLR = len - 1;
+	m_lane->AR = addr;
+	m_lane->IR = insn;
+
+	//for now, simple dumb bytewise copy
+	volatile uint8_t* buf = reinterpret_cast<volatile uint8_t*>(&m_lane->DR);
+	for(uint32_t i=0; i<len; i++)
+		data[i] = *buf;
 }

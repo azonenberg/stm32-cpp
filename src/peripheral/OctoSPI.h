@@ -59,7 +59,8 @@ public:
 
 	void SetFifoThreshold(uint8_t threshold);
 
-	void BlockingWrite(uint32_t insn, uint32_t addr, uint8_t* data, uint32_t len);
+	void BlockingWrite(uint32_t insn, uint32_t addr, const uint8_t* data, uint32_t len);
+	void BlockingRead(uint32_t insn, uint32_t addr, uint8_t* data, uint32_t len);
 
 protected:
 	volatile octospi_t*	m_lane;
