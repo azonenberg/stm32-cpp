@@ -167,6 +167,20 @@ void OctoSPI::SetDQSEnable(bool enable)
 }
 
 /**
+	@brief Enables or disables sample delay
+
+	True = sample 1/2 clock late
+	False = sample at normal time
+ */
+void OctoSPI::SetSampleDelay(bool delay)
+{
+	if(delay)
+		m_lane->TCR |= OCTOSPI_SSHIFT;
+	else
+		m_lane->TCR &= ~OCTOSPI_SSHIFT;
+}
+
+/**
 	@brief Sets the interrupt full threshold for the FIFO
  */
 void OctoSPI::SetFifoThreshold(uint8_t threshold)

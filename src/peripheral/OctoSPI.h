@@ -56,6 +56,7 @@ public:
 	void SetDeselectTime(uint8_t ncycles);
 
 	void SetDQSEnable(bool enable);
+	void SetSampleDelay(bool delay);
 
 	void SetFifoThreshold(uint8_t threshold);
 

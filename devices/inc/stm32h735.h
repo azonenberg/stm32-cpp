@@ -955,6 +955,7 @@ enum octospi_ccr
 
 enum octospi_tcr
 {
+	OCTOSPI_SSHIFT					= 0x40000000,
 	OCTOSPI_DCYC_MASK				= 0x0000001f
 };
 
