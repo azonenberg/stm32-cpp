@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP v0.1                                                                                                       *
 *                                                                                                                      *
-* Copyright (c) 2020-2022 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2023 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -105,6 +105,7 @@ public:
 
 	#ifdef STM32H7
 	static void EnableHighSpeedExternalClock();
+	static void EnableHighSpeedInternalClock(int mhz);
 	static void InitializePLL(
 		uint8_t npll,
 		float in_mhz,

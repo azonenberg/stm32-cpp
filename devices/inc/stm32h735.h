@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP v0.1                                                                                                       *
 *                                                                                                                      *
-* Copyright (c) 2020-2022 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2023 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -223,6 +223,10 @@ enum rcc_apb1l
 
 enum rcc_cr
 {
+	RCC_CR_HSION		= 0x00000001,
+	RCC_CR_HSIRDY		= 0x00000004,
+	RCC_CR_HSIDIVMASK	= 0x0000000c,
+
 	RCC_CR_HSEON 		= 0x00010000,
 	RCC_CR_HSERDY		= 0x00020000,
 	RCC_CR_HSEBYP		= 0x00040000,

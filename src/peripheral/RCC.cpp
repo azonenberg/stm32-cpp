@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP v0.1                                                                                                       *
 *                                                                                                                      *
-* Copyright (c) 2020-2022 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2023 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -634,14 +634,47 @@ void RCCHelper::InitializePLLFromInternalOscillator(
 #ifdef STM32H7
 /**
 	@brief Enable the high speed external oscillator in bypass mode (external clock)
-
-	@param x
  */
 void RCCHelper::EnableHighSpeedExternalClock()
 {
 	RCC.CR = RCC.CR | RCC_CR_HSEON | RCC_CR_HSEBYP;
 
 	while( (RCC.CR & RCC_CR_HSERDY) == 0)
+	{}
+}
+
+/**
+	@brief Enable the high speed internal oscillator
+
+	@param mhz Operating frequency for the HSI oscillator. Must be 8, 16, 32, or 64
+ */
+void RCCHelper::EnableHighSpeedInternalClock(int mhz)
+{
+	//Find clock divider
+	int div = 0;
+	switch(mhz)
+	{
+		case 64:
+			div = 0;
+			break;
+		case 32:
+			div = 1;
+			break;
+		case 16:
+			div = 2;
+			break;
+		case 8:
+			div = 3;
+			break;
+		default:
+			return;
+	}
+
+	//Enable the HSI oscillator
+	RCC.CR = (RCC.CR & ~RCC_CR_HSIDIVMASK) | RCC_CR_HSION | (div << 3);
+
+	//Wait until it's ready
+	while( (RCC.CR & RCC_CR_HSIRDY) == 0)
 	{}
 }
 
