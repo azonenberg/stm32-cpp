@@ -34,6 +34,7 @@
 #include <peripheral/Timer.h>
 
 #ifdef HAVE_TIM
+#ifndef SIMULATION
 
 /**
 	@brief Initialize a timer
@@ -95,4 +96,5 @@ void Timer::Sleep(uint32_t ticks, bool reset)
 	{}
 }
 
+#endif
 #endif

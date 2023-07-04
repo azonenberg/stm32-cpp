@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * stm32-cpp v0.1                                                                                                       *
 *                                                                                                                      *
-* Copyright (c) 2020-2021 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2023 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -60,7 +60,9 @@ public:
 	 */
 	void Push(objtype item)
 	{
-		uint32_t sr = EnterCriticalSection();
+		#ifndef SIMULATION
+			uint32_t sr = EnterCriticalSection();
+		#endif
 
 		if(!InternalIsFull())
 		{
@@ -72,7 +74,9 @@ public:
 		if(m_wptr == depth)
 			m_wptr = 0;
 
-		LeaveCriticalSection(sr);
+		#ifndef SIMULATION
+			LeaveCriticalSection(sr);
+		#endif
 	}
 
 	/**
@@ -82,7 +86,9 @@ public:
 	 */
 	objtype Pop()
 	{
-		uint32_t sr = EnterCriticalSection();
+		#ifndef SIMULATION
+			uint32_t sr = EnterCriticalSection();
+		#endif
 
 		objtype ret = m_storage[m_rptr];
 
@@ -97,7 +103,9 @@ public:
 				m_empty = true;
 		}
 
-		LeaveCriticalSection(sr);
+		#ifndef SIMULATION
+			LeaveCriticalSection(sr);
+		#endif
 
 		return ret;
 	}
@@ -115,9 +123,16 @@ public:
 	 */
 	bool IsFull()
 	{
-		uint32_t sr = EnterCriticalSection();
+		#ifndef SIMULATION
+			uint32_t sr = EnterCriticalSection();
+		#endif
+
 		bool full = InternalIsFull();
-		LeaveCriticalSection(sr);
+
+		#ifndef SIMULATION
+			LeaveCriticalSection(sr);
+		#endif
+
 		return full;
 	}
 
@@ -126,11 +141,17 @@ public:
 	 */
 	void Reset()
 	{
-		uint32_t sr = EnterCriticalSection();
+		#ifndef SIMULATION
+			uint32_t sr = EnterCriticalSection();
+		#endif
+
 		m_wptr = 0;
 		m_rptr = 0;
 		m_empty = true;
-		LeaveCriticalSection(sr);
+
+		#ifndef SIMULATION
+			LeaveCriticalSection(sr);
+		#endif
 	}
 
 protected:

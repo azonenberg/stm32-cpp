@@ -32,6 +32,41 @@
 
 #ifdef HAVE_TIM
 
+#ifdef SIMULATION
+
+#include <time.h>
+
+/**
+	@brief Dummy timer class for simulation
+
+	For now, always runs at 10 kHz
+ */
+class Timer
+{
+public:
+	Timer()
+	{
+		m_starttime = GetCountInternal();
+	}
+
+	uint32_t GetCount()
+	{ return GetCountInternal() - m_starttime; }
+
+protected:
+	uint32_t GetCountInternal()
+	{
+		timespec t;
+		clock_gettime(CLOCK_REALTIME,&t);
+
+		return (t.tv_sec % 86400) + (t.tv_nsec / 100000);
+	}
+
+protected:
+	uint32_t m_starttime;
+};
+
+#else
+
 class Timer
 {
 public:
@@ -63,6 +98,8 @@ protected:
 	Features m_features;
 };
 
-#endif
+#endif	//ifdef SIMULATION
+
+#endif	//ifdef HAVE_TIM
 
 #endif
