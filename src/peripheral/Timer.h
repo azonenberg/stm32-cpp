@@ -35,6 +35,7 @@
 #ifdef SIMULATION
 
 #include <time.h>
+#include <unistd.h>
 
 /**
 	@brief Dummy timer class for simulation
@@ -51,6 +52,9 @@ public:
 
 	uint32_t GetCount()
 	{ return GetCountInternal() - m_starttime; }
+
+	void Sleep(uint32_t ticks, bool /*reset*/ = false)
+	{ usleep(100 * ticks); }
 
 protected:
 	uint32_t GetCountInternal()
