@@ -60,9 +60,9 @@ protected:
 	uint32_t GetCountInternal()
 	{
 		timespec t;
-		clock_gettime(CLOCK_REALTIME,&t);
+		clock_gettime(CLOCK_MONOTONIC, &t);
 
-		return (t.tv_sec % 86400) + (t.tv_nsec / 100000);
+		return ((t.tv_sec % 86400) * 10000) + (t.tv_nsec / 100000);
 	}
 
 protected:
