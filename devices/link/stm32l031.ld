@@ -8,6 +8,8 @@ MEMORY
 	AHB(RW):	ORIGIN = 0x40020000, LENGTH = 32K
 	APB2(RW):	ORIGIN = 0x40010000, LENGTH = 32K
 	APB1(RW):	ORIGIN = 0x40000000, LENGTH = 32K
+
+	SIG(R):		ORIGIN = 0x1ff80000, LENGTH = 64K
 }
 
 SECTIONS
@@ -132,35 +134,42 @@ SECTIONS
 	.sfr_apb2 :
 	{
 		. = ALIGN(1024);
-		. += 1024;		/* SYSCFG not yet implemented */
+		*(.syscfg)
 		. = ALIGN(1024);
-		. += 1024;		/* EXTI not yet implemented */
+		. += 1024;			/* EXTI not yet implemented */
 		. = ALIGN(1024);
 		*(.tim21)
 		. = ALIGN(1024);
-		. += 2048;		/* Reserved */
+		. += 2048;			/* Reserved */
 		. = ALIGN(1024);
 		*(.tim22)
-
-		//*(.syscfg)
-
-		//. += 7168;		/* Reserved */
-		//. += 1024;		/* ADC not yet implemented */
-		//. += 1024;		/* Reserved */
-		//. = ALIGN(1024);
-		//*(.tim1)
-		//. = ALIGN(1024);
-		//*(.spi1)
-		//. += 1024;		/* Reserved */
-		//. = ALIGN(1024);
-		//*(.usart1)
-		//. = ALIGN(1024);
-		//. += 2048;		/* Reserved */
-		//. = ALIGN(1024);
-		//*(.tim16)
-		//. = ALIGN(1024);
-		//*(.tim17)
-		//. += 3072;		/* Reserved */
-		//. += 1024;		/* DBGMCU not implemented */
+		. = ALIGN(1024);
+		. += 1024;			/* Reserved */
+		. = ALIGN(1024);
+		. += 1024;			/* Firewall not implemented */
+		. = ALIGN(1024);
+		. += 1024;			/* Reserved */
+		. = ALIGN(1024);
+		. += 1024;			/* ADC1 not implemented */
+		. = ALIGN(1024);
+		. += 2048;			/* Reserved */
+		. = ALIGN(1024);
+		. += 1024;			/* SPI1 not implemented */
+		. = ALIGN(1024);
+		. += 1024;			/* Reserved */
+		. = ALIGN(1024);
+		. += 1024;			/* USART1 not implemented */
+		. = ALIGN(1024);
+		. += 7168;			/* Reserved */
+		. = ALIGN(1024);
+		*(.dbgmcu)
 	} > APB2
+
+	.sfr_sig :
+	{
+		. += 0x50;
+		*(.uid)
+		. += 0x20;
+		*(.fid)
+	} > SIG
 }

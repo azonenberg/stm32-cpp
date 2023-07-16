@@ -138,19 +138,22 @@ enum usart_bits
 extern volatile usart_t USART2;
 extern volatile usart_t USART4;
 extern volatile usart_t USART5;
-/*
+
 typedef struct
 {
 	uint32_t CFGR1;
+	uint32_t CFGR2;
 	uint32_t EXTICR1;
 	uint32_t EXTICR2;
 	uint32_t EXTICR3;
 	uint32_t EXTICR4;
-	uint32_t CFGR2;
+	uint32_t COMP1_CTRL;
+	uint32_t COMP2_CTRL;
+	uint32_t CFGR3;
 } syscfg_t;
 
 extern volatile syscfg_t SYSCFG;
-
+/*
 typedef struct
 {
 	uint32_t	CR1;
@@ -309,6 +312,19 @@ enum flash_sr
 	FLASH_SR_ERR_MASK		= 0xf2
 };
 */
+
+typedef struct
+{
+	uint32_t	IDCODE;
+	uint32_t	CR;
+	uint32_t	APB1_FZ;
+	uint32_t	APB2_FZ;
+} dbgmcu_t;
+
+extern volatile dbgmcu_t DBGMCU;
+
+extern volatile uint32_t U_ID[3];
+extern volatile uint16_t F_ID;
 
 //Defines for what peripherals are present / implemented
 //#define HAVE_I2C

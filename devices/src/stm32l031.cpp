@@ -43,9 +43,9 @@ volatile flash_t FLASH __attribute__((section(".flash")));
 volatile i2c_t I2C1 __attribute__((section(".i2c1")));
 
 volatile spi_t SPI1 __attribute__((section(".spi1")));
-
-volatile syscfg_t SYSCFG __attribute__((section(".syscfg")));
 */
+volatile syscfg_t SYSCFG __attribute__((section(".syscfg")));
+
 volatile usart_t USART2 __attribute__((section(".usart2")));
 volatile usart_t USART4 __attribute__((section(".usart4")));
 volatile usart_t USART5 __attribute__((section(".usart5")));
@@ -56,3 +56,8 @@ volatile tim_t TIMER6 __attribute__((section(".tim6")));
 volatile tim_t TIMER7 __attribute__((section(".tim7")));
 volatile tim_t TIMER21 __attribute__((section(".tim21")));
 volatile tim_t TIMER22 __attribute__((section(".tim22")));
+
+volatile dbgmcu_t DBGMCU __attribute__((section(".dbgmcu")));
+
+volatile uint32_t U_ID[3] __attribute__((section(".uid")));
+volatile uint16_t F_ID __attribute__((section(".fid")));
