@@ -102,13 +102,13 @@ SECTIONS
 		. = ALIGN(1024);
 		*(.tim3)
 		. = ALIGN(1024);
-		. += 2048;			/* Reserved (Errata in datasheet page 55, says 1K when should be 2K) */
+		. += 2048;			/* Reserved (Errata in datasheet page 55, says 1K when should be 2K, see case #00183734) */
 		. = ALIGN(1024);
 		*(.tim6)
 		. = ALIGN(1024);
 		*(.tim7)
 		. = ALIGN(1024);
-		. += 4096;			/* Reserved (Errata in datasheet page 55, says 3K when should be 4K)  */
+		. += 4096;			/* Reserved (Errata in datasheet page 55, says 3K when should be 4K, see case #00183734)  */
 		. = ALIGN(1024);
 		. += 1024;			/* RTC / BKUP_REG not yet implemented */
 		. = ALIGN(1024);
