@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP v0.1                                                                                                       *
 *                                                                                                                      *
-* Copyright (c) 2020-2022 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2023 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -31,6 +31,9 @@
 #define Flash_h
 
 #include <stm32.h>
+
+//TODO implement for STM32L0
+#ifndef STM32L0
 
 /**
 	@brief Flash memory
@@ -73,5 +76,7 @@ protected:
 
 	static uint32_t m_maxPsize;
 };
+
+#endif	//STM32L0
 
 #endif

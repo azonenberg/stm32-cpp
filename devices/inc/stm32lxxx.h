@@ -27,23 +27,26 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef stm32_h
-#define stm32_h
+#ifndef stm32lxxx_h
+#define stm32lxxx_h
 
 /**
 	@file
 	@author Andrew D. Zonenberg
-	@brief	Master include file for all STM32 parts
+	@brief	Master include file for all STM32L family parts
 
 	Pulls in the correct part depending on a global define
 
-	The user is responsible for externally defining the part number, e.g. STM32F031.
+	The user is responsible for externally defining the part number, e.g. STM32L031.
 
-	This header will define a family macro, e.g. STM32F0, based on that.
+	This header will define a family macro, e.g. STM32L0, based on that.
  */
 
-#include "stm32fxxx.h"
-#include "stm32hxxx.h"
-#include "stm32lxxx.h"
+#ifdef STM32L031
+#define STM32L0
+#include <stm32l031.h>
+#endif
+
+#include "stm32-common.h"
 
 #endif

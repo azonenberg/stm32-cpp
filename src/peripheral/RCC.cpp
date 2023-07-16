@@ -42,6 +42,24 @@ void RCCHelper::Enable(volatile gpio_t* gpio)
 		else if(gpio == &GPIOB)
 			RCC.AHBENR |= RCC_AHB_GPIOB;
 
+	#elif defined(STM32L0)
+
+		if(gpio == &GPIOA)
+			RCC.IOPENR |= RCC_IO_GPIOA;
+		else if(gpio == &GPIOB)
+			RCC.IOPENR |= RCC_IO_GPIOB;
+		else if(gpio == &GPIOC)
+			RCC.IOPENR |= RCC_IO_GPIOC;
+
+		/*
+		else if(gpio == &GPIOD)
+			RCC.IOPENR |= RCC_IO_GPIOD;
+		else if(gpio == &GPIOE)
+			RCC.IOPENR |= RCC_IO_GPIOE;
+		else if(gpio == &GPIOH)
+			RCC.IOPENR |= RCC_IO_GPIOH;
+		*/
+
 	#elif defined(STM32H7)
 
 		if(gpio == &GPIOA)
@@ -351,6 +369,189 @@ void RCCHelper::Enable(volatile tim_t* tim)
 		#error Unknown timer configuration (unsupported part)
 
 	#endif
+}
+#endif
+
+#ifdef STM32L0
+/**
+	@brief Configures the PLL to use the internal 16 MHz oscillator, then selects it
+
+	@param mult		VCO multiplier from HSI16 (3 4, 6, 8, 12, 16, 24, 32, 48)
+	@param hclkdiv	Divider on PLL output to HCLK (2, 3, or 4)
+	@param ahbdiv	Divider from HCLK to AHB (0, 2, 4, 8, 16, 64, 128, 256, 512)
+	@param apb2div	Divider from HCLK to APB2 (1, 2, 4, 8, or 16)
+	@param apb1div	Divider from HCLK to APB1 (1, 2, 4, 8, or 16)
+ */
+void RCCHelper::InitializePLLFromHSI16(uint8_t mult, uint8_t hclkdiv, uint16_t ahbdiv, uint8_t apb2div, uint8_t apb1div)
+{
+	//Enable the HSI16 oscillator
+	RCC.CR |= RCC_HSI_ON;
+
+	//Wait until it's ready
+	while(0 == (RCC.CR & RCC_HSI_READY))
+	{}
+
+	//Remove all PLL configuration
+	RCC.CFGR &= ~0xFD3FF0;
+
+	//Select VCO divider
+	switch(hclkdiv)
+	{
+		case 2:
+			RCC.CFGR |= 0x400000;
+			break;
+
+		case 3:
+			RCC.CFGR |= 0x800000;
+			break;
+
+		case 4:
+			RCC.CFGR |= 0xc00000;
+			break;
+
+		//any other input is illegal, fail
+		default:
+			while(1)
+			{}
+	}
+
+	//Select PLL multiplier
+	switch(mult)
+	{
+		case 3:
+			RCC.CFGR |= 0x00000;
+			break;
+		case 4:
+			RCC.CFGR |= 0x40000;
+			break;
+		case 6:
+			RCC.CFGR |= 0x80000;
+			break;
+		case 8:
+			RCC.CFGR |= 0xc0000;
+			break;
+		case 12:
+			RCC.CFGR |= 0x100000;
+			break;
+		case 16:
+			RCC.CFGR |= 0x140000;
+			break;
+		case 24:
+			RCC.CFGR |= 0x180000;
+			break;
+		case 32:
+			RCC.CFGR |= 0x1c0000;
+			break;
+		case 48:
+			RCC.CFGR |= 0x200000;
+			break;
+
+		//any other input is illegal, fail
+		default:
+			while(1)
+			{}
+	}
+
+	//HSI16 selected as PLL source (bit 16 = 0, cleared above)
+
+	//Select APB2 divider
+	switch(apb2div)
+	{
+		case 1:
+			RCC.CFGR |= 0x00000;
+			break;
+		case 2:
+			RCC.CFGR |= 0x2000;
+			break;
+		case 4:
+			RCC.CFGR |= 0x2800;
+			break;
+		case 8:
+			RCC.CFGR |= 0x3000;
+			break;
+		case 16:
+			RCC.CFGR |= 0x3800;
+			break;
+
+		//any other input is illegal, fail
+		default:
+			while(1)
+			{}
+	}
+
+	//Select APB1 divider
+	switch(apb1div)
+	{
+		case 1:
+			RCC.CFGR |= 0x00000;
+			break;
+		case 2:
+			RCC.CFGR |= 0x400;
+			break;
+		case 4:
+			RCC.CFGR |= 0x500;
+			break;
+		case 8:
+			RCC.CFGR |= 0x600;
+			break;
+		case 16:
+			RCC.CFGR |= 0x700;
+			break;
+
+		//any other input is illegal, fail
+		default:
+			while(1)
+			{}
+	}
+
+	//Select AHB divider
+	switch(ahbdiv)
+	{
+		case 1:
+			RCC.CFGR |= 0x00000;
+			break;
+		case 2:
+			RCC.CFGR |= 0x80;
+			break;
+		case 4:
+			RCC.CFGR |= 0x90;
+			break;
+		case 8:
+			RCC.CFGR |= 0xa0;
+			break;
+		case 16:
+			RCC.CFGR |= 0xb0;
+			break;
+		case 64:
+			RCC.CFGR |= 0xc0;
+			break;
+		case 128:
+			RCC.CFGR |= 0xd0;
+			break;
+		case 256:
+			RCC.CFGR |= 0xe0;
+			break;
+		case 512:
+			RCC.CFGR |= 0xf0;
+			break;
+
+		//any other input is illegal, fail
+		default:
+			while(1)
+			{}
+	}
+
+	//Enable PLL
+	RCC.CR |= RCC_PLL_ON;
+	while(0 == (RCC.CR & RCC_PLL_READY))
+	{}
+
+	//Switch clock source to PLL
+	RCC.CFGR |= 0x3;
+
+	//Wait until PLL switch is complete
+	while(0xc != (RCC.CFGR & 0xc))
+	{}
 }
 #endif
 

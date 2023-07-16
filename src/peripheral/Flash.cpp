@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP v0.1                                                                                                       *
 *                                                                                                                      *
-* Copyright (c) 2020-2022 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2023 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -30,6 +30,8 @@
 #include <stm32.h>
 #include "Flash.h"
 #include <string.h>
+
+#ifndef STM32L0
 
 uint32_t Flash::m_maxPsize = FLASH_CR_PSIZE_X8;
 
@@ -410,3 +412,5 @@ bool Flash::Write(uint8_t* address, const uint8_t* data, uint32_t len)
 
 	return true;
 }
+
+#endif	//STM32L0

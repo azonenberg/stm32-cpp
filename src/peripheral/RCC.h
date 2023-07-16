@@ -90,6 +90,10 @@ public:
 		);
 	#endif
 
+	#ifdef STM32L0
+	static void InitializePLLFromHSI16(uint8_t mult, uint8_t hclkdiv, uint16_t ahbdiv, uint8_t apb2div, uint8_t apb1div);
+	#endif
+
 	#ifdef STM32F7
 	static void InitializePLLFromInternalOscillator(
 		uint8_t prediv,

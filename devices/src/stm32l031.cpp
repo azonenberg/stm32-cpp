@@ -27,23 +27,31 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef stm32_h
-#define stm32_h
+#include <stm32l031.h>
 
-/**
-	@file
-	@author Andrew D. Zonenberg
-	@brief	Master include file for all STM32 parts
+volatile gpio_t GPIOA __attribute__((section(".gpioa")));
+volatile gpio_t GPIOB __attribute__((section(".gpiob")));
+volatile gpio_t GPIOC __attribute__((section(".gpioc")));
+volatile gpio_t GPIOD __attribute__((section(".gpiod")));
+volatile gpio_t GPIOE __attribute__((section(".gpioe")));
+volatile gpio_t GPIOH __attribute__((section(".gpioh")));
 
-	Pulls in the correct part depending on a global define
+volatile rcc_t RCC __attribute__((section(".rcc")));
 
-	The user is responsible for externally defining the part number, e.g. STM32F031.
+volatile flash_t FLASH __attribute__((section(".flash")));
+/*
+volatile i2c_t I2C1 __attribute__((section(".i2c1")));
 
-	This header will define a family macro, e.g. STM32F0, based on that.
- */
+volatile spi_t SPI1 __attribute__((section(".spi1")));
 
-#include "stm32fxxx.h"
-#include "stm32hxxx.h"
-#include "stm32lxxx.h"
+volatile syscfg_t SYSCFG __attribute__((section(".syscfg")));
 
-#endif
+volatile usart_t USART1 __attribute__((section(".usart1")));
+
+volatile tim_t TIM1 __attribute__((section(".tim1")));
+volatile tim_t TIM2 __attribute__((section(".tim2")));
+volatile tim_t TIM3 __attribute__((section(".tim3")));
+volatile tim_t TIM14 __attribute__((section(".tim14")));
+volatile tim_t TIM16 __attribute__((section(".tim16")));
+volatile tim_t TIM17 __attribute__((section(".tim17")));
+*/

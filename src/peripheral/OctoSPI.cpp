@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP v0.1                                                                                                       *
 *                                                                                                                      *
-* Copyright (c) 2020-2022 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2023 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -35,6 +35,8 @@
 #include <algorithm>
 #include <peripheral/RCC.h>
 #include <peripheral/OctoSPI.h>
+
+#ifdef HAVE_OCTOSPI
 
 using namespace std;
 
@@ -240,3 +242,5 @@ void OctoSPI::BlockingRead(uint32_t insn, uint32_t addr, uint8_t* data, uint32_t
 	for(uint32_t i=0; i<len; i++)
 		data[i] = *buf;
 }
+
+#endif
