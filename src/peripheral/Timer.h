@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP v0.1                                                                                                       *
 *                                                                                                                      *
-* Copyright (c) 2020-2021 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2023 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -78,6 +78,7 @@ public:
 	enum Features
 	{
 		FEATURE_GENERAL_PURPOSE,
+		FEATURE_GENERAL_PURPOSE_16BIT,
 		FEATURE_ADVANCED
 	};
 

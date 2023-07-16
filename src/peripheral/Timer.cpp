@@ -91,9 +91,18 @@ void Timer::Sleep(uint32_t ticks, bool reset)
 		m_chan->CNT = 0;
 	}
 
-	unsigned int target = m_chan->CNT + ticks;
-	while(m_chan->CNT != target)
-	{}
+	if(m_features == FEATURE_GENERAL_PURPOSE_16BIT)
+	{
+		uint16_t target = m_chan->CNT + ticks;
+		while(m_chan->CNT != target)
+		{}
+	}
+	else
+	{
+		uint32_t target = m_chan->CNT + ticks;
+		while(m_chan->CNT != target)
+		{}
+	}
 }
 
 #endif
