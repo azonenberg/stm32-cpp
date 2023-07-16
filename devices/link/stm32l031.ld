@@ -96,29 +96,54 @@ SECTIONS
 	.sfr_apb1 :
 	{
 		. = ALIGN(1024);
-		//*(.tim2)
-		//. = ALIGN(1024);
-		//*(.tim3)
-		//. = ALIGN(1024);
-		//. += 6144;		/* Reserved */
-		//. = ALIGN(1024);
-		//*(.tim14)
-		//. = ALIGN(1024);
-		//. += 1024;		/* Reserved */
-		//. += 1024;		/* RTC */
-		//. += 1024;		/* WWDG */
-		//. += 1024;		/* IWDG */
-		//. += 8192;		/* Reserved */
-		//. = ALIGN(1024);
-		//*(.i2c1)
+		*(.tim2)
+		. = ALIGN(1024);
+		*(.tim3)
+		. = ALIGN(1024);
+		. += 2048;			/* Reserved (Errata in datasheet page 55, says 1K when should be 2K) */
+		. = ALIGN(1024);
+		*(.tim6)
+		. = ALIGN(1024);
+		*(.tim7)
+		. = ALIGN(1024);
+		. += 4096;			/* Reserved (Errata in datasheet page 55, says 3K when should be 4K)  */
+		. = ALIGN(1024);
+		. += 1024;			/* RTC / BKUP_REG not yet implemented */
+		. = ALIGN(1024);
+		. += 1024;			/* WWDG not yet implemented */
+		. = ALIGN(1024);
+		. += 1024;			/* IWDG not yet implemented */
+		. = ALIGN(1024);
+		. += 1024;			/* Reserved */
+		. = ALIGN(1024);
+		. += 1024;			/* SPI2 not yet implemented */
+		. = ALIGN(1024);
+		. += 2048;			/* Reserved */
+		. = ALIGN(1024);
+		*(.usart2)
+		. = ALIGN(1024);
+		. += 1024;			/* LPUART1 not yet implemented */
+		. = ALIGN(1024);
+		*(.usart4)
+		. = ALIGN(1024);
+		*(.usart5)
 	} > APB1
 
 	.sfr_apb2 :
 	{
 		. = ALIGN(1024);
+		. += 1024;		/* SYSCFG not yet implemented */
+		. = ALIGN(1024);
+		. += 1024;		/* EXTI not yet implemented */
+		. = ALIGN(1024);
+		*(.tim21)
+		. = ALIGN(1024);
+		. += 2048;		/* Reserved */
+		. = ALIGN(1024);
+		*(.tim22)
+
 		//*(.syscfg)
-		//. = ALIGN(1024);
-		//. += 1024;		/* EXTI not yet implemented */
+
 		//. += 7168;		/* Reserved */
 		//. += 1024;		/* ADC not yet implemented */
 		//. += 1024;		/* Reserved */

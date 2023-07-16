@@ -60,36 +60,23 @@ enum rcc_io
 	RCC_IO_GPIOH	= 0x80,
 };
 
-/*
-enum rcc_ahb
-{
-	RCC_AHB_GPIOA	= 0x020000,
-	RCC_AHB_GPIOB	= 0x040000,
-	RCC_AHB_GPIOC	= 0x080000,
-	RCC_AHB_GPIOD	= 0x100000,
-	RCC_AHB_GPIOE	= 0x200000,
-	RCC_AHB_GPIOF	= 0x400000
-};
-
 enum rcc_apb2
 {
-	RCC_APB2_TIM17	= 0x40000,
-	RCC_APB2_TIM16	= 0x20000,
-	RCC_APB2_USART1 = 0x04000,
-	RCC_APB2_SPI1	= 0x01000,
-	RCC_APB2_TIM1	= 0x00800
+	RCC_APB2_TIM22	= 0x00000020,
+	RCC_APB2_TIM21	= 0x00000004
 };
 
 enum rcc_apb1
 {
-	RCC_APB1_I2C1	= 0x200000,
-	RCC_APB1_TIM14	= 0x000100,
-	RCC_APB1_TIM7	= 0x000020,
-	RCC_APB1_TIM6	= 0x000010,
-	RCC_APB1_TIM3	= 0x000002,
-	RCC_APB1_TIM2	= 0x000001
+	RCC_APB1_USART5	= 0x00200000,
+	RCC_APB1_USART4	= 0x00100000,
+	RCC_APB1_USART2	= 0x00020000,
+	RCC_APB1_TIM7	= 0x00000020,
+	RCC_APB1_TIM6	= 0x00000010,
+	RCC_APB1_TIM3	= 0x00000002,
+	RCC_APB1_TIM2	= 0x00000001
 };
-*/
+
 typedef struct
 {
 	uint32_t CR;
@@ -126,7 +113,7 @@ enum rcc_cr_bits
 };
 
 extern volatile rcc_t RCC;
-/*
+
 typedef struct
 {
 	uint32_t CR1;
@@ -148,8 +135,10 @@ enum usart_bits
 	USART_ISR_RXNE = 0x20
 };
 
-extern volatile usart_t USART1;
-
+extern volatile usart_t USART2;
+extern volatile usart_t USART4;
+extern volatile usart_t USART5;
+/*
 typedef struct
 {
 	uint32_t CFGR1;
@@ -207,7 +196,7 @@ enum spi_sr_bits
 };
 
 extern volatile spi_t SPI1;
-
+*/
 typedef struct
 {
 	uint32_t	CR1;
@@ -222,23 +211,25 @@ typedef struct
 	uint32_t	CNT;
 	uint32_t	PSC;
 	uint32_t	ARR;
-	uint32_t	RCR;
+	uint32_t	field_30;
 	uint32_t	CCR1;
 	uint32_t	CCR2;
 	uint32_t	CCR3;
 	uint32_t	CCR4;
-	uint32_t	BDTR;
+	uint32_t	field_44;
 	uint32_t	DCR;
 	uint32_t	DMAR;
+	uint32_t	OR;
 } tim_t;
 
-extern volatile tim_t TIM1;
-extern volatile tim_t TIM2;
-extern volatile tim_t TIM3;
-extern volatile tim_t TIM14;
-extern volatile tim_t TIM16;
-extern volatile tim_t TIM17;
+extern volatile tim_t TIMER2;
+extern volatile tim_t TIMER3;
+extern volatile tim_t TIMER6;
+extern volatile tim_t TIMER7;
+extern volatile tim_t TIMER21;
+extern volatile tim_t TIMER22;
 
+/*
 enum i2c_cr2_bits
 {
 	I2C_AUTO_END	= 0x02000000,
@@ -261,8 +252,8 @@ typedef struct
 	uint32_t	CR2;
 	uint32_t	OAR1;
 	uint32_t	OAR2;
-	uint32_t	TIMINGR;
-	uint32_t	TIMEOUTR;
+	uint32_t	TIMERINGR;
+	uint32_t	TIMEREOUTR;
 	uint32_t	ISR;
 	uint32_t	ICR;
 	uint32_t	PECR;
@@ -317,12 +308,12 @@ enum flash_sr
 
 	FLASH_SR_ERR_MASK		= 0xf2
 };
+*/
 
 //Defines for what peripherals are present / implemented
-#define HAVE_I2C
+//#define HAVE_I2C
 #define HAVE_TIM
-#define HAVE_SPI
+//#define HAVE_SPI
 #define HAVE_UART
-*/
 
 #endif

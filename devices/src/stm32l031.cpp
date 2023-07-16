@@ -45,13 +45,14 @@ volatile i2c_t I2C1 __attribute__((section(".i2c1")));
 volatile spi_t SPI1 __attribute__((section(".spi1")));
 
 volatile syscfg_t SYSCFG __attribute__((section(".syscfg")));
-
-volatile usart_t USART1 __attribute__((section(".usart1")));
-
-volatile tim_t TIM1 __attribute__((section(".tim1")));
-volatile tim_t TIM2 __attribute__((section(".tim2")));
-volatile tim_t TIM3 __attribute__((section(".tim3")));
-volatile tim_t TIM14 __attribute__((section(".tim14")));
-volatile tim_t TIM16 __attribute__((section(".tim16")));
-volatile tim_t TIM17 __attribute__((section(".tim17")));
 */
+volatile usart_t USART2 __attribute__((section(".usart2")));
+volatile usart_t USART4 __attribute__((section(".usart4")));
+volatile usart_t USART5 __attribute__((section(".usart5")));
+
+volatile tim_t TIMER2 __attribute__((section(".tim2")));
+volatile tim_t TIMER3 __attribute__((section(".tim3")));
+volatile tim_t TIMER6 __attribute__((section(".tim6")));
+volatile tim_t TIMER7 __attribute__((section(".tim7")));
+volatile tim_t TIMER21 __attribute__((section(".tim21")));
+volatile tim_t TIMER22 __attribute__((section(".tim22")));

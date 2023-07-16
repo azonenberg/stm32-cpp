@@ -125,6 +125,15 @@ void RCCHelper::Enable(volatile usart_t* uart)
 		if(uart == &USART1)
 			RCC.APB2ENR |= RCC_APB2_USART1;
 
+	#elif defined(STM32L031)
+
+		if(uart == &USART2)
+			RCC.APB1ENR |= RCC_APB1_USART2;
+		else if(uart == &USART4)
+			RCC.APB1ENR |= RCC_APB1_USART4;
+		else if(uart == &USART5)
+			RCC.APB1ENR |= RCC_APB1_USART5;
+
 	#elif defined(STM32H735)
 
 		if(uart == &USART2)
@@ -154,7 +163,6 @@ void RCCHelper::Enable(volatile usart_t* uart)
 			RCC.APB1ENR |= RCC_APB1_UART7;
 		else if(uart == &UART8)
 			RCC.APB1ENR |= RCC_APB1_UART8;
-
 
 	#else
 		#error Unknown STM32 family
@@ -300,6 +308,7 @@ void RCCHelper::Enable(volatile octospi_t* octospi)
 void RCCHelper::Enable(volatile tim_t* tim)
 {
 	#if defined(STM32F031)
+
 		if(tim == &TIM1)
 			RCC.APB2ENR |= RCC_APB2_TIM1;
 		else if(tim == &TIM2)
@@ -312,6 +321,21 @@ void RCCHelper::Enable(volatile tim_t* tim)
 			RCC.APB2ENR |= RCC_APB2_TIM16;
 		else if(tim == &TIM17)
 			RCC.APB2ENR |= RCC_APB2_TIM17;
+
+	#elif defined(STM32L031)
+
+		if(tim == &TIMER2)
+			RCC.APB2ENR |= RCC_APB1_TIM2;
+		else if(tim == &TIMER3)
+			RCC.APB1ENR |= RCC_APB1_TIM3;
+		else if(tim == &TIMER6)
+			RCC.APB1ENR |= RCC_APB1_TIM6;
+		else if(tim == &TIMER7)
+			RCC.APB1ENR |= RCC_APB1_TIM7;
+		else if(tim == &TIMER21)
+			RCC.APB2ENR |= RCC_APB2_TIM21;
+		else if(tim == &TIMER22)
+			RCC.APB2ENR |= RCC_APB2_TIM22;
 
 	#elif defined(STM32H735)
 
