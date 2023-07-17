@@ -108,6 +108,12 @@ public:
 	#endif
 
 	#ifdef STM32H7
+	enum ClockSource
+	{
+		CLOCK_SOURCE_HSE,
+		CLOCK_SOURCE_HSI
+	};
+
 	static void EnableHighSpeedExternalClock();
 	static void EnableHighSpeedInternalClock(int mhz);
 	static void InitializePLL(
@@ -117,7 +123,8 @@ public:
 		uint16_t mult,
 		uint8_t divP,
 		uint8_t divQ,
-		uint8_t divR
+		uint8_t divR,
+		ClockSource source
 		);
 	static void SelectSystemClockFromPLL1();
 	static void InitializeSystemClocks(

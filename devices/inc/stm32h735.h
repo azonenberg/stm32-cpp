@@ -249,6 +249,7 @@ enum rcc_pllckselr
 {
 	RCC_PLLCKSELR_SRC_MASK	= 0xfffffffc,
 	RCC_PLLCKSELR_SRC_HSE	= 0x00000002,
+	RCC_PLLCKSELR_SRC_HSI	= 0x00000000,
 };
 
 enum rcc_pllcfgr

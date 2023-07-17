@@ -906,7 +906,7 @@ void RCCHelper::EnableHighSpeedInternalClock(int mhz)
 /**
 	@brief Initialize and starts a PLL
 
-	For now, the input must come from the HSE oscillator
+	For now, the input must come from the HSE or HSI oscillator
 
 	Input frequency at PFD must be 1 to 16 MHz
 	VCO frequency must be 150 to 836 MHz
@@ -920,6 +920,7 @@ void RCCHelper::EnableHighSpeedInternalClock(int mhz)
 	@param divP				Divider for output P (1 - 128)
 	@param divQ				Divider for output Q (1 - 128)
 	@param divR				Divider for output R (1 - 128)
+	@param source			Input frequency
  */
 void RCCHelper::InitializePLL(
 	uint8_t npll,
@@ -928,14 +929,17 @@ void RCCHelper::InitializePLL(
 	uint16_t mult,
 	uint8_t divP,
 	uint8_t divQ,
-	uint8_t divR
+	uint8_t divR,
+	ClockSource source
 	)
 {
 	//TODO: fractional N support: multiplier = DIVN + (FRACN / 2^13)
 
 	//Select PLL source
-	//(for now, hard code HSE)
-	RCC.PLLCKSELR = (RCC.PLLCKSELR & RCC_PLLCKSELR_SRC_MASK) | RCC_PLLCKSELR_SRC_HSE;
+	if(source == CLOCK_SOURCE_HSE)
+		RCC.PLLCKSELR = (RCC.PLLCKSELR & RCC_PLLCKSELR_SRC_MASK) | RCC_PLLCKSELR_SRC_HSE;
+	else //if(source == CLOCK_SOURCE_HSI)
+		RCC.PLLCKSELR = (RCC.PLLCKSELR & RCC_PLLCKSELR_SRC_MASK) | RCC_PLLCKSELR_SRC_HSI;
 
 	//Prescaler is not shifted
 	//div 0 = disabled
