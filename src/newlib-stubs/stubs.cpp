@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP v0.1                                                                                                       *
 *                                                                                                                      *
-* Copyright (c) 2020 Andrew D. Zonenberg                                                                               *
+* Copyright (c) 2020-2023 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -51,7 +51,7 @@ extern "C" int _getpid()
 	return 1;
 }
 
-extern "C" void* _sbrk(int nbytes)
+extern "C" void* _sbrk(int /*nbytes*/)
 {
 	errno = ENOMEM;
 	return (void*)-1;
