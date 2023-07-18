@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP v0.1                                                                                                       *
 *                                                                                                                      *
-* Copyright (c) 2020-2022 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2023 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -35,10 +35,8 @@
 
 void Logger::Timestamp(LogType type)
 {
-	//TODO: handle wrap at 4.97 days
-	//We're not Windows 95 though, it's just a status message. So not a priority to fix for now...
-
-	auto uptime = m_timer->GetCount() / 10;
+	//TODO: support printf %ld and use int64 here
+	uint32_t uptime = (m_timeOffset + m_timer->GetCount()) / 10;
 	switch(type)
 	{
 		case NORMAL:
@@ -57,8 +55,30 @@ void Logger::Timestamp(LogType type)
 
 void Logger::PrintIndent()
 {
-	for(int i=0; i<m_indentLevel; i++)
+	for(uint32_t i=0; i<m_indentLevel; i++)
 		m_target->PrintString("    ");
+}
+
+/**
+	@brief Updates the internal offset if the timer is getting close to wrapping, then reset the timer
+ */
+void Logger::UpdateOffset()
+{
+	m_timeOffset += m_timer->GetCount();
+	m_timer->Restart();
+}
+
+/**
+	@brief Updates the internal offset if the timer is getting close to wrapping, then reset the timer
+ */
+void Logger::UpdateOffset(uint32_t threshold)
+{
+	uint32_t timestamp = m_timer->GetCount();
+	if(timestamp >= threshold)
+	{
+		m_timeOffset += timestamp;
+		m_timer->Restart();
+	}
 }
 
 #endif

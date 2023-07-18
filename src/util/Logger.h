@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP v0.1                                                                                                       *
 *                                                                                                                      *
-* Copyright (c) 2020-2022 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2023 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -45,6 +45,7 @@ public:
 	Logger()
 	: m_target(nullptr)
 	, m_timer(nullptr)
+	, m_timeOffset(0)
 	{}
 
 	/**
@@ -115,6 +116,9 @@ public:
 			m_indentLevel --;
 	}
 
+	void UpdateOffset();
+	void UpdateOffset(uint32_t threshold);
+
 protected:
 	void Timestamp();
 	void Timestamp(LogType type);
@@ -124,6 +128,8 @@ protected:
 	CharacterDevice* m_target;
 	Timer* m_timer;
 	uint32_t m_indentLevel;
+
+	uint64_t m_timeOffset;
 };
 
 /**
