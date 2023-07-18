@@ -44,7 +44,7 @@ void Flash::SetConfiguration(int axiClockFreqMHz, VoltageRange range)
 {
 	//Calculate the number of wait states to use
 	//Based on table 16 of RM0468, section 4.3.8
-	int waitStates = 0;
+	unsigned int waitStates = 0;
 	switch(range)
 	{
 		case RANGE_VOS0:

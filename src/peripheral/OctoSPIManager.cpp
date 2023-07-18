@@ -72,8 +72,8 @@ void OctoSPIManager::ConfigurePort(
 	halfport_t		dq30Source,
 	bool			csEnabled,
 	channel_t		csSource,
-	bool			dqsEnabled,
-	channel_t		dqsSource,
+	bool			/*dqsEnabled*/,
+	channel_t		/*dqsSource*/,
 	bool			clkEnabled,
 	channel_t		clkSource)
 {
