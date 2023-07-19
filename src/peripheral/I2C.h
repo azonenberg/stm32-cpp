@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP v0.1                                                                                                       *
 *                                                                                                                      *
-* Copyright (c) 2020-2022 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2023 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -54,6 +54,15 @@ public:
 			static_cast<uint8_t>(data & 0xff)
 		};
 		return BlockingWrite(addr, buf, 2);
+	}
+
+	bool BlockingRead16(uint8_t addr, uint16_t& result)
+	{
+		uint8_t buf[2];
+		if(!BlockingRead(addr, buf, sizeof(buf)))
+			return false;
+		result = (buf[0] << 8) | buf[1];
+		return true;
 	}
 
 protected:
