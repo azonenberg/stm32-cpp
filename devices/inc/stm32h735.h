@@ -779,7 +779,9 @@ enum cryp_cr
 	CRYP_GCM_PHASE_MASK	= 0x30000,
 	CRYP_BSWAP_BYTE		= 0x80,
 	CRYP_DECRYPT		= 0x0004,
-	CRYP_KEY_128		= 0x0
+	CRYP_KEY_128		= 0x0,
+
+	CRYP_FFLUSH			= 0x4000
 };
 
 enum cryp_sr
@@ -795,14 +797,16 @@ typedef struct
 	uint32_t	CR;
 	uint32_t	SR;
 	uint32_t	DR;
-	uint32_t	HTCFG;
+	uint32_t	HTCR;
 } rng_t;
 
 enum rng_cr
 {
-	RNG_CED	= 0x20,
-	RNG_IE	= 0x08,
-	RNG_EN	= 0x04
+	RNG_CONDRST	= 0x40000000,
+
+	RNG_CED		= 0x20,
+	RNG_IE		= 0x08,
+	RNG_EN		= 0x04
 };
 
 enum rng_sr
