@@ -189,7 +189,7 @@ enum rcc_ahb2
 	RCC_AHB2_SRAM1		= 0x20000000,
 	RCC_AHB2_RNG		= 0x00000040,
 	RCC_AHB2_HASH		= 0x00000020,
-	RCC_AHB2_CRYPT		= 0x00000010
+	RCC_AHB2_CRYP		= 0x00000010
 };
 
 enum rcc_apb4
@@ -727,7 +727,7 @@ extern volatile uint32_t U_ID[3];
 extern volatile uint16_t F_ID;
 extern volatile uint32_t L_ID;
 extern volatile uint16_t PKG_ID;
-/*
+
 typedef struct
 {
 	uint32_t	CR;
@@ -750,6 +750,22 @@ typedef struct
 	uint32_t	IV0RR;
 	uint32_t	IV1LR;
 	uint32_t	IV1RR;
+	uint32_t	CSGCMCCM0R;
+	uint32_t	CSGCMCCM1R;
+	uint32_t	CSGCMCCM2R;
+	uint32_t	CSGCMCCM3R;
+	uint32_t	CSGCMCCM4R;
+	uint32_t	CSGCMCCM5R;
+	uint32_t	CSGCMCCM6R;
+	uint32_t	CSGCMCCM7R;
+	uint32_t	CSGCM0R;
+	uint32_t	CSGCM1R;
+	uint32_t	CSGCM2R;
+	uint32_t	CSGCM3R;
+	uint32_t	CSGCM4R;
+	uint32_t	CSGCM5R;
+	uint32_t	CSGCM6R;
+	uint32_t	CSGCM7R;
 } cryp_t;
 
 enum cryp_cr
@@ -779,6 +795,7 @@ typedef struct
 	uint32_t	CR;
 	uint32_t	SR;
 	uint32_t	DR;
+	uint32_t	HTCFG;
 } rng_t;
 
 enum rng_cr
@@ -817,7 +834,7 @@ enum hash_sr
 };
 
 extern volatile hash_t HASH;
-*/
+
 typedef struct
 {
 	uint32_t	CPUID;
@@ -976,13 +993,11 @@ extern volatile octospim_t OCTOSPIM;
 //Defines for what peripherals are present / implemented
 #define HAVE_I2C
 #define HAVE_TIM
-/*
-#define HAVE_SPI
-#define HAVE_EMAC
+//#define HAVE_SPI
+//#define HAVE_EMAC
 #define HAVE_CRYP
 #define HAVE_RNG
 #define HAVE_HASH
-*/
 #define HAVE_UART
 #define HAVE_PWR
 #define HAVE_OCTOSPI

@@ -230,7 +230,13 @@ void RCCHelper::Enable(volatile emac_t* /*ignored*/)
 #ifdef HAVE_RNG
 void RCCHelper::Enable(volatile rng_t* /*ignored*/)
 {
-	RCC.AHB2ENR |= RCC_AHB2_RNG;
+	#if defined(STM32F777)
+		RCC.AHB2ENR |= RCC_AHB2_RNG;
+	#elif defined(STM32H735)
+		RCC.AHB2ENR |= RCC_AHB2_RNG;
+	#else
+	#error Unknown RNG configuration (unsupported part)
+	#endif
 }
 #endif
 
@@ -240,7 +246,13 @@ void RCCHelper::Enable(volatile rng_t* /*ignored*/)
 #ifdef HAVE_HASH
 void RCCHelper::Enable(volatile hash_t* /*ignored*/)
 {
-	RCC.AHB2ENR |= RCC_AHB2_HASH;
+	#if defined(STM32F777)
+		RCC.AHB2ENR |= RCC_AHB2_HASH;
+	#elif defined(STM32H735)
+		RCC.AHB2ENR |= RCC_AHB2_HASH;
+	#else
+	#error Unknown hash configuration (unsupported part)
+	#endif
 }
 #endif
 
@@ -250,7 +262,13 @@ void RCCHelper::Enable(volatile hash_t* /*ignored*/)
 #ifdef HAVE_CRYP
 void RCCHelper::Enable(volatile cryp_t* /*ignored*/)
 {
-	RCC.AHB2ENR |= RCC_AHB2_CRYP;
+	#if defined(STM32F777)
+		RCC.AHB2ENR |= RCC_AHB2_CRYP;
+	#elif defined(STM32H735)
+		RCC.AHB2ENR |= RCC_AHB2_CRYP;
+	#else
+	#error Unknown crypto configuration (unsupported part)
+	#endif
 }
 #endif
 

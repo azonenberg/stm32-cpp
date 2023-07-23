@@ -152,6 +152,19 @@ SECTIONS
 		*(.i2c5)
 	} > APB1
 
+	.sfr_ahb2 :
+	{
+		. += 1024;			/* DCMI not implemented */
+		. += 1024;			/* PSSI not implemented */
+		. += 2048;			/* reserved */
+		. = ALIGN(1024);
+		*(.cryp)
+		. = ALIGN(1024);
+		*(.chash)
+		. = ALIGN(1024);
+		*(.rng)
+	} > AHB2
+
 	.sfr_ahb3 :
 	{
 		. += 1048576;		/* GPV not implemented */

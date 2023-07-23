@@ -105,8 +105,7 @@ volatile uint32_t U_ID[3] __attribute__((section(".uid")));
 volatile uint16_t F_ID __attribute__((section(".fid")));
 volatile uint16_t PKG_ID __attribute__((section(".pkg")));
 volatile uint32_t L_ID __attribute__((section(".lid")));
-/*
+
 volatile cryp_t CRYP __attribute__((section(".cryp")));
 volatile rng_t RNG __attribute__((section(".rng")));
 volatile hash_t HASH __attribute__((section(".chash")));
-*/
