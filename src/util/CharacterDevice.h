@@ -64,7 +64,7 @@ public:
 
 	//Convenience wrappers
 public:
-	void PrintText(char ch)
+	virtual void PrintText(char ch)
 	{
 		if(ch == '\n')
 			PrintBinary('\r');
@@ -116,7 +116,7 @@ public:
 			PrintBinary(data[i]);
 	}
 
-	void PrintString(const char* str)
+	virtual void PrintString(const char* str)
 	{
 		while(*str)
 			PrintText(*(str++));
