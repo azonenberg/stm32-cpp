@@ -225,6 +225,20 @@ void RCCHelper::Enable(volatile emac_t* /*ignored*/)
 #endif
 
 /**
+	@brief Enable the digital temperature sensor
+ */
+#ifdef HAVE_DTS
+void RCCHelper::Enable(volatile dts_t* /*ignored*/)
+{
+	#if defined(STM32H735)
+		RCC.APB4ENR |= RCC_APB4_DTS;
+	#else
+	#error Unknown DTS configuration (unsupported part)
+	#endif
+}
+#endif
+
+/**
 	@brief Enable the RNG
  */
 #ifdef HAVE_RNG

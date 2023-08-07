@@ -30,7 +30,7 @@ MEMORY
 
 	/* SFRs */
 	AHB4(RW):	ORIGIN = 0x58020000, LENGTH = 26K
-	APB4(RW): 	ORIGIN = 0x58000000, LENGTH = 26K
+	APB4(RW): 	ORIGIN = 0x58000000, LENGTH = 27K
 	AHB3(RW):	ORIGIN = 0x51000000, LENGTH = 16432K
 	APB3(RW):	ORIGIN = 0x50000000, LENGTH = 16K
 	AHB2(RW):	ORIGIN = 0x48020000, LENGTH = 18K
@@ -242,6 +242,36 @@ SECTIONS
 		. += 1024;	/* reserved 5800_1800 */
 		. = ALIGN(1024);
 		*(.i2c4);
+		. = ALIGN(1024);
+		. += 1024;	/* reserved 5800_2000 */
+		. = ALIGN(1024);
+		. += 1024;	/* LPTIM2 not yet implemented */
+		. = ALIGN(1024);
+		. += 1024;	/* LPTIM3 not yet implemented */
+		. = ALIGN(1024);
+		. += 1024;	/* LPTIM4 not yet implemented */
+		. = ALIGN(1024);
+		. += 1024;	/* LPTIM5 not yet implemented */
+		. = ALIGN(1024);
+		. += 1024;	/* reserved 5800_3400 */
+		. = ALIGN(1024);
+		. += 1024;	/* COMP1 not yet implemented */
+		. = ALIGN(1024);
+		. += 1024;	/* VREF not yet implemented */
+		. = ALIGN(1024);
+		. += 1024;	/* RTC/BKP not yet implemented */
+		. = ALIGN(1024);
+		. += 1024;	/* reserved 5800_4400 */
+		. = ALIGN(1024);
+		. += 1024;	/* IWDG not yet implemented */
+		. = ALIGN(1024);
+		. += 2048;	/* reserved 5800_4c00 */
+		. = ALIGN(1024);
+		. += 1024;	/* SAI4 not yet implemented */
+		. = ALIGN(1024);
+		. += 4096;	/* reserved 5800_5800 */
+		. = ALIGN(1024);
+		*(.dts);
 
 		/*
 			TODO: LPTIM2, LPTIM3, LPTIM4, LPTIM5, COMP1/2, VREF, RTC/BKP, IWDG, reserved, SAI4, DTS

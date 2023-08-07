@@ -109,3 +109,5 @@ volatile uint32_t L_ID __attribute__((section(".lid")));
 volatile cryp_t CRYP __attribute__((section(".cryp")));
 volatile rng_t RNG __attribute__((section(".rng")));
 volatile hash_t HASH __attribute__((section(".chash")));
+
+volatile dts_t DTS __attribute__((section(".dts")));

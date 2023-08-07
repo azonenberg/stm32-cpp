@@ -195,7 +195,8 @@ enum rcc_ahb2
 enum rcc_apb4
 {
 	RCC_APB4_SYSCFG		= 0x00000002,
-	RCC_APB4_I2C4		= 0x00000080
+	RCC_APB4_I2C4		= 0x00000080,
+	RCC_APB4_DTS		= 0x04000000
 };
 
 enum rcc_apb1l
@@ -994,8 +995,27 @@ typedef struct
 
 extern volatile octospim_t OCTOSPIM;
 
+typedef struct
+{
+	uint32_t CFGR1;
+	uint32_t field_4;
+	uint32_t T0VALR1;
+	uint32_t field_c;
+	uint32_t RAMPVALR;
+	uint32_t ITR1;
+	uint32_t field_18;
+	uint32_t DR;
+	uint32_t SR;
+	uint32_t ITENR;
+	uint32_t ICIFR;
+	uint32_t OR;
+} dts_t;
+
+extern volatile dts_t DTS;
+
 //Defines for what peripherals are present / implemented
 #define HAVE_I2C
+#define HAVE_DTS
 #define HAVE_TIM
 //#define HAVE_SPI
 //#define HAVE_EMAC

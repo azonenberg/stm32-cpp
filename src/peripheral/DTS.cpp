@@ -27,126 +27,76 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef RCC_h
-#define RCC_h
+#include <stm32.h>
+#include <peripheral/DTS.h>
+#include <peripheral/RCC.h>
 
-#include <stm32fxxx.h>
+#ifdef HAVE_DTS
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// DigitalTempSensor driver class
 
 /**
-	@brief Reset and Clock Control
+	@brief Initializes the temperature sensor
 
-	Helper class for enabling various devices.
-
-	All functions are static because there's only one RCC in the device.
+	@param dts			Sensor to initialize
+	@param clkdiv		Clock divisor from APB clock (1-127)
+	@param sampleTime	Number of sampling clock periods to use (0-15)
+	@param fpclk		Frequency of PCLK, in Hz
  */
-class RCCHelper
+DigitalTempSensor::DigitalTempSensor(volatile dts_t* dts, uint8_t clkdiv, uint8_t sampleTime, uint32_t fpclk)
+	: m_dts(dts)
+	, m_samplingTime(sampleTime)
+	, m_fpclk(fpclk)
 {
-public:
-	static void Enable(volatile gpio_t* gpio);
+	//Turn on the sensor
+	RCCHelper::Enable(dts);
 
-	#ifdef HAVE_DTS
-	static void Enable(volatile dts_t* dts);
-	#endif
+	//Enable the sensor, software trigger only
+	dts->CFGR1 = (clkdiv << 24) | (sampleTime << 16);
+	dts->CFGR1 |= 0x1;
+}
 
-	#ifdef HAVE_I2C
-	static void Enable(volatile i2c_t* i2c);
-	#endif
+/**
+	@brief Gets the temperature reading in 8.8 fixed point format
+ */
+uint16_t DigitalTempSensor::GetTemperature()
+{
+	//Wait for sensor to be ready
+	while( (m_dts->SR & 0x8000) == 0)
+	{}
 
-	#ifdef HAVE_SPI
-	static void Enable(volatile spi_t* spi);
-	#endif
+	//Request a measurement once sensor is ready
+	m_dts->CFGR1 |= 0x10;
 
-	#ifdef HAVE_TIM
-	static void Enable(volatile tim_t* tim);
-	#endif
+	//Block until measurement starts
+	while( (m_dts->SR & 0x8000) != 0)
+	{}
 
-	#ifdef HAVE_EMAC
-	static void Enable(volatile emac_t* mac);
-	#endif
+	//Clear start flag
+	m_dts->CFGR1 &= ~0x10;
 
-	#ifdef HAVE_RNG
-	static void Enable(volatile rng_t* rng);
-	#endif
+	//Block until measurement completes
+	while( (m_dts->SR & 0x8000) == 0)
+	{}
 
-	#ifdef HAVE_HASH
-	static void Enable(volatile hash_t* hash);
-	#endif
+	//Frequency of the sensor measured at the calibration temperature T0, in 100 Hz steps
+	uint8_t t0ref = (m_dts->T0VALR1 >> 16) & 3;
+	uint8_t t0 = (t0ref == 1) ? 130 : 30;
+	uint32_t t0freq = (m_dts->T0VALR1 & 0xffff) * 100;
 
-	#ifdef HAVE_CRYP
-	static void Enable(volatile cryp_t* cryp);
-	#endif
+	//Ramp rate in Hz/degC
+	uint16_t ramp = m_dts->RAMPVALR & 0xffff;
 
-	#ifdef HAVE_UART
-	static void Enable(volatile usart_t* uart);
-	#endif
+	//Convert measured frequency from timer ticks to Hz
+	uint16_t mfreq = m_dts->DR & 0xffff;
+	float measuredHz = (m_fpclk * m_samplingTime) / mfreq;
 
-	#ifdef HAVE_OCTOSPI
-	static void Enable(volatile octospim_t* octospim);
-	static void Enable(volatile octospi_t* octospi);
-	#endif
+	//Rescale to get final temperature
+	float dfreq = measuredHz - t0freq;
+	float caltemp = t0 + (dfreq / ramp);
 
-	#ifdef STM32F0
-	static void InitializePLLFromInternalOscillator(
-		uint8_t prediv,
-		uint8_t mult,
-		uint16_t ahbdiv,
-		uint8_t apbdiv
-		);
-	#endif
-
-	#ifdef STM32L0
-	static void InitializePLLFromHSI16(uint8_t mult, uint8_t hclkdiv, uint16_t ahbdiv, uint8_t apb2div, uint8_t apb1div);
-	#endif
-
-	#ifdef STM32F7
-	static void InitializePLLFromInternalOscillator(
-		uint8_t prediv,
-		uint16_t mult,
-		uint8_t pdiv,
-		uint8_t qdiv,
-		uint8_t rdiv,
-		uint16_t ahbdiv,
-		uint16_t apb1div,
-		uint16_t apb2div
-		);
-	#endif
-
-	#ifdef STM32H7
-	enum ClockSource
-	{
-		CLOCK_SOURCE_HSE,
-		CLOCK_SOURCE_HSI
-	};
-
-	static void EnableHighSpeedExternalClock();
-	static void EnableHighSpeedInternalClock(int mhz);
-	static void InitializePLL(
-		uint8_t npll,
-		float in_mhz,
-		uint8_t prediv,
-		uint16_t mult,
-		uint8_t divP,
-		uint8_t divQ,
-		uint8_t divR,
-		ClockSource source
-		);
-	static void SelectSystemClockFromPLL1();
-	static void InitializeSystemClocks(
-		uint16_t sysckdiv,
-		uint16_t ahbdiv,
-		uint8_t apb1div,
-		uint8_t apb2div,
-		uint8_t apb3div,
-		uint8_t apb4div
-		);
-	static uint8_t GetDivider512Code(uint16_t div);
-	static uint8_t GetDivider16Code(uint8_t div);
-
-	static void EnableSyscfg();
-	static void EnableSram2();
-	static void EnableSram1();
-	static void EnableBackupSram();
-	#endif
-};
+	return caltemp * 256;
+}
 
 #endif
