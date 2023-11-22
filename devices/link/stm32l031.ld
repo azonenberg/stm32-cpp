@@ -129,6 +129,8 @@ SECTIONS
 		*(.usart4)
 		. = ALIGN(1024);
 		*(.usart5)
+		. = ALIGN(1024);
+		*(.i2c1)
 	} > APB1
 
 	.sfr_apb2 :

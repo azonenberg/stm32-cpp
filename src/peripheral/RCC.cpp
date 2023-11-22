@@ -297,6 +297,11 @@ void RCCHelper::Enable(volatile i2c_t* i2c)
 		if(i2c == &I2C1)
 			RCC.APB1ENR |= RCC_APB1_I2C1;
 
+	#elif defined(STM32L031)
+
+		if(i2c == &I2C1)
+			RCC.APB1ENR |= RCC_APB1_I2C1;
+
 	#elif defined(STM32H735)
 
 		if(i2c == &I2C1)

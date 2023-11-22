@@ -68,13 +68,15 @@ enum rcc_apb2
 
 enum rcc_apb1
 {
-	RCC_APB1_USART5	= 0x00200000,
-	RCC_APB1_USART4	= 0x00100000,
-	RCC_APB1_USART2	= 0x00020000,
-	RCC_APB1_TIM7	= 0x00000020,
-	RCC_APB1_TIM6	= 0x00000010,
-	RCC_APB1_TIM3	= 0x00000002,
-	RCC_APB1_TIM2	= 0x00000001
+	RCC_APB1_I2C1		= 0x00200000,
+	RCC_APB1_USART5		= 0x00100000,
+	RCC_APB1_USART4		= 0x00080000,
+	RCC_APB1_LPUART1	= 0x00040000,
+	RCC_APB1_USART2		= 0x00020000,
+	RCC_APB1_TIM7		= 0x00000020,
+	RCC_APB1_TIM6		= 0x00000010,
+	RCC_APB1_TIM3		= 0x00000002,
+	RCC_APB1_TIM2		= 0x00000001
 };
 
 typedef struct
@@ -232,7 +234,6 @@ extern volatile tim_t TIMER7;
 extern volatile tim_t TIMER21;
 extern volatile tim_t TIMER22;
 
-/*
 enum i2c_cr2_bits
 {
 	I2C_AUTO_END	= 0x02000000,
@@ -245,6 +246,7 @@ enum i2c_isr_bits
 {
 	I2C_BUSY				= 0x8000,
 	I2C_TRANSFER_COMPLETE	= 0x0040,
+	I2C_NACK 				= 0x0010,
 	I2C_RX_READY			= 0x0004,
 	I2C_TX_EMPTY			= 0x0001
 };
@@ -255,8 +257,8 @@ typedef struct
 	uint32_t	CR2;
 	uint32_t	OAR1;
 	uint32_t	OAR2;
-	uint32_t	TIMERINGR;
-	uint32_t	TIMEREOUTR;
+	uint32_t	TIMINGR;
+	uint32_t	TIMEOUTR;
 	uint32_t	ISR;
 	uint32_t	ICR;
 	uint32_t	PECR;
@@ -265,7 +267,7 @@ typedef struct
 } i2c_t;
 
 extern volatile i2c_t I2C1;
-*/
+
 typedef struct
 {
 	uint32_t ACR;
@@ -327,7 +329,7 @@ extern volatile uint32_t U_ID[3];
 extern volatile uint16_t F_ID;
 
 //Defines for what peripherals are present / implemented
-//#define HAVE_I2C
+#define HAVE_I2C
 #define HAVE_TIM
 //#define HAVE_SPI
 #define HAVE_UART
