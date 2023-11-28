@@ -27,43 +27,26 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#include <stm32l031.h>
+#ifndef adc_h
+#define adc_h
 
-volatile gpio_t GPIOA __attribute__((section(".gpioa")));
-volatile gpio_t GPIOB __attribute__((section(".gpiob")));
-volatile gpio_t GPIOC __attribute__((section(".gpioc")));
-volatile gpio_t GPIOD __attribute__((section(".gpiod")));
-volatile gpio_t GPIOE __attribute__((section(".gpioe")));
-volatile gpio_t GPIOH __attribute__((section(".gpioh")));
+#ifdef HAVE_ADC
 
-volatile rcc_t RCC __attribute__((section(".rcc")));
+class ADC
+{
+public:
 
-volatile flash_t FLASH __attribute__((section(".flash")));
+	ADC(volatile adc_t* lane, int16_t prescale, int16_t tsample);
 
-volatile i2c_t I2C1 __attribute__((section(".i2c1")));
+	uint16_t ReadChannel(uint8_t channel);
 
-//volatile spi_t SPI1 __attribute__((section(".spi1")));
+	uint16_t GetTemperature();
+	uint16_t GetSupplyVoltage();
 
-volatile adc_t ADC1 __attribute__((section(".adc1")));
+protected:
+	volatile adc_t*	m_lane;
+};
 
-volatile syscfg_t SYSCFG __attribute__((section(".syscfg")));
+#endif
 
-volatile usart_t USART2 __attribute__((section(".usart2")));
-volatile usart_t USART4 __attribute__((section(".usart4")));
-volatile usart_t USART5 __attribute__((section(".usart5")));
-
-volatile tim_t TIMER2 __attribute__((section(".tim2")));
-volatile tim_t TIMER3 __attribute__((section(".tim3")));
-volatile tim_t TIMER6 __attribute__((section(".tim6")));
-volatile tim_t TIMER7 __attribute__((section(".tim7")));
-volatile tim_t TIMER21 __attribute__((section(".tim21")));
-volatile tim_t TIMER22 __attribute__((section(".tim22")));
-
-volatile dbgmcu_t DBGMCU __attribute__((section(".dbgmcu")));
-
-volatile uint32_t U_ID[3] __attribute__((section(".uid")));
-volatile uint16_t F_ID __attribute__((section(".fid")));
-
-volatile uint16_t VREFINT_CAL __attribute__((section(".vrefint")));
-volatile uint16_t TSENSE_CAL1 __attribute__((section(".tcal1")));
-volatile uint16_t TSENSE_CAL2 __attribute__((section(".tcal2")));
+#endif

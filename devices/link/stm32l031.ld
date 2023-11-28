@@ -152,7 +152,7 @@ SECTIONS
 		. = ALIGN(1024);
 		. += 1024;			/* Reserved */
 		. = ALIGN(1024);
-		. += 1024;			/* ADC1 not implemented */
+		*(.adc1)
 		. = ALIGN(1024);
 		. += 2048;			/* Reserved */
 		. = ALIGN(1024);
@@ -171,7 +171,10 @@ SECTIONS
 	{
 		. += 0x50;
 		*(.uid)
-		. += 0x20;
+		. += 0x1c;
+		*(.vrefint)
+		*(.tcal1)
 		*(.fid)
+		*(.tcal2)
 	} > SIG
 }

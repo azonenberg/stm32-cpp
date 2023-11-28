@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP v0.1                                                                                                       *
 *                                                                                                                      *
-* Copyright (c) 2020-2023 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2022 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -27,43 +27,155 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#include <stm32l031.h>
+#include <stm32.h>
+#include <ctype.h>
+#include <string.h>
+#include <peripheral/RCC.h>
+#include <peripheral/ADC.h>
 
-volatile gpio_t GPIOA __attribute__((section(".gpioa")));
-volatile gpio_t GPIOB __attribute__((section(".gpiob")));
-volatile gpio_t GPIOC __attribute__((section(".gpioc")));
-volatile gpio_t GPIOD __attribute__((section(".gpiod")));
-volatile gpio_t GPIOE __attribute__((section(".gpioe")));
-volatile gpio_t GPIOH __attribute__((section(".gpioh")));
+#ifdef HAVE_ADC
 
-volatile rcc_t RCC __attribute__((section(".rcc")));
+/**
+	@brief Initialize an ADC lane clocked by the APB clock
 
-volatile flash_t FLASH __attribute__((section(".flash")));
+	@param lane				The peripheral to use
+	@param prescale			APB clock divider
+	@param tsample			ADC sampling time to use (measured in half cycles of ADC clock)
+							For STM32L031 at full bit depth:
+								Total conversion time is sample delay plus fixed 12.5 cycle conversion
+ */
+ADC::ADC(volatile adc_t* lane, int16_t prescale, int16_t tsample)
+	: m_lane(lane)
+{
+	RCCHelper::Enable(lane);
 
-volatile i2c_t I2C1 __attribute__((section(".i2c1")));
+	#ifdef STM32L031
 
-//volatile spi_t SPI1 __attribute__((section(".spi1")));
+		//Run zero calibration with ADC disabled
+		//Set ADCAL, wait for it to be cleared
+		m_lane->CR |= ADC_CR_ADCAL;
+		while(m_lane->CR & ADC_CR_ADCAL)
+		{}
 
-volatile adc_t ADC1 __attribute__((section(".adc1")));
+		//ADC voltage regulator is now enabled, we don't have to do anything special there
 
-volatile syscfg_t SYSCFG __attribute__((section(".syscfg")));
+		//ADC is off, need to start it
+		m_lane->ISR &= ~ADC_ISR_ADRDY;
+		m_lane->CR |= ADC_CR_ADEN;
 
-volatile usart_t USART2 __attribute__((section(".usart2")));
-volatile usart_t USART4 __attribute__((section(".usart4")));
-volatile usart_t USART5 __attribute__((section(".usart5")));
+		//Turn on temperature sensor and voltage reference
+		m_lane->CCR |= ADC_CCR_TSEN | ADC_CCR_VREFEN;
 
-volatile tim_t TIMER2 __attribute__((section(".tim2")));
-volatile tim_t TIMER3 __attribute__((section(".tim3")));
-volatile tim_t TIMER6 __attribute__((section(".tim6")));
-volatile tim_t TIMER7 __attribute__((section(".tim7")));
-volatile tim_t TIMER21 __attribute__((section(".tim21")));
-volatile tim_t TIMER22 __attribute__((section(".tim22")));
+		//Wait for ADC to start
+		while(0 == (m_lane->ISR & ADC_ISR_ADRDY))
+		{}
 
-volatile dbgmcu_t DBGMCU __attribute__((section(".dbgmcu")));
+		//Configure ADC clock at PCLK/prescale
+		int ckmode = 0;
+		switch(prescale)
+		{
+			case 1:
+				ckmode = 3;
+				break;
 
-volatile uint32_t U_ID[3] __attribute__((section(".uid")));
-volatile uint16_t F_ID __attribute__((section(".fid")));
+			case 2:
+				ckmode = 1;
+				break;
 
-volatile uint16_t VREFINT_CAL __attribute__((section(".vrefint")));
-volatile uint16_t TSENSE_CAL1 __attribute__((section(".tcal1")));
-volatile uint16_t TSENSE_CAL2 __attribute__((section(".tcal2")));
+			case 4:
+				ckmode = 2;
+				break;
+
+			//illegal input
+			default:
+				while(1)
+				{}
+		}
+		m_lane->CFGR2 = (ckmode << 30);
+
+		switch(tsample)
+		{
+			case 3:
+				m_lane->SMPR = 0;
+				break;
+
+			case 7:
+				m_lane->SMPR = 1;
+				break;
+
+			case 15:
+				m_lane->SMPR = 2;
+				break;
+
+			case 25:
+				m_lane->SMPR = 3;
+				break;
+
+			case 39:
+				m_lane->SMPR = 4;
+				break;
+
+			case 79:
+				m_lane->SMPR = 5;
+				break;
+
+			case 159:
+				m_lane->SMPR = 6;
+				break;
+
+			case 321:
+				m_lane->SMPR = 7;
+				break;
+		}
+
+		//TODO: support low freq mode and running directly off the HSI16 clock
+		//TODO: support modes other than single shot (CONT=0)
+		//TODO: support <12 bit conversion resolution for faster acquisition
+		//TODO: support oversampling
+
+	#else
+		#error unimplemented for this device family
+	#endif
+}
+
+/**
+	@brief Reads an ADC channel
+ */
+uint16_t ADC::ReadChannel(uint8_t channel)
+{
+	//Select the channel
+	m_lane->CHSELR = (1 << channel);
+
+	//Do the conversion
+	m_lane->CR |= ADC_CR_ADSTART;
+	while(m_lane->CR & ADC_CR_ADSTART)
+	{}
+
+	//Done
+	return m_lane->DR;
+}
+
+/**
+	@brief Gets the die temperature (for now only tested on STM32L031) in 8.8 fixed point format
+ */
+uint16_t ADC::GetTemperature()
+{
+	const uint32_t tref1 = 30;
+	const uint32_t tref2 = 130;
+	const uint32_t dtemp = tref2 - tref1;
+	uint32_t dcal = TSENSE_CAL2 - TSENSE_CAL1;
+
+	uint32_t tempnum = (ReadChannel(18) - TSENSE_CAL1) * 256 * dtemp;
+
+	return (tempnum / dcal) + 256*tref1;
+}
+
+/**
+	@brief Gets the supply voltage, in mV
+ */
+uint16_t ADC::GetSupplyVoltage()
+{
+	return 3000 * VREFINT_CAL / ReadChannel(17);
+}
+
+#endif

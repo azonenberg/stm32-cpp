@@ -48,6 +48,10 @@ public:
 	static void Enable(volatile dts_t* dts);
 	#endif
 
+	#ifdef HAVE_ADC
+	static void Enable(volatile adc_t* adc);
+	#endif
+
 	#ifdef HAVE_I2C
 	static void Enable(volatile i2c_t* i2c);
 	#endif
