@@ -107,7 +107,7 @@ void DoPrintf(CharacterDevice* target, const char* format, __builtin_va_list arg
 			char type;				//format code
 			int length = 0;			//min length of field
 			char padchar = ' ';		//padding character
-			int prepad = 1;
+			bool prepad = true;
 
 			//Flush the buffer
 			if(bufpos > 0)
@@ -121,7 +121,7 @@ void DoPrintf(CharacterDevice* target, const char* format, __builtin_va_list arg
 			type = format[++i];
 			if(type == '-')
 			{
-				prepad = 0;
+				prepad = false;
 				type = format[++i];
 			}
 			while(isdigit(type))
@@ -133,6 +133,29 @@ void DoPrintf(CharacterDevice* target, const char* format, __builtin_va_list arg
 				type = format[++i];
 			}
 
+			//Look for a modifier
+			int modwidth = 0;
+			bool modsign = true;
+			bool done = false;
+			while(!done)
+			{
+				switch(type)
+				{
+					case 'h':
+						modwidth = 2;
+						type = format[++i];
+						break;
+
+					case 'u':
+						modsign = false;
+						type = format[++i];
+						break;
+
+					default:
+						done = true;
+				}
+			}
+
 			switch(type)
 			{
 			case '%':
@@ -142,6 +165,33 @@ void DoPrintf(CharacterDevice* target, const char* format, __builtin_va_list arg
 			case 'd':
 				itoa(__builtin_va_arg(args, int), buf);
 				target->WritePadded(buf, length, padchar, prepad);
+				break;
+
+			//Nonstandard extension: Fixed point integer (_Accum)
+			case 'k':
+
+				//16-bit fixed point types
+				if(modwidth == 2)
+				{
+					//unsigned short _Accum / ufix8_8_t / %uhk
+					if(!modsign)
+					{
+						//Crack fixed point value to integer and fractional parts
+						//(note, while it's logically 8.8 so 16 bits, it will be promoted to 32 by vararg convention)
+						auto fixval = __builtin_va_arg(args, int);
+
+						//Print real part, padded as requested
+						itoa(fixval >> 8, buf);
+						target->WritePadded(buf, length, padchar, prepad);
+						target->PrintBinary('.');
+
+						//Print fractional part, with fixed 3-digit precision
+						int frac = fixval & 0xff;
+						itoa(frac * 1000 / 2560, buf);
+						target->WritePadded(buf, 3, '0', true);
+					}
+				}
+
 				break;
 
 			case 'c':
