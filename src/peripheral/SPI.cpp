@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP v0.1                                                                                                       *
 *                                                                                                                      *
-* Copyright (c) 2020-2022 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2024 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -121,7 +121,7 @@ uint8_t SPI::BlockingRead()
 	//In half-duplex mode, select input mode
 	if(!m_fullDuplex)
 	{
-		m_lane->CR1 &= !SPI_BIDI_OE;
+		m_lane->CR1 &= ~SPI_BIDI_OE;
 		m_lane->CR1 |= SPI_RX_ONLY;
 	}
 
@@ -151,9 +151,14 @@ void SPI::WaitForWrites()
  */
 void SPI::DiscardRxData()
 {
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+
 	volatile int unused;
 	while(m_lane->SR & SPI_RX_NOT_EMPTY)
 		unused = m_lane->DR;
+
+	#pragma GCC diagnostic pop
 }
 
 /**

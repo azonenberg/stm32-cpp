@@ -7,7 +7,9 @@ MEMORY
 	AHB2(RW):	ORIGIN = 0x48000000, LENGTH = 384K
 	AHB1(RW):	ORIGIN = 0x40020000, LENGTH = 384K
 	APB2(RW):	ORIGIN = 0x40010000, LENGTH = 32K
-	APB1(RW):	ORIGIN = 0x40000000, LENGTH = 32K
+	APB1(RW):	ORIGIN = 0x40000000, LENGTH = 32K,
+
+	SIG(R):		ORIGIN = 0x1ffff700, LENGTH = 256
 }
 
 SECTIONS
@@ -124,7 +126,16 @@ SECTIONS
 		*(.tim16)
 		. = ALIGN(1024);
 		*(.tim17)
+		. = ALIGN(1024);
 		. += 3072;		/* Reserved */
-		. += 1024;		/* DBGMCU not implemented */
+		*(.dbgmcu)
 	} > APB2
+
+	.sfr_sig :
+	{
+		. += 0xac;
+		*(.uid)
+		. += 0x14;
+		*(.fid)
+	} > SIG
 }

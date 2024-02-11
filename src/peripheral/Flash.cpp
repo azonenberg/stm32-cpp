@@ -296,6 +296,9 @@ bool Flash::BlockErase(uint8_t* address)
 
 	#else
 
+		(void)addr;
+		(void)numSector;
+
 		//not implemented for this target device
 		while(1)
 		{}

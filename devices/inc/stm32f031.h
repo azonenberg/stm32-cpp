@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP v0.1                                                                                                       *
 *                                                                                                                      *
-* Copyright (c) 2020-2022 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2024 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -235,6 +235,7 @@ enum i2c_isr_bits
 {
 	I2C_BUSY				= 0x8000,
 	I2C_TRANSFER_COMPLETE	= 0x0040,
+	I2C_NACK 				= 0x0010,
 	I2C_RX_READY			= 0x0004,
 	I2C_TX_EMPTY			= 0x0001
 };
@@ -299,6 +300,16 @@ enum flash_sr
 
 	FLASH_SR_ERR_MASK		= 0xf2
 };
+
+typedef struct
+{
+	uint32_t	IDCODE;
+} dbgmcu_t;
+
+extern volatile dbgmcu_t DBGMCU;
+
+extern volatile uint32_t U_ID[3];
+extern volatile uint16_t F_ID;
 
 //Defines for what peripherals are present / implemented
 #define HAVE_I2C

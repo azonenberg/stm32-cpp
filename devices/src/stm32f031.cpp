@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP v0.1                                                                                                       *
 *                                                                                                                      *
-* Copyright (c) 2020 Andrew D. Zonenberg                                                                               *
+* Copyright (c) 2020-2024 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -44,6 +44,11 @@ volatile spi_t SPI1 __attribute__((section(".spi1")));
 volatile syscfg_t SYSCFG __attribute__((section(".syscfg")));
 
 volatile usart_t USART1 __attribute__((section(".usart1")));
+
+volatile dbgmcu_t DBGMCU __attribute__((section(".dbgmcu")));
+
+volatile uint32_t U_ID[3] __attribute__((section(".uid")));
+volatile uint16_t F_ID __attribute__((section(".fid")));
 
 volatile tim_t TIM1 __attribute__((section(".tim1")));
 volatile tim_t TIM2 __attribute__((section(".tim2")));
