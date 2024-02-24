@@ -36,12 +36,14 @@ class ADC
 {
 public:
 
-	ADC(volatile adc_t* lane, int16_t prescale, int16_t tsample);
+	ADC(volatile adc_t* lane, int16_t prescale);
 
 	uint16_t ReadChannel(uint8_t channel);
 
 	uint16_t GetTemperature();
 	uint16_t GetSupplyVoltage();
+
+	void SetSampleTime(int16_t tsample);
 
 protected:
 	volatile adc_t*	m_lane;

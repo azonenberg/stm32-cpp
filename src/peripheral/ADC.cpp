@@ -40,11 +40,8 @@
 
 	@param lane				The peripheral to use
 	@param prescale			APB clock divider
-	@param tsample			ADC sampling time to use (measured in half cycles of ADC clock)
-							For STM32L031 at full bit depth:
-								Total conversion time is sample delay plus fixed 12.5 cycle conversion
  */
-ADC::ADC(volatile adc_t* lane, int16_t prescale, int16_t tsample)
+ADC::ADC(volatile adc_t* lane, int16_t prescale)
 	: m_lane(lane)
 {
 	RCCHelper::Enable(lane);
@@ -93,41 +90,6 @@ ADC::ADC(volatile adc_t* lane, int16_t prescale, int16_t tsample)
 		}
 		m_lane->CFGR2 = (ckmode << 30);
 
-		switch(tsample)
-		{
-			case 3:
-				m_lane->SMPR = 0;
-				break;
-
-			case 7:
-				m_lane->SMPR = 1;
-				break;
-
-			case 15:
-				m_lane->SMPR = 2;
-				break;
-
-			case 25:
-				m_lane->SMPR = 3;
-				break;
-
-			case 39:
-				m_lane->SMPR = 4;
-				break;
-
-			case 79:
-				m_lane->SMPR = 5;
-				break;
-
-			case 159:
-				m_lane->SMPR = 6;
-				break;
-
-			case 321:
-				m_lane->SMPR = 7;
-				break;
-		}
-
 		//TODO: support low freq mode and running directly off the HSI16 clock
 		//TODO: support modes other than single shot (CONT=0)
 		//TODO: support <12 bit conversion resolution for faster acquisition
@@ -136,6 +98,51 @@ ADC::ADC(volatile adc_t* lane, int16_t prescale, int16_t tsample)
 	#else
 		#error unimplemented for this device family
 	#endif
+}
+
+/**
+	@brief Sets the sampling time, in half-cycles of the ADC clock
+
+	@param tsample			ADC sampling time to use (measured in half cycles of ADC clock)
+							For STM32L031 at full bit depth:
+							Total acquisition time is sample delay plus fixed 12.5 cycle conversion
+ */
+void ADC::SetSampleTime(int16_t tsample)
+{
+	switch(tsample)
+	{
+		case 3:
+			m_lane->SMPR = 0;
+			break;
+
+		case 7:
+			m_lane->SMPR = 1;
+			break;
+
+		case 15:
+			m_lane->SMPR = 2;
+			break;
+
+		case 25:
+			m_lane->SMPR = 3;
+			break;
+
+		case 39:
+			m_lane->SMPR = 4;
+			break;
+
+		case 79:
+			m_lane->SMPR = 5;
+			break;
+
+		case 159:
+			m_lane->SMPR = 6;
+			break;
+
+		case 321:
+			m_lane->SMPR = 7;
+			break;
+	}
 }
 
 /**
@@ -165,7 +172,13 @@ uint16_t ADC::GetTemperature()
 	const uint32_t dtemp = tref2 - tref1;
 	uint32_t dcal = TSENSE_CAL2 - TSENSE_CAL1;
 
-	uint32_t tempnum = (ReadChannel(18) - TSENSE_CAL1) * 256 * dtemp;
+	//For reasons unknown, the first measurement always delivers garbage
+	//Until we find a root cause, just throw it away
+	ReadChannel(18);
+
+	//Now do the actual measurement
+	auto adcval = ReadChannel(18);
+	uint32_t tempnum = (adcval - TSENSE_CAL1) * 256 * dtemp;
 
 	return (tempnum / dcal) + 256*tref1;
 }
