@@ -93,6 +93,14 @@ SECTIONS
 		. = ALIGN(1024);
 		*(.gpioc)
 		. = ALIGN(1024);
+		*(.gpiod)
+		. = ALIGN(1024);
+		*(.gpioe)
+		. = ALIGN(1024);
+		. += 1024;	/* no GPIOF present */
+		. += 1024;	/* no GPIOG present */
+		. = ALIGN(1024);
+		*(.gpioh)
 	} > IOPORT
 
 	.sfr_apb1 :

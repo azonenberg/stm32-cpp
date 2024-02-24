@@ -1,8 +1,8 @@
 /***********************************************************************************************************************
 *                                                                                                                      *
-* STM32-CPP v0.1                                                                                                       *
+* STM32-CPP                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2020-2023 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2024 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -50,15 +50,12 @@ void RCCHelper::Enable(volatile gpio_t* gpio)
 			RCC.IOPENR |= RCC_IO_GPIOB;
 		else if(gpio == &GPIOC)
 			RCC.IOPENR |= RCC_IO_GPIOC;
-
-		/*
 		else if(gpio == &GPIOD)
 			RCC.IOPENR |= RCC_IO_GPIOD;
 		else if(gpio == &GPIOE)
 			RCC.IOPENR |= RCC_IO_GPIOE;
 		else if(gpio == &GPIOH)
 			RCC.IOPENR |= RCC_IO_GPIOH;
-		*/
 
 	#elif defined(STM32H7)
 
