@@ -130,8 +130,10 @@ SECTIONS
 		. = ALIGN(1024);
 		. += 1024;			/* LPTIM1 not implemented */
 		. += 4096;			/* 4000_2800 - 4000_37ff reserved */
-		. += 1024;			/* SPI2 not implemented */
-		. += 1024;			/* SPI3 not implemented */
+		. = ALIGN(1024);
+		*(.spi2)
+		. = ALIGN(1024);
+		*(.spi3)
 		. += 1024;			/* SPDIFRX1 not implemented */
 		. = ALIGN(1024);
 		*(.usart2)
@@ -151,6 +153,29 @@ SECTIONS
 		. = ALIGN(1024);
 		*(.i2c5)
 	} > APB1
+
+	.sfr_apb2 :
+	{
+		. += 1024;			/* TIM1 not implemented */
+		. += 1024;			/* TIM8 not implemented */
+		. += 2048;			/* 40010800 - 40010fff reserved */
+		. += 1024;			/* USART1 not implemented */
+		. += 1024;			/* USART6 not implemented */
+		. += 1024;			/* UART9 not implemented */
+		. += 1024;			/* USART10 not implemented */
+		. += 4096;			/* 40012000 - 40012fff reserved */
+		. = ALIGN(1024);
+		*(.spi1)
+		. = ALIGN(1024);
+		*(.spi4)
+		. += 2048;			/* 40013800 - 40013fff reserved */
+		. += 1024;			/* TIM15 not implemented */
+		. += 1024;			/* TIM16 not implemented */
+		. += 1024;			/* TIM17 not implemented */
+		. += 1024;			/* 40014c00 - 40014fff reserved */
+		. = ALIGN(1024);
+		*(.spi5)
+	} > APB2
 
 	.sfr_ahb2 :
 	{
@@ -238,7 +263,8 @@ SECTIONS
 		. += 1024;	/* reserved 5800_0800 */
 		. += 1024;	/* LPUART1 not implemented */
 		. += 1024;	/* reserved 5800_1000 */
-		. += 1024;	/* SPI/I2S6 not implemented */
+		. = ALIGN(1024);
+		*(.spi6)
 		. += 1024;	/* reserved 5800_1800 */
 		. = ALIGN(1024);
 		*(.i2c4);
@@ -272,6 +298,7 @@ SECTIONS
 		. += 4096;	/* reserved 5800_5800 */
 		. = ALIGN(1024);
 		*(.dts);
+		. = ALIGN(1024);
 
 		/*
 			TODO: LPTIM2, LPTIM3, LPTIM4, LPTIM5, COMP1/2, VREF, RTC/BKP, IWDG, reserved, SAI4, DTS

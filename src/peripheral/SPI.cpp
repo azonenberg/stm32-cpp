@@ -1,6 +1,6 @@
 /***********************************************************************************************************************
 *                                                                                                                      *
-* STM32-CPP v0.1                                                                                                       *
+* STM32-CPP                                                                                                            *
 *                                                                                                                      *
 * Copyright (c) 2020-2024 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
@@ -49,64 +49,137 @@ SPI::SPI(volatile spi_t* lane, bool fullDuplex, uint16_t baudDiv)
 {
 	RCCHelper::Enable(lane);
 
-	//8-bit word size, set RXNE as soon as we have a byte in the FIFO
-	//TODO: make word size configurable?
-	lane->CR2 = (7 << 8) | SPI_FRXTH;
+	#ifdef STM32H735
 
-	//Turn on the peripheral in master mode.
-	//To prevent problems, we need to have the internal CS# pulled high.
-	//TODO: support slave mode
-	lane->CR1 = SPI_MASTER | SPI_SOFT_CS | SPI_INTERNAL_CS;
-	lane->CR1 |= SPI_ENABLE;
+		//TODO: what do we write to TSER, TSIZE in CR2?
 
-	//Calculate correct init value for baud rate divisor
-	switch(baudDiv)
-	{
-		case 2:
-			break;
-		case 4:
-			lane->CR1 |= 0x8;
-			break;
-		case 8:
-			lane->CR1 |= 0x10;
-			break;
-		case 16:
-			lane->CR1 |= 0x18;
-			break;
-		case 32:
-			lane->CR1 |= 0x20;
-			break;
-		case 64:
-			lane->CR1 |= 0x28;
-			break;
-		case 128:
-			lane->CR1 |= 0x30;
-			break;
+		//8 bit word size
+		lane->CFG1 = 7;
 
-		//use max value for invalid divisor
-		case 256:
-		default:
-			lane->CR1 |= 0x38;
-			break;
-	}
+		switch(baudDiv)
+		{
+			case 2:
+				break;
 
-	//Enable bidirectional mode if requested
-	if(!fullDuplex)
-		lane->CR1 |= SPI_BIDI_MODE;
+			case 4:
+				lane->CFG1 |= (1 << 28);
+				break;
+
+			case 8:
+				lane->CFG1 |= (2 << 28);
+				break;
+
+			case 16:
+				lane->CFG1 |= (3 << 28);
+				break;
+
+			case 32:
+				lane->CFG1 |= (4 << 28);
+				break;
+
+			case 64:
+				lane->CFG1 |= (5 << 28);
+				break;
+
+			case 128:
+				lane->CFG1 |= (6 << 28);
+				break;
+
+			//use max divisor if invalid is selected
+			case 256:
+			default:
+				lane->CFG1 |= (7 << 28);
+				break;
+		}
+
+		//Set master mode with CS# in output mode
+		//(we don't have to configure the alt mode on CS# but this keeps it from detecting false mode faults)
+		lane->CFG2 = SPI_MASTER | SPI_SSOE;
+
+		//must be done after making all other config changes
+		lane->CR1 |= SPI_ENABLE;
+
+	#else //this is for STM32L031 and F777?
+
+		//8-bit word size, set RXNE as soon as we have a byte in the FIFO
+		//TODO: make word size configurable?
+		lane->CR2 = (7 << 8) | SPI_FRXTH;
+
+		//Turn on the peripheral in master mode.
+		//To prevent problems, we need to have the internal CS# pulled high.
+		//TODO: support slave mode
+		lane->CR1 = SPI_MASTER | SPI_SOFT_CS | SPI_INTERNAL_CS;
+
+		//ok to do before baud changes
+		lane->CR1 |= SPI_ENABLE;
+
+		//Calculate correct init value for baud rate divisor
+		switch(baudDiv)
+		{
+			case 2:
+				break;
+			case 4:
+				lane->CR1 |= 0x8;
+				break;
+			case 8:
+				lane->CR1 |= 0x10;
+				break;
+			case 16:
+				lane->CR1 |= 0x18;
+				break;
+			case 32:
+				lane->CR1 |= 0x20;
+				break;
+			case 64:
+				lane->CR1 |= 0x28;
+				break;
+			case 128:
+				lane->CR1 |= 0x30;
+				break;
+
+			//use max value for invalid divisor
+			case 256:
+			default:
+				lane->CR1 |= 0x38;
+				break;
+		}
+
+		//Enable bidirectional mode if requested
+		if(!fullDuplex)
+			lane->CR1 |= SPI_BIDI_MODE;
+
+	#endif
+
 }
 
 void SPI::BlockingWrite(uint8_t data)
 {
-	//In half-duplex mode, select output mode
-	if(!m_fullDuplex)
-		m_lane->CR1 |= SPI_BIDI_OE;
+	#ifdef STM32H735
 
-	//If FIFO is full, block
-	while( (m_lane->SR & SPI_TX_FIFO_MASK) == SPI_TX_FIFO_MASK)
-	{}
+		//TODO: half duplex support
 
-	//Send it
-	m_lane->DR = data;
+		//If FIFO is full, block
+		while( (m_lane->SR & SPI_TX_FIFO_MASK) == 0)
+		{}
+
+		//Send it
+		m_lane->TXDR = data;
+		m_lane->CR1 |= SPI_START;
+
+	#else
+
+		//In half-duplex mode, select output mode
+		if(!m_fullDuplex)
+			m_lane->CR1 |= SPI_BIDI_OE;
+
+		//If FIFO is full, block
+		while( (m_lane->SR & SPI_TX_FIFO_MASK) == SPI_TX_FIFO_MASK)
+		{}
+
+		//Send it
+		m_lane->DR = data;
+
+	#endif
 
 	//If there's anything in the RX buffer, discard it
 	DiscardRxData();
@@ -118,22 +191,40 @@ uint8_t SPI::BlockingRead()
 	WaitForWrites();
 	DiscardRxData();
 
-	//In half-duplex mode, select input mode
-	if(!m_fullDuplex)
-	{
-		m_lane->CR1 &= ~SPI_BIDI_OE;
-		m_lane->CR1 |= SPI_RX_ONLY;
-	}
+	#ifdef STM32H735
 
-	//Write a dummy byte
-	m_lane->DR = 0x0;
+		//TODO: half duplex support
 
-	//Wait for data to be ready
-	while( (m_lane->SR & SPI_RX_NOT_EMPTY) == 0)
-	{}
+		//Write a dummy byte
+		m_lane->TXDR = 0;
+		m_lane->CR1 |= SPI_START;
 
-	//Done, return it
-	return m_lane->DR;
+		//Wait for lane to be ready
+		while( (m_lane->SR & SPI_RX_NOT_EMPTY) == 0)
+		{}
+
+		//Done, return it
+		return m_lane->RXDR;
+
+	#else
+
+		//In half-duplex mode, select input mode
+		if(!m_fullDuplex)
+		{
+			m_lane->CR1 &= ~SPI_BIDI_OE;
+			m_lane->CR1 |= SPI_RX_ONLY;
+		}
+
+		//Write a dummy byte
+		m_lane->DR = 0x0;
+
+		//Wait for data to be ready
+		while( (m_lane->SR & SPI_RX_NOT_EMPTY) == 0)
+		{}
+
+		//Done, return it
+		return m_lane->DR;
+	#endif
 }
 
 /**
@@ -141,9 +232,19 @@ uint8_t SPI::BlockingRead()
  */
 void SPI::WaitForWrites()
 {
-	//Wait for busy flag to clear
-	while(m_lane->SR & SPI_BUSY)
-	{}
+	#ifdef STM32H735
+
+		//Wait for busy flag to clear
+		while( (m_lane->SR & SPI_TX_EMPTY) == 0)
+		{}
+
+	#else
+
+		//Wait for busy flag to clear
+		while(m_lane->SR & SPI_BUSY)
+		{}
+
+	#endif
 }
 
 /**
@@ -155,8 +256,17 @@ void SPI::DiscardRxData()
 	#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
 
 	volatile int unused;
-	while(m_lane->SR & SPI_RX_NOT_EMPTY)
-		unused = m_lane->DR;
+
+	#ifdef STM32H735
+
+		//Wait for busy flag to clear
+		while(m_lane->SR & SPI_RX_NOT_EMPTY)
+			unused = m_lane->RXDR;
+
+	#else
+		while(m_lane->SR & SPI_RX_NOT_EMPTY)
+			unused = m_lane->DR;
+	#endif
 
 	#pragma GCC diagnostic pop
 }
@@ -166,16 +276,24 @@ void SPI::DiscardRxData()
  */
 void SPI::SetClockInvert(bool invert)
 {
-	//Disable the peripheral
-	m_lane->CR1 &= ~SPI_ENABLE;
+	#ifdef STM32H735
 
-	if(invert)
-		m_lane->CR1 |= SPI_CPOL;
-	else
-		m_lane->CR1 &= ~SPI_CPOL;
+		//TODO: implement this
 
-	//Re-enable it
-	m_lane->CR1 |= SPI_ENABLE;
+	#else
+
+		//Disable the peripheral
+		m_lane->CR1 &= ~SPI_ENABLE;
+
+		if(invert)
+			m_lane->CR1 |= SPI_CPOL;
+		else
+			m_lane->CR1 &= ~SPI_CPOL;
+
+		//Re-enable it
+		m_lane->CR1 |= SPI_ENABLE;
+
+	#endif
 }
 
 #endif

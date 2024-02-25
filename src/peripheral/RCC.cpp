@@ -179,6 +179,21 @@ void RCCHelper::Enable(volatile spi_t* spi)
 		if(spi == &SPI1)
 			RCC.APB2ENR |= RCC_APB2_SPI1;
 
+	#elif defined(STM32H735)
+
+		if(spi == &SPI1)
+			RCC.APB2ENR |= RCC_APB2_SPI1;
+		else if(spi == &SPI2)
+			RCC.APB1LENR |= RCC_APB1L_SPI2;
+		else if(spi == &SPI3)
+			RCC.APB1LENR |= RCC_APB1L_SPI3;
+		else if(spi == &SPI4)
+			RCC.APB2ENR |= RCC_APB2_SPI4;
+		else if(spi == &SPI5)
+			RCC.APB2ENR |= RCC_APB2_SPI5;
+		else if(spi == &SPI6)
+			RCC.APB4ENR |= RCC_APB4_SPI6;
+
 	#elif defined(STM32F777)
 
 		if(spi == &SPI1)
@@ -203,21 +218,23 @@ void RCCHelper::Enable(volatile spi_t* spi)
 #ifdef HAVE_EMAC
 void RCCHelper::Enable(volatile emac_t* /*ignored*/)
 {
-	//TODO: take argument for MII or RMII mode
+	#if defined(STM32F777)
+		//TODO: take argument for MII or RMII mode
 
-	//Select RMII mode
-	//Disable all Ethernet clocks (except 1588 which we don't need, leave it off to save power), reset MAC
-	RCC.AHB1ENR &= ~(RCC_AHB1_EMAC | RCC_AHB1_EMAC_TX | RCC_AHB1_EMAC_RX);
-	RCC.AHB1RSTR |= RCC_AHB1_EMAC;
+		//Select RMII mode
+		//Disable all Ethernet clocks (except 1588 which we don't need, leave it off to save power), reset MAC
+		RCC.AHB1ENR &= ~(RCC_AHB1_EMAC | RCC_AHB1_EMAC_TX | RCC_AHB1_EMAC_RX);
+		RCC.AHB1RSTR |= RCC_AHB1_EMAC;
 
-	//Enable RMII
-	SYSCFG.PMC |= ETH_MODE_RMII;
+		//Enable RMII
+		SYSCFG.PMC |= ETH_MODE_RMII;
 
-	//Enable Ethernet clocks (except 1588 since we don't use that)
-	RCC.AHB1ENR |= RCC_AHB1_EMAC | RCC_AHB1_EMAC_TX | RCC_AHB1_EMAC_RX | RCC_AHB1_PTP;
+		//Enable Ethernet clocks (except 1588 since we don't use that)
+		RCC.AHB1ENR |= RCC_AHB1_EMAC | RCC_AHB1_EMAC_TX | RCC_AHB1_EMAC_RX | RCC_AHB1_PTP;
 
-	//Clear resets
-	RCC.AHB1RSTR &= ~RCC_AHB1_EMAC;
+		//Clear resets
+		RCC.AHB1RSTR &= ~RCC_AHB1_EMAC;
+	#endif
 }
 #endif
 
@@ -336,15 +353,19 @@ void RCCHelper::Enable(volatile i2c_t* i2c)
 
 void RCCHelper::Enable(volatile octospim_t* /*octospim*/)
 {
-	RCC.AHB3ENR |= RCC_AHB3_OCTOSPIM;
+	#if defined(STM32H735)
+		RCC.AHB3ENR |= RCC_AHB3_OCTOSPIM;
+	#endif
 }
 
 void RCCHelper::Enable(volatile octospi_t* octospi)
 {
-	if(octospi == &OCTOSPI1)
-		RCC.AHB3ENR |= RCC_AHB3_OCTOSPI1;
-	else if(octospi == &OCTOSPI2)
-		RCC.AHB3ENR |= RCC_AHB3_OCTOSPI2;
+	#if defined(STM32H735)
+		if(octospi == &OCTOSPI1)
+			RCC.AHB3ENR |= RCC_AHB3_OCTOSPI1;
+		else if(octospi == &OCTOSPI2)
+			RCC.AHB3ENR |= RCC_AHB3_OCTOSPI2;
+	#endif
 }
 
 #endif

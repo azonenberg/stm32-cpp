@@ -1,8 +1,8 @@
 /***********************************************************************************************************************
 *                                                                                                                      *
-* STM32-CPP v0.1                                                                                                       *
+* STM32-CPP                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2020-2022 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2024 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -57,7 +57,6 @@ volatile octospi_t OCTOSPI2 __attribute__((section(".octospi2")));
 
 volatile octospim_t OCTOSPIM __attribute__((section(".octospim")));
 
-/*
 volatile spi_t SPI1 __attribute__((section(".spi1")));
 volatile spi_t SPI2 __attribute__((section(".spi2")));
 volatile spi_t SPI3 __attribute__((section(".spi3")));
@@ -65,8 +64,8 @@ volatile spi_t SPI4 __attribute__((section(".spi4")));
 volatile spi_t SPI5 __attribute__((section(".spi5")));
 volatile spi_t SPI6 __attribute__((section(".spi6")));
 
-volatile usart_t USART1 __attribute__((section(".usart1")));
-*/
+//volatile usart_t USART1 __attribute__((section(".usart1")));
+
 volatile usart_t USART2 __attribute__((section(".usart2")));
 volatile usart_t USART3 __attribute__((section(".usart3")));
 volatile usart_t UART4 __attribute__((section(".uart4")));
