@@ -278,7 +278,17 @@ void SPI::SetClockInvert(bool invert)
 {
 	#ifdef STM32H735
 
-		//TODO: implement this
+		//Disable the peripheral
+		m_lane->CR1 &= ~SPI_ENABLE;
+
+		//Set clock invert flag appropriately
+		if(invert)
+			m_lane->CFG2 |= SPI_CPOL;
+		else
+			m_lane->CFG2 &= ~SPI_CPOL;
+
+		//Re-enable
+		m_lane->CR1 |= SPI_ENABLE;
 
 	#else
 
