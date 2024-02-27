@@ -1,8 +1,8 @@
 /***********************************************************************************************************************
 *                                                                                                                      *
-* STM32-CPP v0.1                                                                                                       *
+* STM32-CPP                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2020-2022 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2024 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -71,7 +71,7 @@ void I2C::Start()
 }
 
 /**
-	@brief Sends a write command
+	@brief Sends a write command in host mode
 
 	@param addr		8-bit device address (LSB ignored)
 	@param data		Data to send
@@ -116,7 +116,31 @@ bool I2C::BlockingWrite(uint8_t addr, const uint8_t* data, uint8_t len)
 }
 
 /**
-	@brief Sends a read command
+	@brief Sends write data in device mode
+
+	@param data		Data to send
+	@param len		Number of bytes to send
+ */
+void I2C::BlockingDeviceWrite(const uint8_t* data, uint8_t len)
+{
+	//Send the data
+	for(uint8_t i=0; i<len; i++)
+	{
+		//Wait for last byte to finish
+		while(!(m_lane->ISR & I2C_TX_EMPTY))
+		{}
+
+		//Send it
+		m_lane->TXDR = data[i];
+	}
+
+	//Wait for send to finish
+	while((m_lane->ISR & I2C_TX_EMPTY) == 0)
+	{}
+}
+
+/**
+	@brief Sends a read command in host mode
  */
 bool I2C::BlockingRead(uint8_t addr, uint8_t* data, uint8_t len)
 {
@@ -143,6 +167,55 @@ bool I2C::BlockingRead(uint8_t addr, uint8_t* data, uint8_t len)
 	}
 
 	return true;
+}
+
+/**
+	@brief Process a read in device mode
+ */
+void I2C::BlockingDeviceRead(uint8_t* data, uint8_t len)
+{
+	//Read the data
+	for(uint8_t i=0; i<len; i++)
+	{
+		//Wait for data to be ready
+		while(!(m_lane->ISR & I2C_RX_READY))
+		{}
+
+		//Read it
+		data[i] = m_lane->RXDR;
+	}
+}
+
+/**
+	@brief Sets the device address of this node
+
+	For now, only 7-bit addresses are supported.
+ */
+void I2C::SetThisNodeAddress(uint8_t addr)
+{
+	//Clear enable flag
+	m_lane->OAR1 &= ~0x8000;
+
+	//Set address
+	m_lane->OAR1 = (addr & 0xfe);
+
+	//Set enable flag
+	m_lane->OAR1 |= 0x8000;
+}
+
+/**
+	@brief Checks if a packet addressed to this node has been received.
+
+	Self clears.
+ */
+bool I2C::PollAddressMatch()
+{
+	if(m_lane->ISR & I2C_ADDR)
+	{
+		m_lane->ICR = I2C_ADDR;
+		return true;
+	}
+	return false;
 }
 
 #endif

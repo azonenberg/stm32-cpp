@@ -1,8 +1,8 @@
 /***********************************************************************************************************************
 *                                                                                                                      *
-* STM32-CPP v0.1                                                                                                       *
+* STM32-CPP                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2020-2023 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2024 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -40,12 +40,17 @@ public:
 	void Start();
 
 	bool BlockingRead(uint8_t addr, uint8_t* data, uint8_t len);
+	void BlockingDeviceRead(uint8_t* data, uint8_t len);
 
 	bool BlockingWrite(uint8_t addr, const uint8_t* data, uint8_t len);
+	void BlockingDeviceWrite(const uint8_t* data, uint8_t len);
 
 	bool BlockingWrite8(uint8_t addr, uint8_t data)
 	{ return BlockingWrite(addr, &data, 1); }
 
+	/**
+		@brief Sends a 16-bit value to a device in host mode
+	 */
 	bool BlockingWrite16(uint8_t addr, uint16_t data)
 	{
 		uint8_t buf[2] =
@@ -56,6 +61,19 @@ public:
 		return BlockingWrite(addr, buf, 2);
 	}
 
+	/**
+		@brief Sends a 16-bit value in response to a request from a host
+	 */
+	void BlockingDeviceWrite16(uint16_t data)
+	{
+		uint8_t buf[2] =
+		{
+			static_cast<uint8_t>(data >> 8),
+			static_cast<uint8_t>(data & 0xff)
+		};
+		BlockingDeviceWrite(buf, 2);
+	}
+
 	bool BlockingRead16(uint8_t addr, uint16_t& result)
 	{
 		uint8_t buf[2];
@@ -64,6 +82,27 @@ public:
 		result = (buf[0] << 8) | buf[1];
 		return true;
 	}
+
+	/**
+		@brief Read an 8-bit value in device mode (typically a register address someone is requesting from us)
+	 */
+	uint8_t BlockingDeviceRead8()
+	{
+		uint8_t tmp;
+		BlockingDeviceRead(&tmp, 1);
+		return tmp;
+	}
+	void SetThisNodeAddress(uint8_t addr);
+
+	/**
+		@brief Checks if the most recent incoming request was a read
+	 */
+	bool IsDeviceRequestRead()
+	{
+		return (m_lane->ISR & I2C_DIR_READ) == I2C_DIR_READ;
+	}
+
+	bool PollAddressMatch();
 
 protected:
 	volatile i2c_t*	m_lane;
