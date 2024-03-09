@@ -58,6 +58,9 @@ public:
 			m_buf[m_wptr] = '\0';
 	}
 
+	size_t length()
+	{ return m_wptr; }
+
 protected:
 	char* m_buf;
 	size_t m_size;
