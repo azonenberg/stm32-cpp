@@ -48,7 +48,7 @@ public:
 	{
 	}
 
-	virtual void PrintBinary(char ch)
+	virtual void PrintBinary(char ch) override
 	{
 		if(m_wptr <= m_size)
 			m_buf[m_wptr ++] = ch;
