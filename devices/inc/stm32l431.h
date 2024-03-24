@@ -122,6 +122,10 @@ enum rcc_apb1_en1
 	RCC_APB1_1_UART4		= 0x00080000,
 	RCC_APB1_1_USART3		= 0x00040000,
 	RCC_APB1_1_USART2		= 0x00020000,
+	RCC_APB1_1_TIM7			= 0x00000020,
+	RCC_APB1_1_TIM6			= 0x00000010,
+	RCC_APB1_1_TIM3			= 0x00000002,
+	RCC_APB1_1_TIM2			= 0x00000001
 };
 
 typedef struct
@@ -431,23 +435,25 @@ extern volatile adc_t ADC1;
 extern volatile uint16_t VREFINT_CAL;
 extern volatile uint16_t TSENSE_CAL1;
 extern volatile uint16_t TSENSE_CAL2;
-
+*/
 typedef struct
 {
 	uint32_t	IDCODE;
 	uint32_t	CR;
-	uint32_t	APB1_FZ;
-	uint32_t	APB2_FZ;
+	uint32_t	APB1FZR1;
+	uint32_t	APB1FZR2;
+	uint32_t	APB2FZR;
 } dbgmcu_t;
 
 extern volatile dbgmcu_t DBGMCU;
 
 extern volatile uint32_t U_ID[3];
-extern volatile uint16_t F_ID;
+extern volatile uint16_t FLASH_SIZE;
+extern volatile uint16_t PKG;
 
 //Defines for what peripherals are present / implemented
-#define HAVE_I2C
-*/
+//#define HAVE_I2C
+
 #define HAVE_TIM
 //#define HAVE_SPI
 #define HAVE_UART

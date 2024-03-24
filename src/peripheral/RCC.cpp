@@ -442,7 +442,14 @@ void RCCHelper::Enable(volatile tim_t* tim)
 
 	#elif defined(STM32L431)
 
-		//TODO
+		if(tim == &TIM2)
+			RCC.APB1ENR1 |= RCC_APB1_1_TIM2;
+		else if(tim == &TIM3)
+			RCC.APB1ENR1 |= RCC_APB1_1_TIM3;
+		else if(tim == &TIM6)
+			RCC.APB1ENR1 |= RCC_APB1_1_TIM6;
+		else if(tim == &TIM7)
+			RCC.APB1ENR1 |= RCC_APB1_1_TIM7;
 
 	#elif defined(STM32H735)
 

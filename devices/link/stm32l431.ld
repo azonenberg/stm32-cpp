@@ -7,8 +7,9 @@ MEMORY
 	IOPORT(RW):	ORIGIN = 0x48000000, LENGTH = 8K
 	AHB1(RW):	ORIGIN = 0x40020000, LENGTH = 32K
 	APB1(RW):	ORIGIN = 0x40000000, LENGTH = 32K
+	MCU2(RW):	ORIGIN = 0xe0042000, LENGTH = 16K
 
-	SIG(R):		ORIGIN = 0x1ff80000, LENGTH = 64K
+	SIG(R):		ORIGIN = 0x1fff7500, LENGTH = 16K
 }
 
 SECTIONS
@@ -132,9 +133,17 @@ SECTIONS
 		*(.gpioh)
 	} > IOPORT
 
+	.sfr_mcu :
+	{
+		*(.dbgmcu)
+	} > MCU2
+
 	.sfr_sig :
 	{
-		. += 0x50;
+		*(.pkg)
+		. += 0x8c;
 		*(.uid)
+		. += 0x44;
+		*(.fid)
 	} > SIG
 }

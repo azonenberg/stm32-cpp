@@ -58,12 +58,13 @@ volatile tim_t TIM2 __attribute__((section(".tim2")));
 volatile tim_t TIM3 __attribute__((section(".tim3")));
 volatile tim_t TIM6 __attribute__((section(".tim6")));
 volatile tim_t TIM7 __attribute__((section(".tim7")));
-/*
+
 volatile dbgmcu_t DBGMCU __attribute__((section(".dbgmcu")));
 
 volatile uint32_t U_ID[3] __attribute__((section(".uid")));
-volatile uint16_t F_ID __attribute__((section(".fid")));
-
+volatile uint16_t FLASH_SIZE __attribute__((section(".fid")));
+volatile uint16_t PKG __attribute__((section(".pkg")));
+/*
 volatile uint16_t VREFINT_CAL __attribute__((section(".vrefint")));
 volatile uint16_t TSENSE_CAL1 __attribute__((section(".tcal1")));
 volatile uint16_t TSENSE_CAL2 __attribute__((section(".tcal2")));
