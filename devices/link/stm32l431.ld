@@ -103,9 +103,12 @@ SECTIONS
 		. = ALIGN(1024);
 		*(.uart4)
 		. += 1024;		/* reserved 4000_5000 */
-		. += 1024;		/* I2C1 not implemented */
-		. += 1024;		/* I2C2 not implemented */
-		. += 1024;		/* I2C3 not implemented */
+		. = ALIGN(1024);
+		*(.i2c1)
+		. = ALIGN(1024);
+		*(.i2c2)
+		. = ALIGN(1024);
+		*(.i2c3)
 		. += 1024;		/* CRS not implemented */
 		. += 1024;		/* CAN1 not implemented */
 		. += 1024;		/* USBFS not implemented */

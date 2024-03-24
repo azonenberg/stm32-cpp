@@ -119,6 +119,9 @@ enum rcc_apb2
 enum rcc_apb1_en1
 {
 	RCC_APB1_1_PWR			= 0x10000000,
+	RCC_APB1_1_I2C3			= 0x00800000,
+	RCC_APB1_1_I2C2			= 0x00400000,
+	RCC_APB1_1_I2C1			= 0x00200000,
 	RCC_APB1_1_UART4		= 0x00080000,
 	RCC_APB1_1_USART3		= 0x00040000,
 	RCC_APB1_1_USART2		= 0x00020000,
@@ -301,7 +304,7 @@ extern volatile tim_t TIM2;
 extern volatile tim_t TIM3;
 extern volatile tim_t TIM6;
 extern volatile tim_t TIM7;
-/*
+
 enum i2c_cr2_bits
 {
 	I2C_AUTO_END	= 0x02000000,
@@ -337,7 +340,10 @@ typedef struct
 } i2c_t;
 
 extern volatile i2c_t I2C1;
-*/
+extern volatile i2c_t I2C2;
+extern volatile i2c_t I2C3;
+//TODO: I2C4
+
 typedef struct
 {
 	uint32_t ACR;
@@ -452,8 +458,7 @@ extern volatile uint16_t FLASH_SIZE;
 extern volatile uint16_t PKG;
 
 //Defines for what peripherals are present / implemented
-//#define HAVE_I2C
-
+#define HAVE_I2C
 #define HAVE_TIM
 //#define HAVE_SPI
 #define HAVE_UART
