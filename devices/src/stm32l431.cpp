@@ -45,21 +45,27 @@ volatile flash_t FLASH __attribute__((section(".flash")));
 volatile i2c_t I2C1 __attribute__((section(".i2c1")));
 volatile i2c_t I2C2 __attribute__((section(".i2c2")));
 volatile i2c_t I2C3 __attribute__((section(".i2c3")));
-/*
-//volatile spi_t SPI1 __attribute__((section(".spi1")));
 
+volatile spi_t SPI1 __attribute__((section(".spi1")));
+volatile spi_t SPI2 __attribute__((section(".spi2")));
+volatile spi_t SPI3 __attribute__((section(".spi3")));
+/*
 volatile adc_t ADC1 __attribute__((section(".adc1")));
 
 volatile syscfg_t SYSCFG __attribute__((section(".syscfg")));
 */
+volatile usart_t USART1 __attribute__((section(".usart1")));
 volatile usart_t USART2 __attribute__((section(".usart2")));
 volatile usart_t USART3 __attribute__((section(".usart3")));
 volatile usart_t UART4 __attribute__((section(".uart4")));
 
+volatile tim_t TIM1 __attribute__((section(".tim1")));
 volatile tim_t TIM2 __attribute__((section(".tim2")));
 volatile tim_t TIM3 __attribute__((section(".tim3")));
 volatile tim_t TIM6 __attribute__((section(".tim6")));
 volatile tim_t TIM7 __attribute__((section(".tim7")));
+volatile tim_t TIM15 __attribute__((section(".tim15")));
+volatile tim_t TIM16 __attribute__((section(".tim16")));
 
 volatile dbgmcu_t DBGMCU __attribute__((section(".dbgmcu")));
 

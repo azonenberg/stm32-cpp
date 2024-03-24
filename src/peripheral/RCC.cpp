@@ -158,7 +158,9 @@ void RCCHelper::Enable(volatile usart_t* uart)
 
 	#elif defined(STM32L431)
 
-		if(uart == &USART2)
+		if(uart == &USART1)
+			RCC.APB2ENR |= RCC_APB2_USART1;
+		else if(uart == &USART2)
 			RCC.APB1ENR1 |= RCC_APB1_1_USART2;
 		else if(uart == &USART3)
 			RCC.APB1ENR1 |= RCC_APB1_1_USART3;
@@ -212,6 +214,15 @@ void RCCHelper::Enable(volatile spi_t* spi)
 
 		if(spi == &SPI1)
 			RCC.APB2ENR |= RCC_APB2_SPI1;
+
+	#elif defined(STM32L431)
+
+		if(spi == &SPI1)
+			RCC.APB2ENR |= RCC_APB2_SPI1;
+		else if(spi == &SPI2)
+			RCC.APB1ENR1 |= RCC_APB1_1_SPI2;
+		else if(spi == &SPI3)
+			RCC.APB1ENR1 |= RCC_APB1_1_SPI3;
 
 	#elif defined(STM32H735)
 
@@ -459,6 +470,10 @@ void RCCHelper::Enable(volatile tim_t* tim)
 			RCC.APB1ENR1 |= RCC_APB1_1_TIM6;
 		else if(tim == &TIM7)
 			RCC.APB1ENR1 |= RCC_APB1_1_TIM7;
+		else if(tim == &TIM15)
+			RCC.APB2ENR |= RCC_APB2_TIM15;
+		else if(tim == &TIM16)
+			RCC.APB2ENR |= RCC_APB2_TIM16;
 
 	#elif defined(STM32H735)
 

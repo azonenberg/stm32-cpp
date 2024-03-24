@@ -5,8 +5,9 @@ MEMORY
 
 	/* SFRs */
 	IOPORT(RW):	ORIGIN = 0x48000000, LENGTH = 8K
-	AHB1(RW):	ORIGIN = 0x40020000, LENGTH = 32K
 	APB1(RW):	ORIGIN = 0x40000000, LENGTH = 32K
+	APB2(RW):	ORIGIN = 0x40010000, LENGTH = 32K
+	AHB1(RW):	ORIGIN = 0x40020000, LENGTH = 32K
 	MCU2(RW):	ORIGIN = 0xe0042000, LENGTH = 16K
 
 	SIG(R):		ORIGIN = 0x1fff7500, LENGTH = 16K
@@ -93,8 +94,10 @@ SECTIONS
 		. += 1024;		/* WWDG not implemented */
 		. += 1024;		/* IWDG not implemented */
 		. += 1024;		/* reserved 4000_3400 */
-		. += 1024;		/* SPI2 not implemented */
-		. += 1024;		/* SPI3 not implemented */
+		. = ALIGN(1024);
+		*(.spi2)
+		. = ALIGN(1024);
+		*(.spi3)
 		. += 1024;		/* reserved 4000_4000 */
 		. = ALIGN(1024);
 		*(.usart2)
@@ -116,6 +119,28 @@ SECTIONS
 		. = ALIGN(1024);
 		*(.pwr)
 	} > APB1
+
+	.sfr_apb2 :
+	{
+		. += 1024;		/* SYSCFG/COMP/VREFBUF not implemented */
+		. += 1024;		/* EXTI not implemented */
+		. += 5120;		/* 0x4001_0800 reserved */
+		. += 1024;		/* FIREWALL not implemented */
+		. += 2048;		/* 0x4001_2000 reserved */
+		. += 1024;		/* SDMMC not implemented */
+		. = ALIGN(1024);
+		*(.tim1)
+		. = ALIGN(1024);
+		*(.spi1)
+		. += 1024;		/* 0x4001_3400 reserved */
+		. = ALIGN(1024);
+		*(.usart1)
+		. += 1024;		/* 0x4001_3c00 reserved */
+		. = ALIGN(1024);
+		*(.tim15)
+		. = ALIGN(1024);
+		*(.tim16)
+	} > APB2
 
 	.sfr_io :
 	{

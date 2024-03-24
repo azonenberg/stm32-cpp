@@ -108,14 +108,16 @@ enum rcc_ahb2
 	RCC_AHB2_GPIOE	= 0x10,
 	RCC_AHB2_GPIOH	= 0x80
 };
-/*
+
 enum rcc_apb2
 {
-	RCC_APB2_ADC	= 0x00000200,
-	RCC_APB2_TIM22	= 0x00000020,
-	RCC_APB2_TIM21	= 0x00000004
+	RCC_APB2_TIM16	= 0x00020000,
+	RCC_APB2_TIM15	= 0x00010000,
+	RCC_APB2_USART1	= 0x00004000,
+	RCC_APB2_SPI1	= 0x00001000,
+	RCC_APB2_TIM1	= 0x00000800
 };
-*/
+
 enum rcc_apb1_en1
 {
 	RCC_APB1_1_PWR			= 0x10000000,
@@ -125,6 +127,8 @@ enum rcc_apb1_en1
 	RCC_APB1_1_UART4		= 0x00080000,
 	RCC_APB1_1_USART3		= 0x00040000,
 	RCC_APB1_1_USART2		= 0x00020000,
+	RCC_APB1_1_SPI3			= 0x00008000,
+	RCC_APB1_1_SPI2			= 0x00004000,
 	RCC_APB1_1_TIM7			= 0x00000020,
 	RCC_APB1_1_TIM6			= 0x00000010,
 	RCC_APB1_1_TIM3			= 0x00000002,
@@ -205,6 +209,7 @@ enum usart_bits
 	USART_ISR_RXNE = 0x20
 };
 
+extern volatile usart_t USART1;
 extern volatile usart_t USART2;
 extern volatile usart_t USART3;
 extern volatile usart_t UART4;
@@ -223,7 +228,7 @@ typedef struct
 } syscfg_t;
 
 extern volatile syscfg_t SYSCFG;
-
+*/
 typedef struct
 {
 	uint32_t	CR1;
@@ -237,8 +242,6 @@ typedef struct
 	uint32_t	CRCPR;
 	uint32_t	RXCRCR;
 	uint32_t	TXCRCR;
-	uint32_t	I2SCFGR;
-	uint32_t	I2SPR;
 } spi_t;
 
 enum spi_cr1_bits
@@ -269,7 +272,9 @@ enum spi_sr_bits
 };
 
 extern volatile spi_t SPI1;
-*/
+extern volatile spi_t SPI2;
+extern volatile spi_t SPI3;
+
 typedef struct
 {
 	uint32_t	CR1;
@@ -300,10 +305,13 @@ typedef struct
 	uint32_t	OR3;
 } tim_t;
 
+extern volatile tim_t TIM1;
 extern volatile tim_t TIM2;
 extern volatile tim_t TIM3;
 extern volatile tim_t TIM6;
 extern volatile tim_t TIM7;
+extern volatile tim_t TIM15;
+extern volatile tim_t TIM16;
 
 enum i2c_cr2_bits
 {
@@ -460,7 +468,7 @@ extern volatile uint16_t PKG;
 //Defines for what peripherals are present / implemented
 #define HAVE_I2C
 #define HAVE_TIM
-//#define HAVE_SPI
+#define HAVE_SPI
 #define HAVE_UART
 //#define HAVE_ADC
 #define HAVE_PWR
