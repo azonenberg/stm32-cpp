@@ -35,7 +35,9 @@
 class SPI
 {
 public:
-	SPI(volatile spi_t* lane, bool fullDuplex, uint16_t baudDiv);
+	SPI(volatile spi_t* lane, bool fullDuplex, uint16_t baudDiv, bool masterMode = true);
+
+	bool PollReadDataReady();
 
 	void BlockingWrite(uint8_t data);
 	void WaitForWrites();

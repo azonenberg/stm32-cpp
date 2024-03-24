@@ -43,7 +43,7 @@
 						False in half-duplex mode (MOSI used bidirectionally)
 	@param baudDiv		Baud rate divisor from APB clock (must be power of two)
  */
-SPI::SPI(volatile spi_t* lane, bool fullDuplex, uint16_t baudDiv)
+SPI::SPI(volatile spi_t* lane, bool fullDuplex, uint16_t baudDiv, bool masterMode)
 	: m_lane(lane)
 	, m_fullDuplex(fullDuplex)
 {
@@ -94,7 +94,10 @@ SPI::SPI(volatile spi_t* lane, bool fullDuplex, uint16_t baudDiv)
 
 		//Set master mode with CS# in output mode
 		//(we don't have to configure the alt mode on CS# but this keeps it from detecting false mode faults)
-		lane->CFG2 = SPI_MASTER | SPI_SSOE;
+		if(masterMode)
+			lane->CFG2 = SPI_MASTER | SPI_SSOE;
+		else
+			lane->CFG2 = 0;
 
 		//must be done after making all other config changes
 		lane->CR1 |= SPI_ENABLE;
@@ -107,8 +110,10 @@ SPI::SPI(volatile spi_t* lane, bool fullDuplex, uint16_t baudDiv)
 
 		//Turn on the peripheral in master mode.
 		//To prevent problems, we need to have the internal CS# pulled high.
-		//TODO: support slave mode
-		lane->CR1 = SPI_MASTER | SPI_SOFT_CS | SPI_INTERNAL_CS;
+		if(masterMode)
+			lane->CR1 = SPI_MASTER | SPI_SOFT_CS | SPI_INTERNAL_CS;
+		else
+			lane->CR1 = 0;
 
 		//ok to do before baud changes
 		lane->CR1 |= SPI_ENABLE;
@@ -150,6 +155,16 @@ SPI::SPI(volatile spi_t* lane, bool fullDuplex, uint16_t baudDiv)
 
 	#endif
 
+}
+
+/**
+	@brief Check if read data is available
+ */
+bool SPI::PollReadDataReady()
+{
+	if((m_lane->SR & SPI_RX_NOT_EMPTY) != 0)
+		return true;
+	return false;
 }
 
 void SPI::BlockingWrite(uint8_t data)
