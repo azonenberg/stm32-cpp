@@ -1,8 +1,8 @@
 /***********************************************************************************************************************
 *                                                                                                                      *
-* STM32-CPP v0.1                                                                                                       *
+* STM32-CPP                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2020-2023 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2024 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -32,8 +32,8 @@
 
 #include <stm32.h>
 
-//TODO implement for STM32L0
-#ifndef STM32L0
+//drivers for these families not implemented yet
+#if( !defined(STM32L0) )
 
 /**
 	@brief Flash memory
@@ -44,10 +44,12 @@ class Flash
 {
 public:
 
+	#ifdef STM32L4
+	static void SetConfiguration(int hclkFreqMHz, VoltageRange range);
+	#endif
+
 	#ifdef STM32H7
-
 	static void SetConfiguration(int axiClockFreqMHz, VoltageRange range);
-
 	#endif
 
 	#ifdef STM32F7
@@ -77,6 +79,6 @@ protected:
 	static uint32_t m_maxPsize;
 };
 
-#endif	//STM32L0
+#endif	//model specific
 
 #endif

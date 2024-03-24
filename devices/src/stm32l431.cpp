@@ -27,37 +27,44 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef Power_h
-#define Power_h
+#include <stm32l431.h>
 
-#ifdef HAVE_PWR
+volatile gpio_t GPIOA __attribute__((section(".gpioa")));
+volatile gpio_t GPIOB __attribute__((section(".gpiob")));
+volatile gpio_t GPIOC __attribute__((section(".gpioc")));
+volatile gpio_t GPIOD __attribute__((section(".gpiod")));
+volatile gpio_t GPIOE __attribute__((section(".gpioe")));
+volatile gpio_t GPIOH __attribute__((section(".gpioh")));
 
-/**
-	@brief Power control
+volatile rcc_t RCC __attribute__((section(".rcc")));
 
-	All methods are static as there's only one power subsystem in the device.
- */
-class Power
-{
-public:
+volatile pwr_t PWR __attribute__((section(".pwr")));
 
-	#ifdef STM32L431
-	static void ConfigureLDO(VoltageRange vcore);
-	#endif
+volatile flash_t FLASH __attribute__((section(".flash")));
+/*
+volatile i2c_t I2C1 __attribute__((section(".i2c1")));
 
-	#ifdef STM32H735
+//volatile spi_t SPI1 __attribute__((section(".spi1")));
 
-	enum SmpsVoltage
-	{
-		VOLTAGE_1V8,
-		VOLTAGE_2V5
-	};
+volatile adc_t ADC1 __attribute__((section(".adc1")));
 
-	static void ConfigureSMPSToLDOCascade(SmpsVoltage vsmps, VoltageRange vcore);
-	#endif
-};
+volatile syscfg_t SYSCFG __attribute__((section(".syscfg")));
+*/
+volatile usart_t USART2 __attribute__((section(".usart2")));
+volatile usart_t USART3 __attribute__((section(".usart3")));
+volatile usart_t UART4 __attribute__((section(".uart4")));
 
-#endif
+volatile tim_t TIM2 __attribute__((section(".tim2")));
+volatile tim_t TIM3 __attribute__((section(".tim3")));
+volatile tim_t TIM6 __attribute__((section(".tim6")));
+volatile tim_t TIM7 __attribute__((section(".tim7")));
+/*
+volatile dbgmcu_t DBGMCU __attribute__((section(".dbgmcu")));
 
-#endif
+volatile uint32_t U_ID[3] __attribute__((section(".uid")));
+volatile uint16_t F_ID __attribute__((section(".fid")));
 
+volatile uint16_t VREFINT_CAL __attribute__((section(".vrefint")));
+volatile uint16_t TSENSE_CAL1 __attribute__((section(".tcal1")));
+volatile uint16_t TSENSE_CAL2 __attribute__((section(".tcal2")));
+*/

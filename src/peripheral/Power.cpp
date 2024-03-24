@@ -1,8 +1,8 @@
 /***********************************************************************************************************************
 *                                                                                                                      *
-* STM32-CPP v0.1                                                                                                       *
+* STM32-CPP                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2020-2022 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2024 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -31,6 +31,22 @@
 #include "Power.h"
 
 #ifdef HAVE_PWR
+
+#ifdef STM32L431
+
+/**
+	@brief Configures the internal LDO and blocks until it's stabilized
+ */
+void Power::ConfigureLDO(VoltageRange vcore)
+{
+	//Set the voltage mode
+	PWR.CR1 = (PWR.CR1 & ~PWR_CR1_VOS) | (vcore << 9);
+
+	//Wait until stable
+	while( (PWR.SR2 & PWR_SR2_VOSF) != 0)
+	{}
+}
+#endif
 
 #ifdef STM32H735
 

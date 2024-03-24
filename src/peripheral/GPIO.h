@@ -1,8 +1,8 @@
 /***********************************************************************************************************************
 *                                                                                                                      *
-* STM32-CPP v0.1                                                                                                       *
+* STM32-CPP                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2020-2022 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2024 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -50,7 +50,7 @@ public:
 		MODE_ANALOG		= 3
 	};
 
-#if defined(STM32F7) || defined(STM32H7) || defined(STM32L0)
+#if defined(STM32F7) || defined(STM32H7) || defined(STM32L0) || defined(STM32L4)
 	/**
 		GPIO slew constants (must be same as STM32 OSPEEDR register)
 	 */
@@ -84,7 +84,7 @@ public:
 		SetMode(mode, altmode, open_drain);
 	}
 
-#if defined(STM32F7) || defined(STM32H7) || defined(STM32L0)
+#if defined(STM32F7) || defined(STM32H7) || defined(STM32L0) || defined(STM32L4)
 	/**
 		@brief Initializes the pin
 	 */
@@ -111,7 +111,7 @@ public:
 
 	void SetMode(gpiomode_t mode, uint8_t altmode = 1, bool open_drain = false);
 
-	#if defined(STM32F7) || defined(STM32H7) || defined(STM32L0)
+	#if defined(STM32F7) || defined(STM32H7) || defined(STM32L0) || defined(STM32L4)
 	void SetOutputSlew(gpioslew_t slew)
 	{ m_gpio->OSPEEDR = (m_gpio->OSPEEDR & ~(0x3 << 2*m_pin)) | (slew << (2*m_pin)); }
 	#endif

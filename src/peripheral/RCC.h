@@ -48,6 +48,10 @@ public:
 	static void Enable(volatile dts_t* dts);
 	#endif
 
+	#ifdef STM32L4
+	static void Enable(volatile pwr_t* pwr);
+	#endif
+
 	#ifdef HAVE_ADC
 	static void Enable(volatile adc_t* adc);
 	#endif
@@ -100,6 +104,17 @@ public:
 
 	#ifdef STM32L0
 	static void InitializePLLFromHSI16(uint8_t mult, uint8_t hclkdiv, uint16_t ahbdiv, uint8_t apb2div, uint8_t apb1div);
+	#endif
+
+	#ifdef STM32L4
+	static void InitializePLLFromHSI16(
+		uint8_t prediv,
+		uint8_t mult,
+		uint8_t qdiv,
+		uint8_t rdiv,
+		uint16_t ahbdiv,
+		uint8_t apb1div,
+		uint8_t apb2div);
 	#endif
 
 	#ifdef STM32F7

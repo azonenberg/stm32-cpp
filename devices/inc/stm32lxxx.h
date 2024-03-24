@@ -1,8 +1,8 @@
 /***********************************************************************************************************************
 *                                                                                                                      *
-* STM32-CPP v0.1                                                                                                       *
+* STM32-CPP                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2020-2023 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2024 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -42,9 +42,15 @@
 	This header will define a family macro, e.g. STM32L0, based on that.
  */
 
+
 #ifdef STM32L031
 #define STM32L0
 #include <stm32l031.h>
+#endif
+
+#ifdef STM32L431
+#define STM32L4
+#include <stm32l431.h>
 #endif
 
 #include "stm32-common.h"

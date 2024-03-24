@@ -1,8 +1,8 @@
 /***********************************************************************************************************************
 *                                                                                                                      *
-* STM32-CPP v0.1                                                                                                       *
+* STM32-CPP                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2020-2023 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2024 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -31,9 +31,56 @@
 #include "Flash.h"
 #include <string.h>
 
-#ifndef STM32L0
+//drivers for these families not implemented yet
+#if( !defined(STM32L0) )
 
 uint32_t Flash::m_maxPsize = FLASH_CR_PSIZE_X8;
+
+#ifdef STM32L4
+
+void Flash::SetConfiguration(int hclkFreqMHz, VoltageRange range)
+{
+	//Calculate the number of wait states to use
+	//Based on table 9 of RM0394, section 3.3.3
+	unsigned int waitStates = 0;
+	if(range == RANGE_VOS1)
+	{
+		if(hclkFreqMHz <= 16)
+			waitStates = 0;
+		else if(hclkFreqMHz <= 32)
+			waitStates = 1;
+		else if(hclkFreqMHz <= 48)
+			waitStates = 2;
+		else if(hclkFreqMHz <= 64)
+			waitStates = 3;
+		else //if(hclkFreqMHz <= 80)
+			waitStates = 4;
+	}
+	else //if(range == RANGE_VOS2)
+	{
+		if(hclkFreqMHz <= 6)
+			waitStates = 0;
+		else if(hclkFreqMHz <= 12)
+			waitStates = 1;
+		else if(hclkFreqMHz <= 18)
+			waitStates = 2;
+		else //if(hclkFreqMHz <= 26)
+			waitStates = 3;
+	}
+
+	//Actually configure the flash
+	//Enable prefetch and I/D caches, set requested number of wait states
+	FLASH.ACR = FLASH_ACR_PREFETCHEN | FLASH_ACR_ICEN | FLASH_ACR_DCEN | waitStates;
+
+	//Read back to verify write took effect
+	while( (FLASH.ACR & 0x7) != waitStates)
+	{}
+
+	//No hardware limits on PSIZE in STM32H7
+	m_maxPsize = FLASH_CR_PSIZE_X64;
+}
+
+#endif
 
 #ifdef STM32H7
 
@@ -236,6 +283,8 @@ bool Flash::BlockErase(uint8_t* address)
 	uint32_t addr = reinterpret_cast<uint32_t>(address);
 	int numSector = 0;
 
+	//TODO: STM32L431
+
 	#ifdef STM32F777
 
 		//TODO: dual bank support
@@ -351,9 +400,13 @@ bool Flash::Write(uint8_t* address, const uint8_t* data, uint32_t len)
 	//Enable writing
 	Unlock();
 
-	#ifdef STM32H735
+	#ifdef STM32L431
 
-		//Set PSIZE to our maximu
+		//FIXME: need to do fixed 64-bit write blocks
+
+	#elif defined(STM32H735)
+
+		//Set PSIZE to our maximu,
 		FLASH.CR = (FLASH.CR & ~FLASH_CR_PSIZE_MASK) | m_maxPsize;
 
 		//Write the data in blocks of 32 bytes; force write after the last one

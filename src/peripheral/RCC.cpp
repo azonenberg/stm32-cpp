@@ -30,6 +30,16 @@
 #include <stm32.h>
 #include <peripheral/RCC.h>
 
+#ifdef STM32L4
+/**
+	@brief Enable power control
+ */
+void RCCHelper::Enable(volatile pwr_t* /*pwr*/)
+{
+	RCC.APB1ENR1 |= RCC_APB1_1_PWR;
+}
+#endif
+
 /**
 	@brief Enable a GPIO bank
  */
@@ -56,6 +66,21 @@ void RCCHelper::Enable(volatile gpio_t* gpio)
 			RCC.IOPENR |= RCC_IO_GPIOE;
 		else if(gpio == &GPIOH)
 			RCC.IOPENR |= RCC_IO_GPIOH;
+
+	#elif defined(STM32L4)
+
+		if(gpio == &GPIOA)
+			RCC.AHB2ENR |= RCC_AHB2_GPIOA;
+		else if(gpio == &GPIOB)
+			RCC.AHB2ENR |= RCC_AHB2_GPIOB;
+		else if(gpio == &GPIOC)
+			RCC.AHB2ENR |= RCC_AHB2_GPIOC;
+		else if(gpio == &GPIOD)
+			RCC.AHB2ENR |= RCC_AHB2_GPIOD;
+		else if(gpio == &GPIOE)
+			RCC.AHB2ENR |= RCC_AHB2_GPIOE;
+		else if(gpio == &GPIOH)
+			RCC.AHB2ENR |= RCC_AHB2_GPIOH;
 
 	#elif defined(STM32H7)
 
@@ -130,6 +155,15 @@ void RCCHelper::Enable(volatile usart_t* uart)
 			RCC.APB1ENR |= RCC_APB1_USART4;
 		else if(uart == &USART5)
 			RCC.APB1ENR |= RCC_APB1_USART5;
+
+	#elif defined(STM32L431)
+
+		if(uart == &USART2)
+			RCC.APB1ENR1 |= RCC_APB1_1_USART2;
+		else if(uart == &USART3)
+			RCC.APB1ENR1 |= RCC_APB1_1_USART3;
+		else if(uart == &UART4)
+			RCC.APB1ENR1 |= RCC_APB1_1_UART4;
 
 	#elif defined(STM32H735)
 
@@ -406,6 +440,10 @@ void RCCHelper::Enable(volatile tim_t* tim)
 		else if(tim == &TIMER22)
 			RCC.APB2ENR |= RCC_APB2_TIM22;
 
+	#elif defined(STM32L431)
+
+		//TODO
+
 	#elif defined(STM32H735)
 
 		if(tim == &TIM2)
@@ -626,6 +664,215 @@ void RCCHelper::InitializePLLFromHSI16(uint8_t mult, uint8_t hclkdiv, uint16_t a
 			break;
 		case 512:
 			RCC.CFGR |= 0xf0;
+			break;
+
+		//any other input is illegal, fail
+		default:
+			while(1)
+			{}
+	}
+
+	//Enable PLL
+	RCC.CR |= RCC_PLL_ON;
+	while(0 == (RCC.CR & RCC_PLL_READY))
+	{}
+
+	//Switch clock source to PLL
+	RCC.CFGR |= 0x3;
+
+	//Wait until PLL switch is complete
+	while(0xc != (RCC.CFGR & 0xc))
+	{}
+}
+#endif
+
+#ifdef STM32L4
+/**
+	@brief Configures the PLL to use the internal 16 MHz oscillator, then selects it
+
+	For L431
+		VOS1
+			PLL max 80 MHz
+			VCO max 344 MHz
+		Pre-divide must be between 1 and 4 to keep PFD frequency between 4 and 16 MHz
+		Multiplier must be between 8 and 86
+		VCO frequency must be between 64 and 344 MHz
+		Q output must not exceed 48 MHz
+		R output must not exceed 80 MHz
+
+	@param prediv	Pre-divider from HSI16
+	@param mult		VCO multiplier from HSI16
+	@param qdiv		Divider on PLL output to PLL48M1CLK (48 MHz output)
+					Must be 2/4/6/8
+	@param rdiv		Divider on PLL output to HCLK
+					Must be 2/4/6/8
+	@param ahbdiv	Divider from SYSCLK to AHB
+	@param apb1div	Divider from HCLK to APB1
+	@param apb2div	Divider from HCLK to APB2
+ */
+void RCCHelper::InitializePLLFromHSI16(
+	uint8_t prediv,
+	uint8_t mult,
+	uint8_t qdiv,
+	uint8_t rdiv,
+	uint16_t ahbdiv,
+	uint8_t apb1div,
+	uint8_t apb2div)
+{
+	//Enable the HSI16 oscillator
+	RCC.CR |= RCC_HSI_ON;
+
+	//Wait until it's ready
+	while(0 == (RCC.CR & RCC_HSI_READY))
+	{}
+
+	//Remove all PLL configuration
+	RCC.CFGR &= 0x80FF4000;
+	RCC.PLLCFGR &= 0x8C808C;
+
+	//Select PLL input from HSI16
+	RCC.PLLCFGR |= 0x2;
+
+	//Pre-divide input clock
+	RCC.PLLCFGR |= (prediv-1) << 4;
+
+	//PLL multiplier
+	RCC.PLLCFGR |= (mult << 8);
+
+	//For now, disable SAICLK and ignore PLLP (SAI1 clock divider)
+	RCC.PLLCFGR &= ~0x10000;
+
+	//PLLQ output divider
+	RCC.PLLCFGR &= ~0x600000;
+	switch(qdiv)
+	{
+		case 2:
+			break;
+
+		case 4:
+			RCC.PLLCFGR |= (1 << 21);
+			break;
+
+		case 6:
+			RCC.PLLCFGR |= (2 << 21);
+			break;
+
+		case 8:
+			RCC.PLLCFGR |= (3 << 21);
+			break;
+	}
+
+	//TODO: configure SAI2 clock
+
+	//Set system clock divider
+
+	//Enable main PLL clock (for use as system clock)
+	RCC.PLLCFGR |= 0x1000000;
+
+	//Enable Q output 48 MHz (nominal) clock for RNG etc
+	RCC.PLLCFGR |= 0x100000;
+
+	//PLLR divider
+	RCC.PLLCFGR &= ~0x6000000;
+	switch(rdiv)
+	{
+		case 2:
+			break;
+
+		case 4:
+			RCC.PLLCFGR |= (1 << 25);
+			break;
+
+		case 6:
+			RCC.PLLCFGR |= (2 << 25);
+			break;
+
+		case 8:
+			RCC.PLLCFGR |= (3 << 25);
+			break;
+	}
+
+	//TODO: SAI2 divider
+
+	//AHB divider
+	switch(ahbdiv)
+	{
+		case 1:
+			RCC.CFGR |= 0x00000;
+			break;
+		case 2:
+			RCC.CFGR |= 0x80;
+			break;
+		case 4:
+			RCC.CFGR |= 0x90;
+			break;
+		case 8:
+			RCC.CFGR |= 0xa0;
+			break;
+		case 16:
+			RCC.CFGR |= 0xb0;
+			break;
+		case 64:
+			RCC.CFGR |= 0xc0;
+			break;
+		case 128:
+			RCC.CFGR |= 0xd0;
+			break;
+		case 256:
+			RCC.CFGR |= 0xe0;
+			break;
+		case 512:
+			RCC.CFGR |= 0xf0;
+			break;
+
+		//any other input is illegal, fail
+		default:
+			while(1)
+			{}
+	}
+
+	//Select APB1 divider
+	switch(apb1div)
+	{
+		case 1:
+			RCC.CFGR |= 0x00000;
+			break;
+		case 2:
+			RCC.CFGR |= 0x400;
+			break;
+		case 4:
+			RCC.CFGR |= 0x500;
+			break;
+		case 8:
+			RCC.CFGR |= 0x600;
+			break;
+		case 16:
+			RCC.CFGR |= 0x700;
+			break;
+
+		//any other input is illegal, fail
+		default:
+			while(1)
+			{}
+	}
+
+	//Select APB2 divider
+	switch(apb2div)
+	{
+		case 1:
+			RCC.CFGR |= 0x00000;
+			break;
+		case 2:
+			RCC.CFGR |= 0x2000;
+			break;
+		case 4:
+			RCC.CFGR |= 0x2800;
+			break;
+		case 8:
+			RCC.CFGR |= 0x3000;
+			break;
+		case 16:
+			RCC.CFGR |= 0x3800;
 			break;
 
 		//any other input is illegal, fail
