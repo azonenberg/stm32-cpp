@@ -32,6 +32,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <string.h>
 
 #include "CharacterDevice.h"
 
@@ -60,6 +61,15 @@ public:
 
 	size_t length()
 	{ return m_wptr; }
+
+	/**
+		@brief Resets the buffer to an empty state
+	 */
+	void Clear()
+	{
+		m_wptr = 0;
+		memset(m_buf, 0, m_size);
+	}
 
 protected:
 	char* m_buf;
