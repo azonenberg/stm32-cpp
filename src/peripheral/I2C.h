@@ -48,6 +48,9 @@ public:
 	bool BlockingWrite8(uint8_t addr, uint8_t data)
 	{ return BlockingWrite(addr, &data, 1); }
 
+	void BlockingDeviceWrite8(uint8_t data)
+	{ BlockingDeviceWrite(&data, 1); }
+
 	/**
 		@brief Sends a 16-bit value to a device in host mode
 	 */
