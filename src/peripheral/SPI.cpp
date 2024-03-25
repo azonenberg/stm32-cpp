@@ -242,6 +242,28 @@ uint8_t SPI::BlockingRead()
 	#endif
 }
 
+uint8_t SPI::BlockingReadDevice()
+{
+	#ifdef STM32H735
+
+		//Wait for lane to be ready
+		while( (m_lane->SR & SPI_RX_NOT_EMPTY) == 0)
+		{}
+
+		//Done, return it
+		return m_lane->RXDR;
+
+	#else
+
+		//Wait for data to be ready
+		while( (m_lane->SR & SPI_RX_NOT_EMPTY) == 0)
+		{}
+
+		//Done, return it
+		return m_lane->DR;
+	#endif
+}
+
 /**
 	@brief 	Block until all pending writes have completed
  */
