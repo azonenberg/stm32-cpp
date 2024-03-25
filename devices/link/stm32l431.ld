@@ -1,7 +1,8 @@
 MEMORY
 {
 	FLASH(RX):	ORIGIN = 0x08000000, LENGTH = 32K
-	SRAM(RW):	ORIGIN = 0x20000000, LENGTH = 8K
+	SRAM1(RW):	ORIGIN = 0x20000000, LENGTH = 48K
+	SRAM2(RW):	ORIGIN = 0x2000c000, LENGTH = 16K
 
 	/* SFRs */
 	IOPORT(RW):	ORIGIN = 0x48000000, LENGTH = 8K
@@ -49,19 +50,20 @@ SECTIONS
 		__data_start = .;
 		*(.data)
 		__data_end = .;
-	} > SRAM AT> FLASH
+	} > SRAM1 AT> FLASH
 
-	/* BSS is pretty straightforward. Use all remaining space for the stack */
+	/* BSS is pretty straightforward, put that in SRAM1*/
 	.bss :
 	{
 		__bss_start__ = .;
 		*(.bss)
 		__bss_end__ = .;
 		__end = .;
-		. = ORIGIN(SRAM) + LENGTH(SRAM) - 4;
+		. = ORIGIN(SRAM1) + LENGTH(SRAM1) - 4;
 		__stack = .;
+	} > SRAM1
 
-	} > SRAM
+	/* SRAM2 currently unused */
 
 	/* SFRs */
 	.sfr_ahb1 :
