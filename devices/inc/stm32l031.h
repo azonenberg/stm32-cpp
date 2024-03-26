@@ -32,6 +32,31 @@
 
 #include <stdint.h>
 
+enum VoltageRange
+{
+	RANGE_VOS1 = 1,	//Vcore = 1.8V
+	RANGE_VOS2 = 2,	//Vcore = 1.5V
+	RANGE_VOS3 = 3	//Vcore = 1.2V
+};
+
+typedef struct
+{
+	uint32_t CR;
+	uint32_t CSR;
+} pwr_t;
+
+enum pwr_cr
+{
+	PWR_CR_VOS		= 0x1800
+};
+
+enum pwr_csr
+{
+	PWR_CSR_VOSF	= 0x10
+};
+
+extern volatile pwr_t PWR;
+
 typedef struct
 {
 	uint32_t MODER;
@@ -65,6 +90,7 @@ enum rcc_io
 
 enum rcc_apb2
 {
+	RCC_APB2_SPI1	= 0x00001000,
 	RCC_APB2_ADC	= 0x00000200,
 	RCC_APB2_TIM22	= 0x00000020,
 	RCC_APB2_TIM21	= 0x00000004
@@ -72,6 +98,7 @@ enum rcc_apb2
 
 enum rcc_apb1
 {
+	RCC_APB1_PWR		= 0x10000000,
 	RCC_APB1_I2C1		= 0x00200000,
 	RCC_APB1_USART5		= 0x00100000,
 	RCC_APB1_USART4		= 0x00080000,
@@ -159,7 +186,7 @@ typedef struct
 } syscfg_t;
 
 extern volatile syscfg_t SYSCFG;
-/*
+
 typedef struct
 {
 	uint32_t	CR1;
@@ -168,8 +195,6 @@ typedef struct
 	uint8_t		DR;			//STM32f0x1 datasheet page 807, 28.9.4 says the register is 16-bits wide, and that
 							//"Unused bits are ignored when writing to the register". This is untrue.
 							//If you access DR as a 16-bit write, you get *two* bytes of data sent.
-	uint8_t		padding1;
-	uint16_t	padding2;
 	uint32_t	CRCPR;
 	uint32_t	RXCRCR;
 	uint32_t	TXCRCR;
@@ -197,15 +222,13 @@ enum spi_cr2_bits
 
 enum spi_sr_bits
 {
-	SPI_TX_FIFO_MASK	= 0x1800,
-	SPI_RX_FIFO_MASK	= 0x0600,
 	SPI_BUSY			= 0x0080,
 	SPI_TX_EMPTY		= 0x0002,
 	SPI_RX_NOT_EMPTY	= 0x0001,
 };
 
 extern volatile spi_t SPI1;
-*/
+
 typedef struct
 {
 	uint32_t	CR1;
@@ -289,13 +312,13 @@ typedef struct
 } flash_t;
 
 extern volatile flash_t FLASH;
-/*
+
 enum flash_acr
 {
-	FLASH_ACR_ARTEN = 0x20,
-	FLASH_ACR_PREFETCHEN = 0x10,
+	FLASH_ACR_PREFETCHEN	= 0x2,
+	FLASH_ACR_LATENCY		= 0x1
 };
-
+/*
 enum flash_cr
 {
 	FLASH_CR_LOCK			= 0x80000000,
@@ -312,14 +335,11 @@ enum flash_cr
 	FLASH_CR_SER			= 0x2,
 	FLASH_CR_PG				= 0x1
 };
-
+*/
 enum flash_sr
 {
-	FLASH_SR_BUSY			= 0x10000,
-
-	FLASH_SR_ERR_MASK		= 0xf2
+	FLASH_SR_BUSY			= 0x1
 };
-*/
 
 typedef struct
 {
@@ -386,8 +406,10 @@ extern volatile uint16_t F_ID;
 //Defines for what peripherals are present / implemented
 #define HAVE_I2C
 #define HAVE_TIM
-//#define HAVE_SPI
+#define HAVE_SPI
 #define HAVE_UART
 #define HAVE_ADC
+#define HAVE_PWR
+#define HAVE_FLASH
 
 #endif

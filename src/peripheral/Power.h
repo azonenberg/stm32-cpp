@@ -41,7 +41,7 @@ class Power
 {
 public:
 
-	#ifdef STM32L431
+	#if ( defined(STM32L031) || defined(STM32L431) )
 	static void ConfigureLDO(VoltageRange vcore);
 	#endif
 

@@ -139,6 +139,10 @@ SECTIONS
 		*(.usart5)
 		. = ALIGN(1024);
 		*(.i2c1)
+		. += 1024;			/* I2C2 not yet implemented */
+		. += 5120;			/* 0x4000_5c00 reserved (datasheet errata, page 54 says 1k) */
+		. = ALIGN(1024);
+		*(.pwr)
 	} > APB1
 
 	.sfr_apb2 :
@@ -164,7 +168,7 @@ SECTIONS
 		. = ALIGN(1024);
 		. += 2048;			/* Reserved */
 		. = ALIGN(1024);
-		. += 1024;			/* SPI1 not implemented */
+		*(.spi1)
 		. = ALIGN(1024);
 		. += 1024;			/* Reserved */
 		. = ALIGN(1024);

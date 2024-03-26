@@ -30,13 +30,17 @@
 #include <stm32.h>
 #include <peripheral/RCC.h>
 
-#ifdef STM32L4
+#if defined(STM32L4) || defined(STM32L0)
 /**
 	@brief Enable power control
  */
 void RCCHelper::Enable(volatile pwr_t* /*pwr*/)
 {
-	RCC.APB1ENR1 |= RCC_APB1_1_PWR;
+	#ifdef STM32L0
+		RCC.APB1ENR |= RCC_APB1_PWR;
+	#elif defined(STM32L4)
+		RCC.APB1ENR1 |= RCC_APB1_1_PWR;
+	#endif
 }
 #endif
 
@@ -211,6 +215,11 @@ void RCCHelper::Enable(volatile usart_t* uart)
 void RCCHelper::Enable(volatile spi_t* spi)
 {
 	#if defined(STM32F031)
+
+		if(spi == &SPI1)
+			RCC.APB2ENR |= RCC_APB2_SPI1;
+
+	#elif defined(STM32L031)
 
 		if(spi == &SPI1)
 			RCC.APB2ENR |= RCC_APB2_SPI1;

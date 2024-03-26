@@ -48,7 +48,7 @@ public:
 	static void Enable(volatile dts_t* dts);
 	#endif
 
-	#ifdef STM32L4
+	#if defined(STM32L4) || defined(STM32L0)
 	static void Enable(volatile pwr_t* pwr);
 	#endif
 

@@ -32,19 +32,36 @@
 
 #ifdef HAVE_PWR
 
-#ifdef STM32L431
+#if ( defined(STM32L031) || defined(STM32L431) )
 
 /**
 	@brief Configures the internal LDO and blocks until it's stabilized
  */
 void Power::ConfigureLDO(VoltageRange vcore)
 {
-	//Set the voltage mode
-	PWR.CR1 = (PWR.CR1 & ~PWR_CR1_VOS) | (vcore << 9);
+	#ifdef STM32L031
 
-	//Wait until stable
-	while( (PWR.SR2 & PWR_SR2_VOSF) != 0)
-	{}
+		//Set the voltage mode
+		PWR.CR = (PWR.CR & ~PWR_CR_VOS) | (vcore << 11);
+
+		//Wait until stable
+		while( (PWR.CSR & PWR_CSR_VOSF) != 0)
+		{}
+
+	#elif defined(STM32L431)
+
+		//Set the voltage mode
+		PWR.CR1 = (PWR.CR1 & ~PWR_CR1_VOS) | (vcore << 9);
+
+		//Wait until stable
+		while( (PWR.SR2 & PWR_SR2_VOSF) != 0)
+		{}
+
+	#else
+
+		#error unimplemented
+
+	#endif
 }
 #endif
 

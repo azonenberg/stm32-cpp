@@ -43,6 +43,7 @@ public:
 	void WaitForWrites();
 	uint8_t BlockingRead();
 	uint8_t BlockingReadDevice();
+	void NonblockingWriteDevice(uint8_t data);
 	void DiscardRxData();
 
 	void SetClockInvert(bool invert);

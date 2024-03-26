@@ -167,6 +167,18 @@ bool SPI::PollReadDataReady()
 	return false;
 }
 
+/**
+	@brief Send a byte of data in response to a message from the host
+ */
+void SPI::NonblockingWriteDevice(uint8_t data)
+{
+	#ifdef STM32H735
+		m_lane->TXDR = data;
+	#else
+		m_lane->DR = data;
+	#endif
+}
+
 void SPI::BlockingWrite(uint8_t data)
 {
 	#ifdef STM32H735
@@ -180,6 +192,19 @@ void SPI::BlockingWrite(uint8_t data)
 		//Send it
 		m_lane->TXDR = data;
 		m_lane->CR1 |= SPI_START;
+
+	#elif defined(STM32L031)
+
+		//In half-duplex mode, select output mode
+		if(!m_fullDuplex)
+			m_lane->CR1 |= SPI_BIDI_OE;
+
+		//If FIFO is full, block
+		while( (m_lane->SR & SPI_TX_EMPTY) != 0)
+		{}
+
+		//Send it
+		m_lane->DR = data;
 
 	#else
 

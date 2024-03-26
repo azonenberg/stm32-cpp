@@ -32,9 +32,6 @@
 
 #include <stm32.h>
 
-//drivers for these families not implemented yet
-#if( !defined(STM32L0) )
-
 /**
 	@brief Flash memory
 
@@ -43,6 +40,10 @@
 class Flash
 {
 public:
+
+	#ifdef STM32L031
+	static void SetConfiguration(int hclkFreqMHz, VoltageRange range);
+	#endif
 
 	#ifdef STM32L4
 	static void SetConfiguration(int hclkFreqMHz, VoltageRange range);
@@ -72,13 +73,19 @@ public:
 protected:
 	static void Unlock()
 	{
-		FLASH.KEYR = 0x45670123;
-		FLASH.KEYR = 0xCDEF89AB;
+		#ifdef STM32L031
+			//not yet implemented
+			while(1)
+			{}
+		#else
+			FLASH.KEYR = 0x45670123;
+			FLASH.KEYR = 0xCDEF89AB;
+		#endif
 	}
 
+	#ifndef STM32L031
 	static uint32_t m_maxPsize;
+	#endif
 };
-
-#endif	//model specific
 
 #endif
