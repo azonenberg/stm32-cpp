@@ -44,6 +44,7 @@ public:
 	uint8_t BlockingRead();
 	uint8_t BlockingReadDevice();
 	void NonblockingWriteDevice(uint8_t data);
+	void BlockingWriteDevice(const uint8_t* data, uint32_t len);
 	void DiscardRxData();
 
 	void SetClockInvert(bool invert);

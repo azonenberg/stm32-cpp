@@ -168,6 +168,18 @@ bool SPI::PollReadDataReady()
 }
 
 /**
+	@brief Send a block of data in response to a query from the host
+ */
+void SPI::BlockingWriteDevice(const uint8_t* data, uint32_t len)
+{
+	for(uint32_t i=0; i<len; i++)
+	{
+		NonblockingWriteDevice(data[i]);
+		BlockingReadDevice();
+	}
+}
+
+/**
 	@brief Send a byte of data in response to a message from the host
  */
 void SPI::NonblockingWriteDevice(uint8_t data)
