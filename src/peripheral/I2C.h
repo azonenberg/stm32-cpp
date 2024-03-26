@@ -37,6 +37,44 @@ class I2C
 public:
 	I2C(volatile i2c_t* lane, uint8_t prescale, uint8_t clkdiv);
 
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Nonblocking API (polling or interrupt based)
+
+	void NonblockingStart(uint8_t len, uint8_t addr, bool read);
+
+	/**
+		@brief Checks if the start/address sequence has completed
+	 */
+	bool IsStartDone()
+	{ return (m_lane->CR2 & I2C_START) != I2C_START; }
+
+	/**
+		@brief Sends a byte of write data, returning immediately and not waiting for it to finish
+	 */
+	void NonblockingWrite(uint8_t data)
+	{ m_lane->TXDR = data; }
+
+	/**
+		@brief Checks if the write is finished
+	 */
+	bool IsWriteDone()
+	{ return (m_lane->ISR & I2C_TX_EMPTY) == I2C_TX_EMPTY; }
+
+	/**
+		@brief Checks if read data is available
+	 */
+	bool IsReadReady()
+	{ return (m_lane->ISR & I2C_RX_READY) == I2C_RX_READY; }
+
+	/**
+		@brief Gets the read data
+	 */
+	uint8_t GetReadData()
+	{ return m_lane->RXDR;	}
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Blocking API (slow and simple)
+
 	void Start();
 
 	bool BlockingRead(uint8_t addr, uint8_t* data, uint8_t len);

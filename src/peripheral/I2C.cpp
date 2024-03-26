@@ -60,6 +60,28 @@ I2C::I2C(volatile i2c_t* lane, uint8_t prescale, uint8_t clkdiv)
 	lane->CR1 = 1;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Nonblocking API
+
+/**
+	@brief Sends a start (or restart) command, returning immediately and not waiting for it to finish
+
+	@param len		Number of bytes we intend to send
+	@param addr		Device address
+	@param read		True to initiate a read request, false to initiate a write
+ */
+void I2C::NonblockingStart(uint8_t len, uint8_t addr, bool read)
+{
+	//Auto end, specified length
+	m_lane->CR2 = I2C_AUTO_END | (len << 16) | addr;
+	if(read)
+		m_lane->CR2 |= I2C_READ;
+	m_lane->CR2 |= I2C_START;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Blocking API
+
 /**
 	@brief Sends a start (or restart) command
  */
