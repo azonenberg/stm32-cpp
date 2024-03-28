@@ -51,11 +51,11 @@ public:
 
 	virtual void PrintBinary(char ch) override
 	{
-		if(m_wptr <= m_size)
+		if(m_wptr < m_size)
 			m_buf[m_wptr ++] = ch;
 
 		//Null terminate
-		if(m_wptr <= m_size)
+		if(m_wptr < m_size)
 			m_buf[m_wptr] = '\0';
 	}
 
