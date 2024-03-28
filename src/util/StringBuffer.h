@@ -57,6 +57,8 @@ public:
 		//Null terminate
 		if(m_wptr < m_size)
 			m_buf[m_wptr] = '\0';
+		else
+			m_buf[m_size-1] = '\0';
 	}
 
 	size_t length()
