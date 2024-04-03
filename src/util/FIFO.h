@@ -111,6 +111,30 @@ public:
 	}
 
 	/**
+		@brief Returns the number of elements in the FIFO
+	 */
+	uint32_t size()
+	{
+		#ifndef SIMULATION
+			uint32_t sr = EnterCriticalSection();
+		#endif
+
+		uint32_t size = 0;
+		if(IsEmpty())
+			size = 0;
+		else if(IsFull())
+			size = depth;
+		else
+			size = (m_wptr - m_rptr) % depth;
+
+		#ifndef SIMULATION
+			LeaveCriticalSection(sr);
+		#endif
+
+		return size;
+	}
+
+	/**
 		@brief Checks if the FIFO is empty
 	 */
 	bool IsEmpty()
