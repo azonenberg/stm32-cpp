@@ -262,10 +262,7 @@ uint8_t SPI::BlockingRead()
 
 		//In half-duplex mode, select input mode
 		if(!m_fullDuplex)
-		{
 			m_lane->CR1 &= ~SPI_BIDI_OE;
-			m_lane->CR1 |= SPI_RX_ONLY;
-		}
 
 		//Write a dummy byte
 		m_lane->DR = 0x0;
