@@ -46,6 +46,7 @@
 SPI::SPI(volatile spi_t* lane, bool fullDuplex, uint16_t baudDiv, bool masterMode)
 	: m_lane(lane)
 	, m_fullDuplex(fullDuplex)
+	, m_lastWasWrite(false)
 {
 	RCCHelper::Enable(lane);
 
@@ -193,6 +194,8 @@ void SPI::NonblockingWriteDevice(uint8_t data)
 
 void SPI::BlockingWrite(uint8_t data)
 {
+	m_lastWasWrite = true;
+
 	#ifdef STM32H735
 
 		//TODO: half duplex support
@@ -242,6 +245,8 @@ uint8_t SPI::BlockingRead()
 	//Wait for previous events to complete
 	WaitForWrites();
 	DiscardRxData();
+
+	m_lastWasWrite = false;
 
 	#ifdef STM32H735
 
@@ -310,6 +315,10 @@ void SPI::WaitForWrites()
 		{}
 
 	#else
+
+		//nothing to do if we are reading in half duplex mode
+		if(!m_fullDuplex && !m_lastWasWrite)
+			return;
 
 		//Wait for busy flag to clear
 		while(m_lane->SR & SPI_BUSY)

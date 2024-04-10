@@ -52,6 +52,7 @@ public:
 protected:
 	volatile spi_t*	m_lane;
 	bool m_fullDuplex;
+	bool m_lastWasWrite;
 };
 
 #endif
