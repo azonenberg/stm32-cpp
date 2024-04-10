@@ -57,19 +57,8 @@ enum pwr_csr
 
 extern volatile pwr_t PWR;
 
-typedef struct
-{
-	uint32_t MODER;
-	uint32_t OTYPER;
-	uint32_t OSPEEDR;
-	uint32_t PUPDR;
-	uint32_t IDR;
-	uint32_t ODR;
-	uint32_t BSRR;
-	uint32_t LCKR;
-	uint32_t AFRL;
-	uint32_t AFRH;
-} gpio_t;
+#define GPIO_T_VERSION 1
+#include "stm32-gpio.h"
 
 extern volatile gpio_t GPIOA;
 extern volatile gpio_t GPIOB;
@@ -147,26 +136,8 @@ enum rcc_cr_bits
 
 extern volatile rcc_t RCC;
 
-typedef struct
-{
-	uint32_t CR1;
-	uint32_t CR2;
-	uint32_t CR3;
-	uint32_t BRR;
-	uint32_t GTPR;
-	uint32_t RTOR;
-	uint32_t RQR;
-	uint32_t ISR;
-	uint32_t ICR;
-	uint32_t RDR;
-	uint32_t TDR;
-} usart_t;
-
-enum usart_bits
-{
-	USART_ISR_TXE = 0x80,
-	USART_ISR_RXNE = 0x20
-};
+#define USART_T_VERSION 1
+#include "stm32-usart.h"
 
 extern volatile usart_t USART2;
 extern volatile usart_t USART4;
