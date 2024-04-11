@@ -71,14 +71,16 @@ void Logger::UpdateOffset()
 /**
 	@brief Updates the internal offset if the timer is getting close to wrapping, then reset the timer
  */
-void Logger::UpdateOffset(uint32_t threshold)
+bool Logger::UpdateOffset(uint32_t threshold)
 {
 	uint32_t timestamp = m_timer->GetCount();
 	if(timestamp >= threshold)
 	{
 		m_timeOffset += timestamp;
 		m_timer->Restart();
+		return true;
 	}
+	return false;
 }
 
 #endif
