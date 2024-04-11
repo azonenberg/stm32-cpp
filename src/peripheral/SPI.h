@@ -36,6 +36,7 @@ class SPI
 {
 public:
 	SPI(volatile spi_t* lane, bool fullDuplex, uint16_t baudDiv, bool masterMode = true);
+	void SetBaudDiv(uint16_t baudDiv);
 
 	bool PollReadDataReady();
 

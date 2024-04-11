@@ -57,41 +57,7 @@ SPI::SPI(volatile spi_t* lane, bool fullDuplex, uint16_t baudDiv, bool masterMod
 		//8 bit word size
 		lane->CFG1 = 7;
 
-		switch(baudDiv)
-		{
-			case 2:
-				break;
-
-			case 4:
-				lane->CFG1 |= (1 << 28);
-				break;
-
-			case 8:
-				lane->CFG1 |= (2 << 28);
-				break;
-
-			case 16:
-				lane->CFG1 |= (3 << 28);
-				break;
-
-			case 32:
-				lane->CFG1 |= (4 << 28);
-				break;
-
-			case 64:
-				lane->CFG1 |= (5 << 28);
-				break;
-
-			case 128:
-				lane->CFG1 |= (6 << 28);
-				break;
-
-			//use max divisor if invalid is selected
-			case 256:
-			default:
-				lane->CFG1 |= (7 << 28);
-				break;
-		}
+		SetBaudDiv(baudDiv);
 
 		//Set master mode with CS# in output mode
 		//(we don't have to configure the alt mode on CS# but this keeps it from detecting false mode faults)
@@ -119,36 +85,7 @@ SPI::SPI(volatile spi_t* lane, bool fullDuplex, uint16_t baudDiv, bool masterMod
 		//ok to do before baud changes
 		lane->CR1 |= SPI_ENABLE;
 
-		//Calculate correct init value for baud rate divisor
-		switch(baudDiv)
-		{
-			case 2:
-				break;
-			case 4:
-				lane->CR1 |= 0x8;
-				break;
-			case 8:
-				lane->CR1 |= 0x10;
-				break;
-			case 16:
-				lane->CR1 |= 0x18;
-				break;
-			case 32:
-				lane->CR1 |= 0x20;
-				break;
-			case 64:
-				lane->CR1 |= 0x28;
-				break;
-			case 128:
-				lane->CR1 |= 0x30;
-				break;
-
-			//use max value for invalid divisor
-			case 256:
-			default:
-				lane->CR1 |= 0x38;
-				break;
-		}
+		SetBaudDiv(baudDiv);
 
 		//Enable bidirectional mode if requested
 		if(!fullDuplex)
@@ -156,6 +93,85 @@ SPI::SPI(volatile spi_t* lane, bool fullDuplex, uint16_t baudDiv, bool masterMod
 
 	#endif
 
+}
+
+void SPI::SetBaudDiv(uint16_t baudDiv)
+{
+	#ifdef STM32H735
+		m_lane->CFG1 &= ~(7 << 28);
+
+		switch(baudDiv)
+		{
+			case 2:
+				break;
+
+			case 4:
+				m_lane->CFG1 |= (1 << 28);
+				break;
+
+			case 8:
+				m_lane->CFG1 |= (2 << 28);
+				break;
+
+			case 16:
+				m_lane->CFG1 |= (3 << 28);
+				break;
+
+			case 32:
+				m_lane->CFG1 |= (4 << 28);
+				break;
+
+			case 64:
+				m_lane->CFG1 |= (5 << 28);
+				break;
+
+			case 128:
+				m_lane->CFG1 |= (6 << 28);
+				break;
+
+			//use max divisor if invalid is selected
+			case 256:
+			default:
+				m_lane->CFG1 |= (7 << 28);
+				break;
+		}
+
+	#else
+
+		m_lane->CR1 &= ~0x38;
+
+		//Calculate correct init value for baud rate divisor
+		switch(baudDiv)
+		{
+			case 2:
+				break;
+			case 4:
+				m_lane->CR1 |= 0x8;
+				break;
+			case 8:
+				m_lane->CR1 |= 0x10;
+				break;
+			case 16:
+				m_lane->CR1 |= 0x18;
+				break;
+			case 32:
+				m_lane->CR1 |= 0x20;
+				break;
+			case 64:
+				m_lane->CR1 |= 0x28;
+				break;
+			case 128:
+				m_lane->CR1 |= 0x30;
+				break;
+
+			//use max value for invalid divisor
+			case 256:
+			default:
+				m_lane->CR1 |= 0x38;
+				break;
+		}
+
+	#endif
 }
 
 /**
