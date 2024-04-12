@@ -82,6 +82,29 @@ char* itoa(int n, char* s)
 }
 
 /**
+	@brief Converts an int to a string (K&R implementation but uisugned)
+
+	@param n Input
+	@param s String to store into (must be 12+ bytes long to hold any possible integer)
+
+	@return str
+ */
+char* utoa(unsigned int n, char* s)
+{
+	unsigned int i;
+
+	i = 0;
+	do
+	{       /* generate digits in reverse order */
+		s[i++] = n % 10 + '0';   /* get next digit */
+	} while ((n /= 10) > 0);     /* delete it */
+
+	s[i] = '\0';
+
+	return reverse(s);
+}
+
+/**
 	@brief Stripped-down printf implementation adapted from my old PICNIX project.
 
 	Much ligher than a full ANSI compatible version but good enough for typical embedded use.
@@ -162,6 +185,11 @@ void DoPrintf(CharacterDevice* target, const char* format, __builtin_va_list arg
 				target->PrintBinary('%');
 				break;
 
+			case 'u':
+				utoa(__builtin_va_arg(args, unsigned int), buf);
+				target->WritePadded(buf, length, padchar, prepad);
+				break;
+
 			case 'd':
 				itoa(__builtin_va_arg(args, int), buf);
 				target->WritePadded(buf, length, padchar, prepad);
@@ -239,6 +267,14 @@ void DoPrintf(CharacterDevice* target, const char* format, __builtin_va_list arg
 				break;
 
 			default:
+				//special case: %u is a shortcut for %ud
+				if(!modsign)
+				{
+					i--;
+					utoa(__builtin_va_arg(args, unsigned int), buf);
+					target->WritePadded(buf, length, padchar, prepad);
+					continue;
+				}
 				target->PrintBinary('*');
 				break;
 			}
