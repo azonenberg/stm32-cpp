@@ -82,7 +82,8 @@ enum rcc_apb2
 	RCC_APB2_SPI1	= 0x00001000,
 	RCC_APB2_ADC	= 0x00000200,
 	RCC_APB2_TIM22	= 0x00000020,
-	RCC_APB2_TIM21	= 0x00000004
+	RCC_APB2_TIM21	= 0x00000004,
+	RCC_APB2_SYSCFG = 0x00000001
 };
 
 enum rcc_apb1
@@ -160,6 +161,18 @@ extern volatile syscfg_t SYSCFG;
 
 typedef struct
 {
+	uint32_t	IMR;
+	uint32_t	EMR;
+	uint32_t	RTSR;
+	uint32_t	FTSR;
+	uint32_t	SWIER;
+	uint32_t	PR;
+} exti_t;
+
+extern volatile exti_t EXTI;
+
+typedef struct
+{
 	uint32_t	CR1;
 	uint32_t	CR2;
 	uint32_t	SR;
@@ -188,7 +201,9 @@ enum spi_cr1_bits
 
 enum spi_cr2_bits
 {
-	SPI_FRXTH		= 0x1000
+	SPI_FRXTH		= 0x1000,
+	SPI_TXEIE		= 0x0080,
+	SPI_RXNEIE		= 0x0040
 };
 
 enum spi_sr_bits

@@ -82,6 +82,14 @@ public:
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Interrupt driven API, for now only fully supports device-mode operation
 
+	void NonblockingWriteFifo(const uint8_t* data, uint32_t len);
+
+	bool HasNextTxByte()
+	{ return !m_txFifo.IsEmpty(); }
+
+	uint8_t GetNextTxByte()
+	{ return m_txFifo.Pop(); }
+
 	SPIEvent GetEvent()
 	{ return m_rxFifo.Pop(); }
 
@@ -101,6 +109,7 @@ protected:
 	bool m_lastWasWrite;
 
 	FIFO<SPIEvent, 32> m_rxFifo;
+	FIFO<uint8_t, 32> m_txFifo;
 };
 
 #endif

@@ -166,7 +166,7 @@ public:
 	static void EnableBackupSram();
 	#endif
 
-	#if defined(STM32L4) || defined(STM32H7)
+	#if defined(STM32L0) || defined(STM32L4) || defined(STM32H7)
 	static void EnableSyscfg();
 	#endif
 };

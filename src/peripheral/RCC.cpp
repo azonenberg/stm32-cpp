@@ -1522,12 +1522,14 @@ uint8_t RCCHelper::GetDivider16Code(uint8_t div)
 }
 #endif
 
-#if defined(STM32L4) || defined(STM32H7)
+#if defined(STM32L0) || defined(STM32L4) || defined(STM32H7)
 void RCCHelper::EnableSyscfg()
 {
 	#if defined(STM32H735)
 		RCC.APB4ENR |= RCC_APB4_SYSCFG;
 	#elif defined(STM32L431)
+		RCC.APB2ENR |= RCC_APB2_SYSCFG;
+	#elif defined(STM32L031)
 		RCC.APB2ENR |= RCC_APB2_SYSCFG;
 	#else
 		#error Unknown part, dont know what to do with syscfg!

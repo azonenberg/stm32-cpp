@@ -191,9 +191,11 @@ void SPI::BlockingWriteDevice(const uint8_t* data, uint32_t len)
 {
 	for(uint32_t i=0; i<len; i++)
 	{
+		while( (m_lane->SR & SPI_TX_EMPTY) == 0)
+		{}
 		NonblockingWriteDevice(data[i]);
-		BlockingReadDevice();
 	}
+	DiscardRxData();
 }
 
 /**
@@ -206,6 +208,19 @@ void SPI::NonblockingWriteDevice(uint8_t data)
 	#else
 		m_lane->DR = data;
 	#endif
+}
+
+void SPI::NonblockingWriteFifo(const uint8_t* data, uint32_t len)
+{
+	for(uint32_t i=0; i<len; i++)
+		m_txFifo.Push(data[i]);
+
+	//Enable transmit interrupt
+	#ifdef STM32L0
+		m_lane->CR2 |= SPI_TXEIE;
+	#endif
+
+	//TODO: implement for other device families
 }
 
 void SPI::BlockingWrite(uint8_t data)

@@ -150,7 +150,7 @@ SECTIONS
 		. = ALIGN(1024);
 		*(.syscfg)
 		. = ALIGN(1024);
-		. += 1024;			/* EXTI not yet implemented */
+		*(.exti)
 		. = ALIGN(1024);
 		*(.tim21)
 		. = ALIGN(1024);

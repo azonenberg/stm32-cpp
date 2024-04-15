@@ -138,9 +138,7 @@ public:
 		@brief Checks if the FIFO is empty
 	 */
 	bool IsEmpty()
-	{
-		return m_empty;
-	}
+	{ return m_empty; }
 
 	/**
 		@brief Checks if the FIFO is full
