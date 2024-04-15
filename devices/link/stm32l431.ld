@@ -1,6 +1,6 @@
 MEMORY
 {
-	FLASH(RX):	ORIGIN = 0x08000000, LENGTH = 32K
+	FLASH(RX):	ORIGIN = 0x08000000, LENGTH = 256K
 	SRAM1(RW):	ORIGIN = 0x20000000, LENGTH = 48K
 	SRAM2(RW):	ORIGIN = 0x2000c000, LENGTH = 16K
 
@@ -124,8 +124,10 @@ SECTIONS
 
 	.sfr_apb2 :
 	{
-		. += 1024;		/* SYSCFG/COMP/VREFBUF not implemented */
-		. += 1024;		/* EXTI not implemented */
+		. = ALIGN(1024);
+		*(.syscfg)
+		. = ALIGN(1024);
+		*(.exti)
 		. += 5120;		/* 0x4001_0800 reserved */
 		. += 1024;		/* FIREWALL not implemented */
 		. += 2048;		/* 0x4001_2000 reserved */

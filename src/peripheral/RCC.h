@@ -161,10 +161,13 @@ public:
 	static uint8_t GetDivider512Code(uint16_t div);
 	static uint8_t GetDivider16Code(uint8_t div);
 
-	static void EnableSyscfg();
 	static void EnableSram2();
 	static void EnableSram1();
 	static void EnableBackupSram();
+	#endif
+
+	#if defined(STM32L4) || defined(STM32H7)
+	static void EnableSyscfg();
 	#endif
 };
 

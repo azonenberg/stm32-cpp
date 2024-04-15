@@ -103,7 +103,8 @@ enum rcc_apb2
 	RCC_APB2_TIM15	= 0x00010000,
 	RCC_APB2_USART1	= 0x00004000,
 	RCC_APB2_SPI1	= 0x00001000,
-	RCC_APB2_TIM1	= 0x00000800
+	RCC_APB2_TIM1	= 0x00000800,
+	RCC_APB2_SYSCFG	= 0x00000001
 };
 
 enum rcc_apb1_en1
@@ -183,22 +184,23 @@ extern volatile usart_t USART1;
 extern volatile usart_t USART2;
 extern volatile usart_t USART3;
 extern volatile usart_t UART4;
-/*
+
 typedef struct
 {
+	uint32_t MEMRMP;
 	uint32_t CFGR1;
-	uint32_t CFGR2;
 	uint32_t EXTICR1;
 	uint32_t EXTICR2;
 	uint32_t EXTICR3;
 	uint32_t EXTICR4;
-	uint32_t COMP1_CTRL;
-	uint32_t COMP2_CTRL;
-	uint32_t CFGR3;
+	uint32_t SCSR;
+	uint32_t CFGR2;
+	uint32_t SWPR;
+	uint32_t SKR;
 } syscfg_t;
 
 extern volatile syscfg_t SYSCFG;
-*/
+
 typedef struct
 {
 	uint32_t	CR1;
@@ -229,7 +231,8 @@ enum spi_cr1_bits
 
 enum spi_cr2_bits
 {
-	SPI_FRXTH		= 0x1000
+	SPI_FRXTH		= 0x1000,
+	SPI_RXNEIE		= 0x0040
 };
 
 enum spi_sr_bits
@@ -430,6 +433,24 @@ typedef struct
 } dbgmcu_t;
 
 extern volatile dbgmcu_t DBGMCU;
+
+typedef struct
+{
+	uint32_t	IMR1;
+	uint32_t	EMR1;
+	uint32_t	RTSR1;
+	uint32_t	FTSR1;
+	uint32_t	SWIER1;
+	uint32_t	PR1;
+	uint32_t	IMR2;
+	uint32_t	EMR2;
+	uint32_t	RTSR2;
+	uint32_t	FTSR2;
+	uint32_t	SWIER2;
+	uint32_t	PR2;
+} exti_t;
+
+extern volatile exti_t EXTI;
 
 extern volatile uint32_t U_ID[3];
 extern volatile uint16_t FLASH_SIZE;

@@ -32,6 +32,35 @@
 
 #ifdef HAVE_SPI
 
+#include <util/FIFO.h>
+
+class SPIEvent
+{
+public:
+	SPIEvent(uint8_t t=0, uint8_t d=0)
+	: type(t)
+	, data(d)
+	{}
+
+	enum
+	{
+		TYPE_DATA,
+		TYPE_CS
+	};
+	uint8_t type;
+
+	uint8_t	data;
+
+	SPIEvent& operator=(const SPIEvent& rhs) =default;
+
+	void operator=(const SPIEvent& rhs) volatile
+	{
+		type = rhs.type;
+		data = rhs.data;
+	}
+};
+
+//TODO: consider refactoring this to be a CharacterDevice?
 class SPI
 {
 public:
@@ -50,10 +79,28 @@ public:
 
 	void SetClockInvert(bool invert);
 
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Interrupt driven API, for now only fully supports device-mode operation
+
+	SPIEvent GetEvent()
+	{ return m_rxFifo.Pop(); }
+
+	bool HasEvents()
+	{ return !m_rxFifo.IsEmpty(); }
+
+	//Interrupt handlers
+	void OnIRQRxData(uint8_t value)
+	{ m_rxFifo.Push(SPIEvent(SPIEvent::TYPE_DATA, value) ); }
+
+	void OnIRQCSEdge(bool value)
+	{ m_rxFifo.Push(SPIEvent(SPIEvent::TYPE_CS, value)); }
+
 protected:
 	volatile spi_t*	m_lane;
 	bool m_fullDuplex;
 	bool m_lastWasWrite;
+
+	FIFO<SPIEvent, 32> m_rxFifo;
 };
 
 #endif

@@ -90,7 +90,7 @@ public:
 			uint32_t sr = EnterCriticalSection();
 		#endif
 
-		objtype ret = m_storage[m_rptr];
+		objtype ret = *const_cast<objtype*>(&m_storage[m_rptr]);
 
 		if(!IsEmpty())
 		{
