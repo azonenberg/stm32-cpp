@@ -96,7 +96,7 @@ SECTIONS
 		__bss_end__ = .;
 	} > AXISRAM
 
-	/* Fill all remaining AXI SRAM space with the heap */
+	/* Fill all remaining AXI SRAM space with the heap (which we don't actually use) */
 	.heap :
 	{
 		. = ALIGN(4);
