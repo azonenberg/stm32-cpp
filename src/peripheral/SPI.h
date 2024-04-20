@@ -84,7 +84,7 @@ public:
 
 	void EnableRxInterrupt()
 	{
-		#if SPI_T_VERSION == 1
+		#if (SPI_T_VERSION == 1) || (SPI_T_VERSION == 3)
 			m_lane->CR2 |= SPI_RXNEIE;
 		#elif SPI_T_VERSION == 2
 			m_lane->IER |= SPI_IER_RXPIE;

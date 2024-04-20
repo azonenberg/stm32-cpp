@@ -50,26 +50,7 @@ SPI::SPI(volatile spi_t* lane, bool fullDuplex, uint16_t baudDiv, bool masterMod
 {
 	RCCHelper::Enable(lane);
 
-	#ifdef STM32H735
-
-		//TODO: what do we write to TSER, TSIZE in CR2?
-
-		//8 bit word size
-		lane->CFG1 = 7;
-
-		SetBaudDiv(baudDiv);
-
-		//Set master mode with CS# in output mode
-		//(we don't have to configure the alt mode on CS# but this keeps it from detecting false mode faults)
-		if(masterMode)
-			lane->CFG2 = SPI_MASTER | SPI_SSOE;
-		else
-			lane->CFG2 = 0;
-
-		//must be done after making all other config changes
-		lane->CR1 |= SPI_ENABLE;
-
-	#else //this is for STM32L031 and F777?
+	#if SPI_T_VERSION == 1
 
 		//8-bit word size, set RXNE as soon as we have a byte in the FIFO
 		//TODO: make word size configurable?
@@ -91,6 +72,49 @@ SPI::SPI(volatile spi_t* lane, bool fullDuplex, uint16_t baudDiv, bool masterMod
 		if(!fullDuplex)
 			lane->CR1 |= SPI_BIDI_MODE;
 
+	#elif SPI_T_VERSION == 2
+
+		//TODO: what do we write to TSER, TSIZE in CR2?
+
+		//8 bit word size
+		lane->CFG1 = 7;
+
+		SetBaudDiv(baudDiv);
+
+		//Set master mode with CS# in output mode
+		//(we don't have to configure the alt mode on CS# but this keeps it from detecting false mode faults)
+		if(masterMode)
+			lane->CFG2 = SPI_MASTER | SPI_SSOE;
+		else
+			lane->CFG2 = 0;
+
+		//must be done after making all other config changes
+		lane->CR1 |= SPI_ENABLE;
+
+	#elif SPI_T_VERSION == 3
+
+		//8-bit word size
+		//TODO: make word size configurable?
+		lane->CR2 = 7 << 8;
+
+		//Turn on the peripheral in master mode.
+		//To prevent problems, we need to have the internal CS# pulled high.
+		if(masterMode)
+			lane->CR1 = SPI_MASTER | SPI_SOFT_CS | SPI_INTERNAL_CS;
+		else
+			lane->CR1 = 0;
+
+		//ok to do before baud changes
+		lane->CR1 |= SPI_ENABLE;
+
+		SetBaudDiv(baudDiv);
+
+		//Enable bidirectional mode if requested
+		if(!fullDuplex)
+			lane->CR1 |= SPI_BIDI_MODE;
+
+	#else
+		#error unknown SPI peripheral version
 	#endif
 
 }

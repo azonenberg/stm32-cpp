@@ -171,47 +171,8 @@ typedef struct
 
 extern volatile exti_t EXTI;
 
-typedef struct
-{
-	uint32_t	CR1;
-	uint32_t	CR2;
-	uint32_t	SR;
-	uint8_t		DR;			//STM32f0x1 datasheet page 807, 28.9.4 says the register is 16-bits wide, and that
-							//"Unused bits are ignored when writing to the register". This is untrue.
-							//If you access DR as a 16-bit write, you get *two* bytes of data sent.
-	uint32_t	CRCPR;
-	uint32_t	RXCRCR;
-	uint32_t	TXCRCR;
-	uint32_t	I2SCFGR;
-	uint32_t	I2SPR;
-} spi_t;
-
-enum spi_cr1_bits
-{
-	SPI_BIDI_MODE	= 0x8000,
-	SPI_BIDI_OE		= 0x4000,
-	SPI_RX_ONLY		= 0x0400,
-	SPI_SOFT_CS		= 0x0200,
-	SPI_INTERNAL_CS	= 0x0100,
-	SPI_LSB_FIRST	= 0x0080,
-	SPI_ENABLE		= 0x0040,
-	SPI_MASTER		= 0x0004,
-	SPI_CPOL		= 0x0002
-};
-
-enum spi_cr2_bits
-{
-	SPI_FRXTH		= 0x1000,
-	SPI_TXEIE		= 0x0080,
-	SPI_RXNEIE		= 0x0040
-};
-
-enum spi_sr_bits
-{
-	SPI_BUSY			= 0x0080,
-	SPI_TX_EMPTY		= 0x0002,
-	SPI_RX_NOT_EMPTY	= 0x0001,
-};
+#define SPI_T_VERSION 3
+#include "stm32-spi.h"
 
 extern volatile spi_t SPI1;
 
@@ -392,8 +353,6 @@ extern volatile uint16_t F_ID;
 //Defines for what peripherals are present / implemented
 #define HAVE_I2C
 #define HAVE_TIM
-#define HAVE_SPI
-#define HAVE_UART
 #define HAVE_ADC
 #define HAVE_PWR
 #define HAVE_FLASH
