@@ -415,31 +415,8 @@ extern volatile i2c_t I2C3;
 extern volatile i2c_t I2C2;
 extern volatile i2c_t I2C1;
 
-typedef struct
-{
-	uint32_t CR1;
-	uint32_t CR2;
-	uint32_t CFG1;
-	uint32_t CFG2;
-	uint32_t IER;
-	uint32_t SR;
-	uint32_t IFCR;
-	uint32_t field_1c;
-	uint8_t	TXDR;			//TODO: find a cleaner way of doing this
-	uint8_t field_21[3];
-	uint32_t field_24;
-	uint32_t field_28;
-	uint32_t field_2c;
-	uint32_t RXDR;
-	uint32_t field_34;
-	uint32_t field_38;
-	uint32_t field_3c;
-	uint32_t CRCPOLY;
-	uint32_t TXCRC;
-	uint32_t RXCRCR;
-	uint32_t UDRDR;
-	uint32_t I2SCFGR;
-} spi_t;
+#define SPI_T_VERSION 2
+#include "stm32-spi.h"
 
 extern volatile spi_t SPI1;
 extern volatile spi_t SPI2;
@@ -448,29 +425,6 @@ extern volatile spi_t SPI4;
 extern volatile spi_t SPI5;
 extern volatile spi_t SPI6;
 
-enum spi_cr1_bits
-{
-	SPI_ENABLE		= 0x00000001,
-	SPI_AF_LOCK		= 0x00010000
-};
-
-enum spi_cfg2_bits
-{
-	SPI_CPOL		= 0x02000000,
-	SPI_LSB_FIRST	= 0x00800000,
-	SPI_SSOE		= 0x20000000,
-	SPI_MASTER		= 0x00400000
-};
-
-enum spi_sr_bits
-{
-	SPI_TX_FIFO_MASK	= 0x0002,
-	//SPI_RX_FIFO_MASK	= 0x0600,
-	//SPI_BUSY			= 0x0080,
-	SPI_TX_EMPTY		= 0x1000,
-	SPI_RX_NOT_EMPTY	= 0x0001,
-	SPI_START			= 0x0200
-};
 /*
 typedef struct
 {
@@ -998,12 +952,10 @@ extern volatile dts_t DTS;
 #define HAVE_I2C
 #define HAVE_DTS
 #define HAVE_TIM
-#define HAVE_SPI
 //#define HAVE_EMAC
 #define HAVE_CRYP
 #define HAVE_RNG
 #define HAVE_HASH
-#define HAVE_UART
 #define HAVE_PWR
 #define HAVE_OCTOSPI
 
