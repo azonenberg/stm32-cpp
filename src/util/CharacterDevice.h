@@ -109,6 +109,9 @@ public:
 		while(*str)
 			PrintText(*(str++));
 	}
+
+	virtual void Flush()
+	{}
 };
 
 #endif

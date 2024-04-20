@@ -83,7 +83,15 @@ public:
 	// Interrupt driven API, for now only fully supports device-mode operation
 
 	void EnableRxInterrupt()
-	{ m_lane->CR2 |= SPI_RXNEIE; }
+	{
+		#if SPI_T_VERSION == 1
+			m_lane->CR2 |= SPI_RXNEIE;
+		#elif SPI_T_VERSION == 2
+			m_lane->IER |= SPI_IER_RXPIE;
+		#else
+			#error Dont know what to do with this SPI version
+		#endif
+	}
 
 	void NonblockingWriteFifo(const uint8_t* data, uint32_t len);
 

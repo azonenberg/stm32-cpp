@@ -1,8 +1,8 @@
 /***********************************************************************************************************************
 *                                                                                                                      *
-* stm32-cpp v0.1                                                                                                       *
+* stm32-cpp                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2021-2022 Andrew D. Zonenberg and contributors                                                         *
+* Copyright (c) 2021-2024 Andrew D. Zonenberg and contributors                                                         *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -41,7 +41,9 @@
 #include <util/FIFO.h>
 
 /**
-	@brief CLI output stream for a UART (for use with embedded-cli)
+	@brief CLI output stream for a UART or other character device (for use with embedded-cli)
+
+	Mostly just a passthrough, but converts \r to \r\n
  */
 class UARTOutputStream : public CLIOutputStream
 {
@@ -49,16 +51,14 @@ public:
 	UARTOutputStream();
 	virtual ~UARTOutputStream();
 
-	void Initialize(UART* uart);
+	void Initialize(CharacterDevice* uart);
 
 	virtual void PutCharacter(char ch);
 	virtual void PutString(const char* str);
 	virtual void Flush();
 
 protected:
-	UART* m_uart;
-
-	FIFO<char, 32> m_fifo;
+	CharacterDevice* m_uart;
 };
 
 #endif

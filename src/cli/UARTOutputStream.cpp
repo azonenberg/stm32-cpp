@@ -1,8 +1,8 @@
 /***********************************************************************************************************************
 *                                                                                                                      *
-* stm32-cpp v0.1                                                                                                       *
+* stm32-cpp                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2021-2022 Andrew D. Zonenberg and contributors                                                         *
+* Copyright (c) 2021-2024 Andrew D. Zonenberg and contributors                                                         *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -45,10 +45,9 @@ UARTOutputStream::~UARTOutputStream()
 {
 }
 
-void UARTOutputStream::Initialize(UART* uart)
+void UARTOutputStream::Initialize(CharacterDevice* uart)
 {
 	m_uart = uart;
-	m_fifo.Reset();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -56,28 +55,15 @@ void UARTOutputStream::Initialize(UART* uart)
 
 void UARTOutputStream::PutCharacter(char ch)
 {
-	//convert \n to \r\n
-	if(ch == '\n')
-		PutCharacter('\r');
-
-	if(m_fifo.IsFull())
-		Flush();
-
-	m_fifo.Push(ch);
+	m_uart->PrintText(ch);
 }
 
 void UARTOutputStream::PutString(const char* str)
 {
-	while(*str != '\0')
-	{
-		PutCharacter(*str);
-		str ++;
-	}
+	m_uart->PrintString(str);
 }
 
 void UARTOutputStream::Flush()
 {
-	while(!m_fifo.IsEmpty())
-		m_uart->PrintBinary(m_fifo.Pop());
-	m_fifo.Reset();
+	m_uart->Flush();
 }

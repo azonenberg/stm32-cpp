@@ -30,6 +30,7 @@
 #ifndef BufferedCharacterDevice_h
 #define BufferedCharacterDevice_h
 
+#include <cstddef>
 #include "CharacterDevice.h"
 
 template<size_t rxbufsize, size_t txbufsize>
@@ -52,6 +53,13 @@ public:
 	//Interrupt handlers
 	void OnIRQRxData(char ch)
 	{ m_rxFifo.Push(ch); }
+
+	///@brief Blocks until the transmit FIFO has fully drained
+	virtual void Flush() override
+	{
+		while(!m_txFifo.IsEmpty())
+		{}
+	}
 
 protected:
 	FIFO<char, rxbufsize> m_rxFifo;
