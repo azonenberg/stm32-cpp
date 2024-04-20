@@ -80,18 +80,36 @@ public:
 		}
 
 		//Configure TX/RX lanes appropriately
-		m_txlane->CR1 |= 0x9;
-		m_rxlane->CR1 |= 0x25;
+		m_txlane->CR1 |= USART_CR1_TE | USART_CR1_UE;
+		m_rxlane->CR1 |= USART_CR1_RE | USART_CR1_RXNEIE | USART_CR1_UE;
 	}
 
 	//TX side
-	virtual void PrintBinary(char ch)
+	virtual void PrintBinary(char ch) override
 	{
-		m_txlane->TDR = ch;
-
-		while(0 == (m_txlane->ISR & USART_ISR_TXE))
+		//Block if the FIFO has no free space
+		while(BufferedCharacterDevice<rxbufsize, txbufsize>::m_txFifo.IsFull())
 		{}
+
+		//Write to the FIFO
+		BufferedCharacterDevice<rxbufsize, txbufsize>::m_txFifo.Push(ch);
+
+		//Enable TX interrupt
+		m_txlane->CR1 |= USART_CR1_TXEIE;
 	}
+
+	//TX interrupt handler
+	virtual void OnIRQTxEmpty()
+	{
+		if(BufferedCharacterDevice<rxbufsize, txbufsize>::m_txFifo.IsEmpty())
+			m_txlane->CR1 &= ~USART_CR1_TXEIE;
+		else
+			m_txlane->TDR = BufferedCharacterDevice<rxbufsize, txbufsize>::m_txFifo.Pop();
+	}
+
+	//RX interrupt handler
+	virtual void OnIRQRxData()
+	{ BufferedCharacterDevice<rxbufsize, txbufsize>::m_rxFifo.Push(m_rxlane->RDR); }
 
 protected:
 	volatile usart_t* m_txlane;

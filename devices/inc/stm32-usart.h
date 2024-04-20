@@ -48,10 +48,19 @@ typedef struct
 	uint32_t TDR;
 } usart_t;
 
-enum usart_bits
+enum usart_isr_bits
 {
-	USART_ISR_TXE = 0x80,
-	USART_ISR_RXNE = 0x20
+	USART_ISR_TXE	= 0x80,
+	USART_ISR_RXNE	= 0x20
+};
+
+enum usart_cr1_bits
+{
+	USART_CR1_TXEIE 	= 0x80,
+	USART_CR1_RXNEIE	= 0x20,
+	USART_CR1_TE		= 0x08,
+	USART_CR1_RE 		= 0x04,
+	USART_CR1_UE		= 0x01
 };
 
 //STM32H735
@@ -73,10 +82,19 @@ typedef struct
 	uint32_t PRESC;
 } usart_t;
 
-enum usart_bits
+enum usart_isr_bits
 {
 	USART_ISR_TXE = 0x80,
 	USART_ISR_RXNE = 0x20
+};
+
+enum usart_cr1_bits
+{
+	USART_CR1_TXEIE 	= 0x80,
+	USART_CR1_RXNEIE	= 0x20,
+	USART_CR1_TE		= 0x08,
+	USART_CR1_RE 		= 0x04,
+	USART_CR1_UE		= 0x01
 };
 
 #else
