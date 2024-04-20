@@ -61,12 +61,14 @@ public:
 			m_buf[m_size-1] = '\0';
 	}
 
+	///@brief not used, but has to be defined because base class needs it
+	virtual char BlockingRead() override
+	{ return 0; }
+
 	size_t length()
 	{ return m_wptr; }
 
-	/**
-		@brief Resets the buffer to an empty state
-	 */
+	///@brief Resets the buffer to an empty state
 	void Clear()
 	{
 		m_wptr = 0;

@@ -1,8 +1,8 @@
 /***********************************************************************************************************************
 *                                                                                                                      *
-* STM32-CPP v0.1                                                                                                       *
+* STM32-CPP                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2020-2022 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2024 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -27,56 +27,35 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#include <stm32.h>
-#include <ctype.h>
-#include <string.h>
-#include <peripheral/UART.h>
-#include <peripheral/RCC.h>
-#include <util/StringHelpers.h>
+#ifndef BufferedCharacterDevice_h
+#define BufferedCharacterDevice_h
 
-#ifdef HAVE_UART
+#include "CharacterDevice.h"
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// UART driver class
-
-/**
-	@brief Initializes a UART.
- */
-UART::UART(volatile usart_t* txlane, volatile usart_t* rxlane, uint32_t baud_div)
-	: m_txlane(txlane)
-	, m_rxlane(rxlane)
+template<size_t rxbufsize, size_t txbufsize>
+class BufferedCharacterDevice : public CharacterDevice
 {
-	//Turn on the UART
-	RCCHelper::Enable(txlane);
-	RCCHelper::Enable(rxlane);
+public:
 
-	//Set baud rates
-	m_txlane->BRR = baud_div;
-	if(m_txlane != m_rxlane)
-		m_rxlane->BRR = baud_div;
+	bool HasInput()
+	{ return !m_rxFifo.IsEmpty(); }
 
-	//Wipe config register to default states
-	m_txlane->CR3 = 0x0;
-	m_txlane->CR2 = 0x0;
-	m_txlane->CR1 = 0x0;
-	if(m_txlane != m_rxlane)
+	virtual char BlockingRead() override
 	{
-		m_rxlane->CR3 = 0x0;
-		m_rxlane->CR2 = 0x0;
-		m_rxlane->CR1 = 0x0;
+		//block until at least one byte is ready
+		while(m_rxFifo.IsEmpty())
+		{}
+
+		return m_rxFifo.Pop();
 	}
 
-	//Configure TX/RX lanes appropriately
-	m_txlane->CR1 |= 0x9;
-	m_rxlane->CR1 |= 0x25;
-}
+	//Interrupt handlers
+	void OnIRQRxData(char ch)
+	{ m_rxFifo.Push(ch); }
 
-void UART::PrintBinary(char ch)
-{
-	m_txlane->TDR = ch;
-
-	while(0 == (m_txlane->ISR & USART_ISR_TXE))
-	{}
-}
+protected:
+	FIFO<char, rxbufsize> m_rxFifo;
+	FIFO<char, txbufsize> m_txFifo;
+};
 
 #endif

@@ -1,8 +1,8 @@
 /***********************************************************************************************************************
 *                                                                                                                      *
-* STM32-CPP v0.1                                                                                                       *
+* STM32-CPP                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2020-2022 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2024 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -30,7 +30,10 @@
 #ifndef uart_h
 #define uart_h
 
-#include <util/CharacterDevice.h>
+#include <stm32.h>
+#include <peripheral/RCC.h>
+#include <util/StringHelpers.h>
+#include <util/BufferedCharacterDevice.h>
 
 #ifdef HAVE_UART
 
@@ -43,7 +46,8 @@
 /**
 	@brief Driver for a UART
  */
-class UART : public CharacterDevice
+template<size_t rxbufsize, size_t txbufsize>
+class UART : public BufferedCharacterDevice<rxbufsize, txbufsize>
 {
 public:
 
@@ -51,10 +55,43 @@ public:
 	 : UART(lane, lane, baud_div)
 	{}
 
-	UART(volatile usart_t* txlane, volatile usart_t* rxlane, uint32_t baud_div);
+	UART(volatile usart_t* txlane, volatile usart_t* rxlane, uint32_t baud_div)
+		: m_txlane(txlane)
+		, m_rxlane(rxlane)
+	{
+		//Turn on the UART
+		RCCHelper::Enable(txlane);
+		RCCHelper::Enable(rxlane);
+
+		//Set baud rates
+		m_txlane->BRR = baud_div;
+		if(m_txlane != m_rxlane)
+			m_rxlane->BRR = baud_div;
+
+		//Wipe config register to default states
+		m_txlane->CR3 = 0x0;
+		m_txlane->CR2 = 0x0;
+		m_txlane->CR1 = 0x0;
+		if(m_txlane != m_rxlane)
+		{
+			m_rxlane->CR3 = 0x0;
+			m_rxlane->CR2 = 0x0;
+			m_rxlane->CR1 = 0x0;
+		}
+
+		//Configure TX/RX lanes appropriately
+		m_txlane->CR1 |= 0x9;
+		m_rxlane->CR1 |= 0x25;
+	}
 
 	//TX side
-	virtual void PrintBinary(char ch);
+	virtual void PrintBinary(char ch)
+	{
+		m_txlane->TDR = ch;
+
+		while(0 == (m_txlane->ISR & USART_ISR_TXE))
+		{}
+	}
 
 protected:
 	volatile usart_t* m_txlane;
