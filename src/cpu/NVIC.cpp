@@ -27,40 +27,10 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef stm32_common_h
-#define stm32_common_h
+#include "stm32-common.h"
 
-#include <stdint.h>
-
-/**
-	@brief Disables interrupts without saving the previous enable state
- */
-extern "C" void DisableInterrupts();
-
-/**
-	@brief Enables interrupts without saving the previous enable state
- */
-extern "C" void EnableInterrupts();
-
-/**
-	@brief Enters a critical section, disables interrupts, and returns the previous PRIMASK value
- */
-extern "C" uint32_t EnterCriticalSection();
-
-/**
-	@brief Leaves a critical section and restores the previous PRIMASK value
- */
-extern "C" void LeaveCriticalSection(uint32_t cpu_sr);
-
-//Linker variables
-extern uint8_t __data_romstart;
-extern uint8_t __data_start;
-extern uint8_t __data_end;
-
-/**
-	@brief Enables an IRQ lane in the NVIC
- */
-void NVIC_EnableIRQ(int lane);
-
-#endif
-
+void NVIC_EnableIRQ(int lane)
+{
+	volatile uint32_t* NVIC_ISER0 = (volatile uint32_t*)(0xe000e100);
+	NVIC_ISER0[lane/32] |= 1 << (lane % 32);
+}

@@ -82,6 +82,9 @@ public:
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Interrupt driven API, for now only fully supports device-mode operation
 
+	void EnableRxInterrupt()
+	{ m_lane->CR2 |= SPI_RXNEIE; }
+
 	void NonblockingWriteFifo(const uint8_t* data, uint32_t len);
 
 	bool HasNextTxByte()
