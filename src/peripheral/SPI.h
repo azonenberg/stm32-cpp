@@ -42,6 +42,11 @@ public:
 	, data(d)
 	{}
 
+	SPIEvent(const SPIEvent& rhs)
+	: type(rhs.type)
+	, data(rhs.data)
+	{}
+
 	enum
 	{
 		TYPE_DATA,
