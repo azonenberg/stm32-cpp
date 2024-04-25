@@ -30,6 +30,8 @@
 #ifndef rtc_h
 #define rtc_h
 
+#ifdef HAVE_RTC
+
 #include <peripheral/RCC.h>
 #include <time.h>
 
@@ -83,5 +85,7 @@ public:
 	volatile uint8_t* GetBackupMemory()
 	{ return reinterpret_cast<volatile uint8_t*>(&_RTC.BKP[0]); }
 };
+
+#endif
 
 #endif
