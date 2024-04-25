@@ -186,6 +186,7 @@ enum rcc_apb4
 	RCC_APB4_SYSCFG		= 0x00000002,
 	RCC_APB4_SPI6		= 0x00000020,
 	RCC_APB4_I2C4		= 0x00000080,
+	RCC_APB4_RTC		= 0x00010000,
 	RCC_APB4_DTS		= 0x04000000
 };
 
@@ -424,6 +425,11 @@ extern volatile spi_t SPI3;
 extern volatile spi_t SPI4;
 extern volatile spi_t SPI5;
 extern volatile spi_t SPI6;
+
+#define RTC_T_VERSION 1
+#include "stm32-rtc.h"
+
+extern volatile rtc_t _RTC;
 
 /*
 typedef struct

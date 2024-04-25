@@ -30,6 +30,17 @@
 #include <stm32.h>
 #include <peripheral/RCC.h>
 
+#ifdef HAVE_RTC
+void RCCHelper::Enable([[maybe_unused]] volatile rtc_t* rtc)
+{
+	#if defined(STM32H735)
+		RCC.APB4ENR |= RCC_APB4_RTC;
+	#else
+		#error Dont know what to do with RTC on this part
+	#endif
+}
+#endif
+
 #if defined(STM32L4) || defined(STM32L0)
 /**
 	@brief Enable power control

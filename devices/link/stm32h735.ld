@@ -285,7 +285,7 @@ SECTIONS
 		. = ALIGN(1024);
 		. += 1024;	/* VREF not yet implemented */
 		. = ALIGN(1024);
-		. += 1024;	/* RTC/BKP not yet implemented */
+		*(.rtc);
 		. = ALIGN(1024);
 		. += 1024;	/* reserved 5800_4400 */
 		. = ALIGN(1024);
