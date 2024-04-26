@@ -43,7 +43,7 @@
 						False in half-duplex mode (MOSI used bidirectionally)
 	@param baudDiv		Baud rate divisor from APB clock (must be power of two)
  */
-SPI::SPI(volatile spi_t* lane, bool fullDuplex, uint16_t baudDiv, bool masterMode)
+SPIBase::SPIBase(volatile spi_t* lane, bool fullDuplex, uint16_t baudDiv, bool masterMode)
 	: m_lane(lane)
 	, m_fullDuplex(fullDuplex)
 	, m_lastWasWrite(false)
@@ -119,7 +119,7 @@ SPI::SPI(volatile spi_t* lane, bool fullDuplex, uint16_t baudDiv, bool masterMod
 
 }
 
-void SPI::SetBaudDiv(uint16_t baudDiv)
+void SPIBase::SetBaudDiv(uint16_t baudDiv)
 {
 	#ifdef STM32H735
 		m_lane->CFG1 &= ~(7 << 28);
@@ -201,7 +201,7 @@ void SPI::SetBaudDiv(uint16_t baudDiv)
 /**
 	@brief Check if read data is available
  */
-bool SPI::PollReadDataReady()
+bool SPIBase::PollReadDataReady()
 {
 	if((m_lane->SR & SPI_RX_NOT_EMPTY) != 0)
 		return true;
@@ -211,7 +211,7 @@ bool SPI::PollReadDataReady()
 /**
 	@brief Send a block of data in response to a query from the host
  */
-void SPI::BlockingWriteDevice(const uint8_t* data, uint32_t len)
+void SPIBase::BlockingWriteDevice(const uint8_t* data, uint32_t len)
 {
 	for(uint32_t i=0; i<len; i++)
 	{
@@ -225,7 +225,7 @@ void SPI::BlockingWriteDevice(const uint8_t* data, uint32_t len)
 /**
 	@brief Send a byte of data in response to a message from the host
  */
-void SPI::NonblockingWriteDevice(uint8_t data)
+void SPIBase::NonblockingWriteDevice(uint8_t data)
 {
 	#ifdef STM32H735
 		m_lane->TXDR = data;
@@ -234,20 +234,7 @@ void SPI::NonblockingWriteDevice(uint8_t data)
 	#endif
 }
 
-void SPI::NonblockingWriteFifo(const uint8_t* data, uint32_t len)
-{
-	for(uint32_t i=0; i<len; i++)
-		m_txFifo.Push(data[i]);
-
-	//Enable transmit interrupt
-	#ifdef STM32L0
-		m_lane->CR2 |= SPI_TXEIE;
-	#endif
-
-	//TODO: implement for other device families
-}
-
-void SPI::BlockingWrite(uint8_t data)
+void SPIBase::BlockingWrite(uint8_t data)
 {
 	m_lastWasWrite = true;
 
@@ -295,7 +282,7 @@ void SPI::BlockingWrite(uint8_t data)
 	DiscardRxData();
 }
 
-uint8_t SPI::BlockingRead()
+uint8_t SPIBase::BlockingRead()
 {
 	//Wait for previous events to complete
 	WaitForWrites();
@@ -336,7 +323,7 @@ uint8_t SPI::BlockingRead()
 	#endif
 }
 
-uint8_t SPI::BlockingReadDevice()
+uint8_t SPIBase::BlockingReadDevice()
 {
 	#ifdef STM32H735
 
@@ -361,7 +348,7 @@ uint8_t SPI::BlockingReadDevice()
 /**
 	@brief 	Block until all pending writes have completed
  */
-void SPI::WaitForWrites()
+void SPIBase::WaitForWrites()
 {
 	#ifdef STM32H735
 
@@ -385,7 +372,7 @@ void SPI::WaitForWrites()
 /**
 	@brief Discards any data in the RX FIFO
  */
-void SPI::DiscardRxData()
+void SPIBase::DiscardRxData()
 {
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
@@ -409,7 +396,7 @@ void SPI::DiscardRxData()
 /**
 	@brief Set the SPI clock inversion mode (CPOL)
  */
-void SPI::SetClockInvert(bool invert)
+void SPIBase::SetClockInvert(bool invert)
 {
 	#ifdef STM32H735
 

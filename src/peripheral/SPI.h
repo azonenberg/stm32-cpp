@@ -66,10 +66,10 @@ public:
 };
 
 //TODO: consider refactoring this to be a CharacterDevice?
-class SPI
+class SPIBase
 {
 public:
-	SPI(volatile spi_t* lane, bool fullDuplex, uint16_t baudDiv, bool masterMode = true);
+	SPIBase(volatile spi_t* lane, bool fullDuplex, uint16_t baudDiv, bool masterMode = true);
 	void SetBaudDiv(uint16_t baudDiv);
 
 	bool PollReadDataReady();
@@ -98,7 +98,35 @@ public:
 		#endif
 	}
 
-	void NonblockingWriteFifo(const uint8_t* data, uint32_t len);
+protected:
+	volatile spi_t*	m_lane;
+	bool m_fullDuplex;
+	bool m_lastWasWrite;
+};
+
+template<size_t rxsize = 32, size_t txsize = 32>
+class SPI : public SPIBase
+{
+public:
+	SPI(volatile spi_t* lane, bool fullDuplex, uint16_t baudDiv, bool masterMode = true)
+	: SPIBase(lane, fullDuplex, baudDiv, masterMode)
+	{}
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Interrupt driven API, for now only fully supports device-mode operation
+
+	void NonblockingWriteFifo(const uint8_t* data, uint32_t len)
+	{
+		for(uint32_t i=0; i<len; i++)
+			m_txFifo.Push(data[i]);
+
+		//Enable transmit interrupt
+		#ifdef STM32L0
+			m_lane->CR2 |= SPI_TXEIE;
+		#endif
+
+		//TODO: implement for other device families
+	}
 
 	bool HasNextTxByte()
 	{ return !m_txFifo.IsEmpty(); }
@@ -120,12 +148,8 @@ public:
 	{ m_rxFifo.Push(SPIEvent(SPIEvent::TYPE_CS, value)); }
 
 protected:
-	volatile spi_t*	m_lane;
-	bool m_fullDuplex;
-	bool m_lastWasWrite;
-
-	FIFO<SPIEvent, 32> m_rxFifo;
-	FIFO<uint8_t, 32> m_txFifo;
+	FIFO<SPIEvent, rxsize> m_rxFifo;
+	FIFO<uint8_t, txsize> m_txFifo;
 };
 
 #endif
