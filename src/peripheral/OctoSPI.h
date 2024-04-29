@@ -58,6 +58,8 @@ public:
 	void SetDQSEnable(bool enable);
 	void SetSampleDelay(bool delay);
 
+	void SetMemoryMapMode();
+
 	void SetFifoThreshold(uint8_t threshold);
 
 	void BlockingWrite(uint32_t insn, uint32_t addr, const uint8_t* data, uint32_t len);

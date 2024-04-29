@@ -70,6 +70,8 @@ public:
 			m_wptr ++;
 			m_empty = false;
 		}
+		else
+			asm("nop");
 
 		if(m_wptr == depth)
 			m_wptr = 0;

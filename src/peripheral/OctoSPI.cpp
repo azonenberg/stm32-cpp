@@ -243,4 +243,12 @@ void OctoSPI::BlockingRead(uint32_t insn, uint32_t addr, uint8_t* data, uint32_t
 		data[i] = *buf;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Memory map the OCTOSPI
+
+void OctoSPI::SetMemoryMapMode()
+{
+	m_lane->CR = (m_lane->CR & ~OCTOSPI_FMODE_MASK) | OCTOSPI_FMODE_MMAP;
+}
+
 #endif
