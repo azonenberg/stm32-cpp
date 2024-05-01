@@ -27,68 +27,119 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef Flash_h
-#define Flash_h
+#ifndef stm32_flash_h
+#define stm32_flash_h
 
-#include <stm32.h>
+#define HAVE_FLASH
 
-/**
-	@brief Flash memory
+//STM32H735
+#if FLASH_T_VERSION == 1
 
-	All functions are static because there's only one flash subsystem in the device.
- */
-class Flash
+typedef struct
 {
-public:
+	uint32_t ACR;
+	uint32_t KEYR;
+	uint32_t OPTKEYR;
+	uint32_t CR;
+	uint32_t SR;
+	uint32_t CCR;
+	uint32_t OPTCR;
+	uint32_t OPTSR_CUR;
+	uint32_t OPTSR_PRG;
+	uint32_t OPTCCR;
+	uint32_t PRAR_CUR;
+	uint32_t PRAR_PRG;
+	uint32_t SCAR_CUR;
+	uint32_t SCAR_PRG;
+	uint32_t WPSN_CUR;
+	uint32_t WPSN_PRG;
+	uint32_t BOOT_CUR;
+	uint32_t BOOT_PRG;
+	uint32_t padding1[2];
+	uint32_t CRCCR;
+	uint32_t CRCSADDR;
+	uint32_t CRCEADDR;
+	uint32_t CRCDATAR;
+	uint32_t ECC_FAR;
+	uint32_t padding2[3];
+	uint32_t OPTSR2_CUR;
+	uint32_t OPTSR2_PRG;
+} flash_t;
 
-	#ifdef STM32L031
-	static void SetConfiguration(int hclkFreqMHz, VoltageRange range);
-	#endif
+enum flash_cr
+{
+	FLASH_CR_LOCK			= 0x1,
+	FLASH_CR_STRT			= 0x80,
 
-	#ifdef STM32L4
-	static void SetConfiguration(int hclkFreqMHz, VoltageRange range);
-	#endif
+	FLASH_CR_PSIZE_MASK		= 0x30,
+	FLASH_CR_PSIZE_X8		= 0x00,
+	FLASH_CR_PSIZE_X16		= 0x10,
+	FLASH_CR_PSIZE_X32		= 0x20,
+	FLASH_CR_PSIZE_X64		= 0x30,
 
-	#ifdef STM32H7
-	static void SetConfiguration(int axiClockFreqMHz, VoltageRange range);
-	#endif
+	FLASH_CR_SECTOR_MASK	= 0x300,
 
-	#ifdef STM32F7
+	FLASH_CR_FW				= 0x40,
+	FLASH_CR_SER			= 0x4,
+	FLASH_CR_PG				= 0x2
 
-	enum VoltageRange
-	{
-		RANGE_1V8,	//1.8V - 2.1V
-		RANGE_2V1,	//2.1V - 2.4V
-		RANGE_2V4,	//2.4V - 2.7V
-		RANGE_2V7,	//2.7V and up
-	};
-
-	static void SetConfiguration(bool cacheEnable, bool prefetchEnable, int cpuFreqMHz, VoltageRange range);
-
-	#endif
-
-	static bool BlockErase(uint8_t* address);
-	static bool Write(uint8_t* address, const uint8_t* data, uint32_t len);
-
-protected:
-	static void Unlock()
-	{
-		#ifdef STM32L031
-			//not yet implemented
-			while(1)
-			{}
-		#else
-			FLASH.KEYR = 0x45670123;
-			FLASH.KEYR = 0xCDEF89AB;
-		#endif
-	}
-
-	static void Lock()
-	{ FLASH.CR |= FLASH_CR_LOCK; }
-
-	#ifdef STM32H735
-	static uint32_t m_maxPsize;
-	#endif
 };
 
-#endif
+enum flash_sr
+{
+	FLASH_SR_BUSY			= 0x1,
+
+	FLASH_SR_ERR_MASK		= 0x7EE0400
+};
+
+//STM32L431
+#elif FLASH_T_VERSION == 2
+
+typedef struct
+{
+	uint32_t ACR;
+	uint32_t PDKEYR;
+	uint32_t KEYR;
+	uint32_t OPTKEYR;
+	uint32_t SR;
+	uint32_t CR;
+	uint32_t ECR;
+	uint32_t OPTR;
+	uint32_t PCROP1SR;
+	uint32_t PCROP1ER;
+	uint32_t WRP1AR;
+	uint32_t WRP1BR;
+} flash_t;
+
+enum flash_acr
+{
+	FLASH_ACR_DCEN			= 0x400,
+	FLASH_ACR_ICEN 			= 0x200,
+	FLASH_ACR_PREFETCHEN	= 0x100,
+};
+
+enum flash_cr
+{
+	FLASH_CR_LOCK			= 0x80000000,
+	FLASH_CR_STRT			= 0x10000,
+
+	FLASH_CR_SECTOR_MASK	= 0x7f8,
+
+	FLASH_CR_PER			= 0x2,
+	FLASH_CR_PG				= 0x1
+};
+
+enum flash_sr
+{
+	FLASH_SR_BUSY			= 0x10000,
+
+	FLASH_SR_ERR_MASK		= 0xC3FA
+};
+
+#else
+
+#error Undefined or unspecified FLASH_T_VERSION
+
+#endif	//version check
+
+#endif	//include guard

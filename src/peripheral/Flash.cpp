@@ -31,7 +31,7 @@
 #include "Flash.h"
 #include <string.h>
 
-#ifndef STM32L031
+#ifdef STM32H735
 uint32_t Flash::m_maxPsize = FLASH_CR_PSIZE_X8;
 #endif
 
@@ -113,9 +113,6 @@ void Flash::SetConfiguration(int hclkFreqMHz, VoltageRange range)
 	//Read back to verify write took effect
 	while( (FLASH.ACR & 0x7) != waitStates)
 	{}
-
-	//No hardware limits on PSIZE in STM32H7
-	m_maxPsize = FLASH_CR_PSIZE_X64;
 }
 
 #endif
@@ -317,9 +314,11 @@ void Flash::SetConfiguration(bool cacheEnable, bool prefetchEnable, int cpuFreqM
  */
 bool Flash::BlockErase(uint8_t* address)
 {
-	//Sector number isn't simple math because sector size isn't uniform!
+	//Sector number isn't simple math because sector size isn't uniform on all devices!
 	uint32_t addr = reinterpret_cast<uint32_t>(address);
 	int numSector = 0;
+
+	const uint32_t flashStart = 0x08000000;
 
 	//TODO: STM32L431, L031
 
@@ -351,7 +350,7 @@ bool Flash::BlockErase(uint8_t* address)
 				break;
 			}
 		}
-		if( (addr < 0x08000000) || (numSector < 0) )
+		if( (addr < flashStart) || (numSector < 0) )
 			return false;
 
 	#elif defined(STM32H735)
@@ -378,8 +377,19 @@ bool Flash::BlockErase(uint8_t* address)
 				break;
 			}
 		}
-		if( (addr < 0x08000000) || (numSector < 0) )
+		if( (addr < flashStart) || (numSector < 0) )
 			return false;
+
+	#elif defined(STM32L431)
+
+		//bail if address is out of range
+		if(addr < flashStart)
+			return false;
+
+		//uniform 2 kB sectors
+		uint32_t sectorStart = addr & ~0x7ff;
+		uint32_t flashOffset = sectorStart - flashStart;
+		numSector = flashOffset / 2048;
 
 	#else
 
@@ -399,13 +409,15 @@ bool Flash::BlockErase(uint8_t* address)
 	Unlock();
 
 	//Set maximum PSIZE to get fast erase
-	#ifndef STM32L031
+	#ifdef STM32H735
 		FLASH.CR = (FLASH.CR & ~FLASH_CR_PSIZE_MASK) | m_maxPsize;
 	#endif
 
 	//Select the sector being erased
-	#ifdef STM32F777
+	#if defined(STM32F777)
 		FLASH.CR = (FLASH.CR & ~FLASH_CR_SECTOR_MASK) | (numSector << 3) | FLASH_CR_SER;
+	#elif defined(STM32L431)
+		FLASH.CR = (FLASH.CR & ~FLASH_CR_SECTOR_MASK) | (numSector << 3) | FLASH_CR_PER;
 	#elif defined(STM32H735)
 		FLASH.CR = (FLASH.CR & ~FLASH_CR_SECTOR_MASK) | (numSector << 8) | FLASH_CR_SER;
 	#else
@@ -426,14 +438,22 @@ bool Flash::BlockErase(uint8_t* address)
 		asm("dmb st");
 		while(FLASH.SR & FLASH_SR_BUSY)
 		{}
-
-		//Re-lock the control register
-		FLASH.CR |= FLASH_CR_LOCK;
-
-		//Check for errors
-		if(FLASH.SR & FLASH_SR_ERR_MASK)
-			return false;
 	#endif
+
+	//Clear the erase bit
+	#ifdef STM32L431
+		FLASH.CR &= ~FLASH_CR_PER;
+	#elif defined(STM32H735)
+		FLASH.CR &= ~FLASH_CR_SER;
+	#endif
+
+	//Re-lock the control register
+	Lock();
+
+	//Check for errors
+	if(FLASH.SR & FLASH_SR_ERR_MASK)
+		return false;
+
 	return true;
 }
 
@@ -448,9 +468,37 @@ bool Flash::Write(uint8_t* address, const uint8_t* data, uint32_t len)
 
 	#ifdef STM32L431
 
-		//FIXME: need to do fixed 64-bit write blocks
-		while(1)
-		{}
+		//Clear program error
+		FLASH.SR |= FLASH_SR_ERR_MASK;
+
+		//Write the data in blocks of 8 bytes, force write after last one
+		uint32_t tmp[2];
+		for(uint32_t i=0; i<len; i+=8)
+		{
+			//Put stuff in write buffer
+			uint32_t blocksize = 8;
+			if(i+8 > len)
+			{
+				blocksize = len - i;
+				tmp[0] = 0;
+				tmp[1] = 0;
+			}
+			memcpy((void*)(&tmp[0]), data+i, blocksize);
+
+			//Enable programming
+			FLASH.CR |= FLASH_CR_PG;
+
+			//Push to flash, must use 32-bit AHB transactions (no partial blocks allowed)
+			*reinterpret_cast<volatile uint32_t*>(address + i) = tmp[0];
+			*reinterpret_cast<volatile uint32_t*>(address + i+4) = tmp[1];
+
+			//Wait until done, then check for errors
+			asm("dmb st");
+			while(FLASH.SR & FLASH_SR_BUSY)
+			{}
+			if(FLASH.SR & FLASH_SR_ERR_MASK)
+				return false;
+		}
 
 	#elif defined(STM32L031)
 
@@ -460,7 +508,7 @@ bool Flash::Write(uint8_t* address, const uint8_t* data, uint32_t len)
 
 	#elif defined(STM32H735)
 
-		//Set PSIZE to our maximu,
+		//Set PSIZE to our maximum
 		FLASH.CR = (FLASH.CR & ~FLASH_CR_PSIZE_MASK) | m_maxPsize;
 
 		//Write the data in blocks of 32 bytes; force write after the last one
@@ -517,14 +565,15 @@ bool Flash::Write(uint8_t* address, const uint8_t* data, uint32_t len)
 	#endif
 
 	//Done
-	//Re-lock the control register
+	//Re-lock the control register and exit program mode
 	#ifdef STM32L031
 		//unimplemented
 		while(1)
 		{}
 	#else
-		FLASH.CR |= FLASH_CR_LOCK;
+		FLASH.CR &= ~FLASH_CR_PG;
 	#endif
+	Lock();
 
 	return true;
 }

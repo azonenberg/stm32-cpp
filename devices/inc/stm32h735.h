@@ -67,64 +67,10 @@ enum pwr_d3cr
 	PWR_D3CR_VOSMASK = 0xc000
 };
 
-typedef struct
-{
-	uint32_t ACR;
-	uint32_t KEYR;
-	uint32_t OPTKEYR;
-	uint32_t CR;
-	uint32_t SR;
-	uint32_t CCR;
-	uint32_t OPTCR;
-	uint32_t OPTSR_CUR;
-	uint32_t OPTSR_PRG;
-	uint32_t OPTCCR;
-	uint32_t PRAR_CUR;
-	uint32_t PRAR_PRG;
-	uint32_t SCAR_CUR;
-	uint32_t SCAR_PRG;
-	uint32_t WPSN_CUR;
-	uint32_t WPSN_PRG;
-	uint32_t BOOT_CUR;
-	uint32_t BOOT_PRG;
-	uint32_t padding1[2];
-	uint32_t CRCCR;
-	uint32_t CRCSADDR;
-	uint32_t CRCEADDR;
-	uint32_t CRCDATAR;
-	uint32_t ECC_FAR;
-	uint32_t padding2[3];
-	uint32_t OPTSR2_CUR;
-	uint32_t OPTSR2_PRG;
-} flash_t;
+#define FLASH_T_VERSION 1
+#include "stm32-flash.h"
 
 extern volatile flash_t FLASH;
-
-enum flash_cr
-{
-	FLASH_CR_LOCK			= 0x1,
-	FLASH_CR_STRT			= 0x80,
-
-	FLASH_CR_PSIZE_MASK		= 0x30,
-	FLASH_CR_PSIZE_X8		= 0x00,
-	FLASH_CR_PSIZE_X16		= 0x10,
-	FLASH_CR_PSIZE_X32		= 0x20,
-	FLASH_CR_PSIZE_X64		= 0x30,
-
-	FLASH_CR_SECTOR_MASK	= 0x300,
-
-	FLASH_CR_FW				= 0x40,
-	FLASH_CR_SER			= 0x4,
-	FLASH_CR_PG				= 0x2
-
-};
-
-enum flash_sr
-{
-	FLASH_SR_BUSY			= 0x1,
-
-	FLASH_SR_ERR_MASK		= 0x7EE0400
-};
 
 #define GPIO_T_VERSION 1
 #include "stm32-gpio.h"

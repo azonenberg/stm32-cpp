@@ -81,7 +81,7 @@ SECTIONS
 	} > AXISRAM AT> FLASH
 
 	/* Stack goes in TCM to keep it fast. We probably won't be DMAing etc to/from it. */
-	.stack :
+	.stack  (NOLOAD):
 	{
 		__end = .;
 		. = ORIGIN(DTCM) + LENGTH(DTCM) - 4;
@@ -89,7 +89,7 @@ SECTIONS
 	} > DTCM
 
 	/* BSS is pretty straightforward */
-	.bss :
+	.bss  (NOLOAD):
 	{
 		__bss_start__ = .;
 		*(.bss)
@@ -97,7 +97,7 @@ SECTIONS
 	} > AXISRAM
 
 	/* Fill all remaining AXI SRAM space with the heap (which we don't actually use) */
-	.heap :
+	.heap  (NOLOAD):
 	{
 		. = ALIGN(4);
 		__heap_start = .;
@@ -107,7 +107,7 @@ SECTIONS
 	} > AXISRAM
 
 	/* SFRs */
-	.sfr_apb1 :
+	.sfr_apb1  (NOLOAD):
 	{
 		. = ALIGN(1024);
 		*(.tim2)
@@ -154,7 +154,7 @@ SECTIONS
 		*(.i2c5)
 	} > APB1
 
-	.sfr_apb2 :
+	.sfr_apb2  (NOLOAD):
 	{
 		. += 1024;			/* TIM1 not implemented */
 		. += 1024;			/* TIM8 not implemented */
@@ -177,7 +177,7 @@ SECTIONS
 		*(.spi5)
 	} > APB2
 
-	.sfr_ahb2 :
+	.sfr_ahb2  (NOLOAD):
 	{
 		. += 1024;			/* DCMI not implemented */
 		. += 1024;			/* PSSI not implemented */
@@ -190,7 +190,7 @@ SECTIONS
 		*(.rng)
 	} > AHB2
 
-	.sfr_ahb3 :
+	.sfr_ahb3  (NOLOAD):
 	{
 		. += 1048576;		/* GPV not implemented */
 		. += 15728640;		/* 5110_0000 - 51ff_ffff reserved */
@@ -214,7 +214,7 @@ SECTIONS
 		/* TODO: OTFDEC */
 	} > AHB3
 
-	.sfr_ahb4 :
+	.sfr_ahb4  (NOLOAD):
 	{
 		. = ALIGN(1024);
 		*(.gpioa)
@@ -254,7 +254,7 @@ SECTIONS
 		 */
 	} > AHB4
 
-	.sfr_apb4 :
+	.sfr_apb4  (NOLOAD):
 	{
 		. += 1024;	/* EXTI not yet implemented */
 		. = ALIGN(1024);
@@ -305,7 +305,7 @@ SECTIONS
 		 */
 	} > APB4
 
-	.sfr_mcu :
+	.sfr_mcu  (NOLOAD):
 	{
 		. += 0xed00;
 		*(.scb)
@@ -314,12 +314,12 @@ SECTIONS
 		. = ALIGN(1024);
 	} > MCU
 
-	.sfr_mcu2 :
+	.sfr_mcu2  (NOLOAD):
 	{
 		*(.dbgmcu)
 	} > MCU2
 
-	.sfr_sig :
+	.sfr_sig  (NOLOAD):
 	{
 		. += 0x1e800;
 		*(.uid)
