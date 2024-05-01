@@ -27,156 +27,36 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef RCC_h
-#define RCC_h
+#include <stm32.h>
+#include "CRC.h"
+#include "RCC.h"
 
-#include <stm32fxxx.h>
+#ifdef HAVE_CRC
 
-/**
-	@brief Reset and Clock Control
-
-	Helper class for enabling various devices.
-
-	All functions are static because there's only one RCC in the device.
- */
-class RCCHelper
+uint32_t CRC::Checksum(const uint8_t* idata, uint32_t len, uint32_t poly, uint32_t init)
 {
-public:
-	static void Enable(volatile gpio_t* gpio);
+	//Initialize the CRC peripheral
+	_CRC.INIT = init;
+	_CRC.POL = poly;
+	_CRC.CR = 0xe1;	//32 bit polynomial, bit swap for endianness
 
-	#ifdef HAVE_CRC
-	static void Enable(volatile crc_t* crc);
-	#endif
+	//wait for reset
+	while(_CRC.CR & 1)
+	{}
 
-	#ifdef HAVE_RTC
-	static void Enable(volatile rtc_t* rtc);
-	#endif
+	//Process data in 32-bit blocks as much as possible
+	auto p = reinterpret_cast<const uint32_t*>(idata);
+	uint32_t iend = len & ~0x3;
+	uint32_t wend = iend / 4;
+	for(uint32_t i=0; i<wend; i++)
+		_CRC.DR = p[i];
 
-	#ifdef HAVE_DTS
-	static void Enable(volatile dts_t* dts);
-	#endif
+	//Process any leftovers
+	//TODO: can we unroll this more?
+	for(uint32_t i=iend; i<len; i++)
+		*reinterpret_cast<volatile uint8_t*>(&_CRC.DR) = idata[i];
 
-	#if defined(STM32L4) || defined(STM32L0)
-	static void Enable(volatile pwr_t* pwr);
-	#endif
-
-	#ifdef HAVE_ADC
-	static void Enable(volatile adc_t* adc);
-	#endif
-
-	#ifdef HAVE_I2C
-	static void Enable(volatile i2c_t* i2c);
-	#endif
-
-	#ifdef HAVE_SPI
-	static void Enable(volatile spi_t* spi);
-	#endif
-
-	#ifdef HAVE_TIM
-	static void Enable(volatile tim_t* tim);
-	#endif
-
-	#ifdef HAVE_EMAC
-	static void Enable(volatile emac_t* mac);
-	#endif
-
-	#ifdef HAVE_RNG
-	static void Enable(volatile rng_t* rng);
-	#endif
-
-	#ifdef HAVE_HASH
-	static void Enable(volatile hash_t* hash);
-	#endif
-
-	#ifdef HAVE_CRYP
-	static void Enable(volatile cryp_t* cryp);
-	#endif
-
-	#ifdef HAVE_UART
-	static void Enable(volatile usart_t* uart);
-	#endif
-
-	#ifdef HAVE_OCTOSPI
-	static void Enable(volatile octospim_t* octospim);
-	static void Enable(volatile octospi_t* octospi);
-	#endif
-
-	#ifdef STM32F0
-	static void InitializePLLFromInternalOscillator(
-		uint8_t prediv,
-		uint8_t mult,
-		uint16_t ahbdiv,
-		uint8_t apbdiv
-		);
-	#endif
-
-	#ifdef STM32L0
-	static void InitializePLLFromHSI16(uint8_t mult, uint8_t hclkdiv, uint16_t ahbdiv, uint8_t apb2div, uint8_t apb1div);
-	#endif
-
-	#ifdef STM32L4
-	static void InitializePLLFromHSI16(
-		uint8_t prediv,
-		uint8_t mult,
-		uint8_t qdiv,
-		uint8_t rdiv,
-		uint16_t ahbdiv,
-		uint8_t apb1div,
-		uint8_t apb2div);
-	#endif
-
-	#ifdef STM32F7
-	static void InitializePLLFromInternalOscillator(
-		uint8_t prediv,
-		uint16_t mult,
-		uint8_t pdiv,
-		uint8_t qdiv,
-		uint8_t rdiv,
-		uint16_t ahbdiv,
-		uint16_t apb1div,
-		uint16_t apb2div
-		);
-	#endif
-
-	#ifdef STM32H7
-	enum ClockSource
-	{
-		CLOCK_SOURCE_HSE,
-		CLOCK_SOURCE_HSI
-	};
-
-	static void EnableHighSpeedExternalClock();
-	static void EnableHighSpeedInternalClock(int mhz);
-	static void InitializePLL(
-		uint8_t npll,
-		float in_mhz,
-		uint8_t prediv,
-		uint16_t mult,
-		uint8_t divP,
-		uint8_t divQ,
-		uint8_t divR,
-		ClockSource source
-		);
-	static void SelectSystemClockFromPLL1();
-	static void InitializeSystemClocks(
-		uint16_t sysckdiv,
-		uint16_t ahbdiv,
-		uint8_t apb1div,
-		uint8_t apb2div,
-		uint8_t apb3div,
-		uint8_t apb4div
-		);
-	static uint8_t GetDivider512Code(uint16_t div);
-	static uint8_t GetDivider16Code(uint8_t div);
-
-	static void EnableSram2();
-	static void EnableSram1();
-	static void EnableBackupSram();
-	#endif
-
-	#if defined(STM32L0) || defined(STM32L4) || defined(STM32H7)
-	static void EnableSyscfg();
-	#endif
-};
+	return ~_CRC.DR;
+}
 
 #endif

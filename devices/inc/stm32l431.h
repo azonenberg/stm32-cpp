@@ -77,6 +77,11 @@ enum pwr_sr2
 
 extern volatile pwr_t PWR;
 
+#define CRC_T_VERSION 1
+#include "stm32-crc.h"
+
+extern volatile crc_t _CRC;
+
 #define GPIO_T_VERSION 2
 #include "stm32-gpio.h"
 
@@ -86,6 +91,11 @@ extern volatile gpio_t GPIOC;
 extern volatile gpio_t GPIOD;
 extern volatile gpio_t GPIOE;
 extern volatile gpio_t GPIOH;
+
+enum rcc_ahb1
+{
+	RCC_AHB1_CRC	= 0x1000
+};
 
 enum rcc_ahb2
 {

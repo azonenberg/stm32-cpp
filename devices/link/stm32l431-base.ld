@@ -4,6 +4,9 @@ SECTIONS
 	.text :
 	{
 		*(.vector)
+		. = ALIGN(32);
+		*(.fwver)
+		. = ALIGN(32);
 		*(.text.*)
 		*(.rodata)
 		*(.ctors)
@@ -58,9 +61,13 @@ SECTIONS
 		. += 2048;		/* 0x4002_0800 reserved */
 		. = ALIGN(1024);
 		*(.rcc)
-		. += 3072;		/* 0x4002_2400 reserved */
+		. += 3072;		/* 0x4002_1400 reserved */
 		. = ALIGN(1024);
 		*(.flash)
+		. = ALIGN(1024);
+		. += 3072;		/* 0x4002_2400 reserved */
+		. = ALIGN(1024);
+		*(.crc)
 	} > AHB1
 
 	.sfr_apb1 (NOLOAD):

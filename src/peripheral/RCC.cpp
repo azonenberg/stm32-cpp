@@ -30,6 +30,17 @@
 #include <stm32.h>
 #include <peripheral/RCC.h>
 
+#ifdef HAVE_CRC
+void RCCHelper::Enable([[maybe_unused]] volatile crc_t* crc)
+{
+	#if defined(STM32L431)
+		RCC.AHB1ENR |= RCC_AHB1_CRC;
+	#else
+		#error Dont know what to do with CRC on this part
+	#endif
+}
+#endif
+
 #ifdef HAVE_RTC
 void RCCHelper::Enable([[maybe_unused]] volatile rtc_t* rtc)
 {

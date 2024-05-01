@@ -42,6 +42,8 @@ volatile pwr_t PWR __attribute__((section(".pwr")));
 
 volatile flash_t FLASH __attribute__((section(".flash")));
 
+volatile crc_t _CRC __attribute__((section(".crc")));
+
 volatile i2c_t I2C1 __attribute__((section(".i2c1")));
 volatile i2c_t I2C2 __attribute__((section(".i2c2")));
 volatile i2c_t I2C3 __attribute__((section(".i2c3")));
