@@ -45,6 +45,11 @@ public:
 	static void ConfigureLDO(VoltageRange vcore);
 	#endif
 
+	#if defined(STM32L431)
+	static void EnableBackupSramWrites()
+	{ PWR.CR1 |= PWR_CR1_DBP; }
+	#endif
+
 	#ifdef STM32H735
 
 	enum SmpsVoltage

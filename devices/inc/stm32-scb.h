@@ -27,70 +27,30 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef stm32_rtc_h
-#define stm32_rtc_h
-
-#define HAVE_RTC
-
-//STM32H735
-#if RTC_T_VERSION == 1
+#ifndef stm32_scb_h
+#define stm32_scb_h
 
 typedef struct
 {
-	uint32_t TR;
-	uint32_t DR;
-	uint32_t CR;
-	uint32_t ISR;
-	uint32_t PRER;
-	uint32_t WUTR;
-	uint32_t field_18;
-	uint32_t ALRMAR;
-	uint32_t ALRMBR;
-	uint32_t WPR;
-	uint32_t SSR;
-	uint32_t SHIFTR;
-	uint32_t TSTR;
-	uint32_t TSDR;
-	uint32_t TSSSR;
-	uint32_t CALR;
-	uint32_t TAFCR;
-	uint32_t ALRMASSR;
-	uint32_t ALRMBSSR;
-	uint32_t OR;
-	uint32_t BKP[32];
-} rtc_t;
-
-#elif RTC_T_VERSION == 2
-
-typedef struct
-{
-	uint32_t TR;
-	uint32_t DR;
-	uint32_t CR;
-	uint32_t ISR;
-	uint32_t PRER;
-	uint32_t WUTR;
-	uint32_t field_18;
-	uint32_t ALRMAR;
-	uint32_t ALRMBR;
-	uint32_t WPR;
-	uint32_t SSR;
-	uint32_t SHIFTR;
-	uint32_t TSTR;
-	uint32_t TSDR;
-	uint32_t TSSSR;
-	uint32_t CALR;
-	uint32_t TAMPCR;		//slightly diff from v1
-	uint32_t ALRMASSR;
-	uint32_t ALRMBSSR;
-	uint32_t OR;
-	uint32_t BKP[32];
-} rtc_t;
-
-#else
-
-#error Undefined or unspecified RTC_T_VERSION
-
-#endif	//version check
+	uint32_t	CPUID;
+	uint32_t	ICSR;
+	uint32_t	VTOR;
+	uint32_t	AIRCR;
+	uint32_t	SCR;
+	uint32_t	CCR;
+	uint8_t		SHP[12];
+	uint32_t	SHCR;
+	uint32_t	CFSR;
+	uint32_t	HFSR;
+	uint32_t	DFSR;
+	uint32_t	MMFAR;
+	uint32_t	BFAR;
+	uint32_t	AFSR;
+	uint32_t	PFR[2];
+	uint32_t	DFR;
+	uint32_t	ADR;
+	uint32_t	MMFR[4];
+	uint32_t	ISAR[5];
+} scb_t;
 
 #endif	//include guard

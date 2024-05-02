@@ -727,29 +727,7 @@ enum hash_sr
 
 extern volatile hash_t HASH;
 
-typedef struct
-{
-	uint32_t	CPUID;
-	uint32_t	ICSR;
-	uint32_t	VTOR;
-	uint32_t	AIRCR;
-	uint32_t	SCR;
-	uint32_t	CCR;
-	uint8_t		SHP[12];
-	uint32_t	SHCR;
-	uint32_t	CFSR;
-	uint32_t	HFSR;
-	uint32_t	DFSR;
-	uint32_t	MMFAR;
-	uint32_t	BFAR;
-	uint32_t	AFSR;
-	uint32_t	PFR[2];
-	uint32_t	DFR;
-	uint32_t	ADR;
-	uint32_t	MMFR[4];
-	uint32_t	ISAR[5];
-} scb_t;
-
+#include "stm32-scb.h"
 extern volatile scb_t SCB;
 
 typedef struct

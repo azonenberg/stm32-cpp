@@ -67,7 +67,8 @@ typedef struct
 
 enum pwr_cr1
 {
-	PWR_CR1_VOS		= 0x600
+	PWR_CR1_VOS		= 0x600,
+	PWR_CR1_DBP		= 0x100
 };
 
 enum pwr_sr2
@@ -128,6 +129,7 @@ enum rcc_apb1_en1
 	RCC_APB1_1_USART2		= 0x00020000,
 	RCC_APB1_1_SPI3			= 0x00008000,
 	RCC_APB1_1_SPI2			= 0x00004000,
+	RCC_APB1_1_RTC			= 0x00000400,
 	RCC_APB1_1_TIM7			= 0x00000020,
 	RCC_APB1_1_TIM6			= 0x00000010,
 	RCC_APB1_1_TIM3			= 0x00000002,
@@ -194,6 +196,12 @@ extern volatile usart_t USART1;
 extern volatile usart_t USART2;
 extern volatile usart_t USART3;
 extern volatile usart_t UART4;
+
+//doesn't have a full RTC, but backup/tamper registers are in the RTC subsystem
+#define RTC_T_VERSION 2
+#include "stm32-rtc.h"
+
+extern volatile rtc_t _RTC;
 
 typedef struct
 {
@@ -378,6 +386,9 @@ typedef struct
 } exti_t;
 
 extern volatile exti_t EXTI;
+
+#include "stm32-scb.h"
+extern volatile scb_t SCB;
 
 extern volatile uint32_t U_ID[3];
 extern volatile uint16_t FLASH_SIZE;

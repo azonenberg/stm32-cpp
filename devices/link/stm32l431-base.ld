@@ -83,7 +83,8 @@ SECTIONS
 		*(.tim7)
 		. += 3072;		/* reserved 4000_1800 */
 		. += 1024;		/* LCD not implemented */
-		. += 1024;		/* RTC not implemented */
+		. = ALIGN(1024);
+		*(.rtc)
 		. += 1024;		/* WWDG not implemented */
 		. += 1024;		/* IWDG not implemented */
 		. += 1024;		/* reserved 4000_3400 */
@@ -156,7 +157,14 @@ SECTIONS
 		*(.gpioh)
 	} > IOPORT
 
-	.sfr_mcu (NOLOAD):
+	.sfr_mcu  (NOLOAD):
+	{
+		. += 0xed00;
+		*(.scb)
+		. = ALIGN(1024);
+	} > MCU
+
+	.sfr_mcu2 (NOLOAD):
 	{
 		*(.dbgmcu)
 	} > MCU2

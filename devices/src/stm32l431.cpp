@@ -38,6 +38,8 @@ volatile gpio_t GPIOH __attribute__((section(".gpioh")));
 
 volatile rcc_t RCC __attribute__((section(".rcc")));
 
+volatile rtc_t _RTC __attribute__((section(".rtc")));
+
 volatile pwr_t PWR __attribute__((section(".pwr")));
 
 volatile flash_t FLASH __attribute__((section(".flash")));
@@ -72,6 +74,7 @@ volatile tim_t TIM16 __attribute__((section(".tim16")));
 volatile exti_t EXTI __attribute__((section(".exti")));
 
 volatile dbgmcu_t DBGMCU __attribute__((section(".dbgmcu")));
+volatile scb_t SCB __attribute__((section(".scb")));
 
 volatile uint32_t U_ID[3] __attribute__((section(".uid")));
 volatile uint16_t FLASH_SIZE __attribute__((section(".fid")));

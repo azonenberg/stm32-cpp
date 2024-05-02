@@ -29,6 +29,7 @@
 
 #include <stm32.h>
 #include <peripheral/RCC.h>
+#include <peripheral/Power.h>
 
 #ifdef HAVE_CRC
 void RCCHelper::Enable([[maybe_unused]] volatile crc_t* crc)
@@ -46,6 +47,9 @@ void RCCHelper::Enable([[maybe_unused]] volatile rtc_t* rtc)
 {
 	#if defined(STM32H735)
 		RCC.APB4ENR |= RCC_APB4_RTC;
+	#elif defined(STM32L431)
+		RCC.APB1ENR1 |= RCC_APB1_1_RTC;
+		Power::EnableBackupSramWrites();
 	#else
 		#error Dont know what to do with RTC on this part
 	#endif
