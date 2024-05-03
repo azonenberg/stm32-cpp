@@ -55,6 +55,7 @@ public:
 	 : UART(lane, lane, baud_div)
 	{}
 
+	__attribute__((noinline))
 	UART(volatile usart_t* txlane, volatile usart_t* rxlane, uint32_t baud_div)
 		: m_txlane(txlane)
 		, m_rxlane(rxlane)
@@ -110,6 +111,16 @@ public:
 	//RX interrupt handler
 	virtual void OnIRQRxData()
 	{ BufferedCharacterDevice<rxbufsize, txbufsize>::m_rxFifo.Push(m_rxlane->RDR); }
+
+	///@brief Forces a flush, even if interrupts are disabled
+	void __attribute__((noinline)) BlockingFlush()
+	{
+		while(!BufferedCharacterDevice<rxbufsize, txbufsize>::m_txFifo.IsEmpty())
+		{
+			if(m_txlane->ISR & USART_ISR_TXE)
+				OnIRQTxEmpty();
+		}
+	}
 
 protected:
 	volatile usart_t* m_txlane;
