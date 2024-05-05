@@ -109,6 +109,8 @@ public:
 	}
 #endif
 
+	void SetAltMode(uint8_t altmode);
+
 	void SetMode(gpiomode_t mode, uint8_t altmode = 1, bool open_drain = false);
 
 	#if defined(STM32F7) || defined(STM32H7) || defined(STM32L0) || defined(STM32L4)

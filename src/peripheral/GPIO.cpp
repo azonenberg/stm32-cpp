@@ -1,8 +1,8 @@
 /***********************************************************************************************************************
 *                                                                                                                      *
-* STM32-CPP v0.1                                                                                                       *
+* STM32-CPP                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2020-2022 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2024 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -57,6 +57,20 @@ void GPIOPin::SetMode(gpiomode_t mode, uint8_t altmode, bool open_drain)
 		m_gpio->OTYPER |= (1 << m_pin);
 	else
 		m_gpio->OTYPER &= ~(1 << m_pin);
+}
+
+void GPIOPin::SetAltMode(uint8_t altmode)
+{
+	if(m_pin < 8)
+	{
+		m_gpio->AFRL &= ~(0xf << 4*m_pin);
+		m_gpio->AFRL |= (altmode << 4*m_pin);
+	}
+	else
+	{
+		m_gpio->AFRH &= ~(0xf << 4*(m_pin-8));
+		m_gpio->AFRH |= (altmode << 4*(m_pin-8));
+	}
 }
 
 void GPIOPin::SetPullMode(PullMode mode)
