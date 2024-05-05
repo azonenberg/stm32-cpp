@@ -66,6 +66,7 @@ enum spi_cr1_bits
 enum spi_cr2_bits
 {
 	SPI_FRXTH		= 0x1000,
+	SPI_TXEIE		= 0x0080,
 	SPI_RXNEIE		= 0x0040
 };
 

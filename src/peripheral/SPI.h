@@ -121,7 +121,7 @@ public:
 			m_txFifo.Push(data[i]);
 
 		//Enable transmit interrupt
-		#ifdef STM32L0
+		#if (SPI_T_VERSION == 1) || (SPI_T_VERSION == 3)
 			m_lane->CR2 |= SPI_TXEIE;
 		#endif
 
