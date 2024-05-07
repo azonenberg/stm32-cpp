@@ -67,6 +67,11 @@ enum pwr_d3cr
 	PWR_D3CR_VOSMASK = 0xc000
 };
 
+#define CRC_T_VERSION 1
+#include "stm32-crc.h"
+
+extern volatile crc_t _CRC;
+
 #define FLASH_T_VERSION 1
 #include "stm32-flash.h"
 

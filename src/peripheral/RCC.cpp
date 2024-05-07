@@ -36,6 +36,8 @@ void RCCHelper::Enable([[maybe_unused]] volatile crc_t* crc)
 {
 	#if defined(STM32L431)
 		RCC.AHB1ENR |= RCC_AHB1_CRC;
+	#elif defined(STM32H735)
+		RCC.AHB4ENR |= RCC_AHB4_CRC;
 	#else
 		#error Dont know what to do with CRC on this part
 	#endif

@@ -52,11 +52,41 @@ uint32_t CRC::Checksum(const uint8_t* idata, uint32_t len, uint32_t poly, uint32
 		_CRC.DR = p[i];
 
 	//Process any leftovers
-	//TODO: can we unroll this more?
+	//(switch to byte-level input and don't reset)
+	_CRC.CR = 0xa0;
 	for(uint32_t i=iend; i<len; i++)
 		*reinterpret_cast<volatile uint8_t*>(&_CRC.DR) = idata[i];
 
 	return ~_CRC.DR;
+}
+
+void CRC::ChecksumInit(uint32_t poly, uint32_t init)
+{
+	//Initialize the CRC peripheral
+	_CRC.INIT = init;
+	_CRC.POL = poly;
+	_CRC.CR = 0x01;
+
+	//wait for reset
+	while(_CRC.CR & 1)
+	{}
+}
+
+void CRC::ChecksumUpdate(const uint8_t* idata, uint32_t len)
+{
+	//Process data in 32-bit blocks as much as possible
+	_CRC.CR = 0xe0;
+	auto p = reinterpret_cast<const uint32_t*>(idata);
+	uint32_t iend = len & ~0x3;
+	uint32_t wend = iend / 4;
+	for(uint32_t i=0; i<wend; i++)
+		_CRC.DR = p[i];
+
+	//Process any leftovers
+	//(switch to byte-level input and don't reset)
+	_CRC.CR = 0xa0;
+	for(uint32_t i=iend; i<len; i++)
+		*reinterpret_cast<volatile uint8_t*>(&_CRC.DR) = idata[i];
 }
 
 #endif

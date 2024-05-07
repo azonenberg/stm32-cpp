@@ -45,6 +45,12 @@ public:
 		uint32_t poly = 0x04c11db7,
 		uint32_t init = 0xffffffff);
 
+	static void ChecksumInit(uint32_t poly = 0x04c11db7, uint32_t init = 0xffffffff);
+
+	static void ChecksumUpdate(const uint8_t* idata, uint32_t len);
+
+	static uint32_t ChecksumFinal()
+	{ return ~_CRC.DR; }
 };
 
 #endif

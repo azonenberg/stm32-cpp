@@ -43,6 +43,7 @@ volatile gpio_t GPIOK __attribute__((section(".gpiok")));
 volatile rcc_t RCC __attribute__((section(".rcc")));
 
 volatile rtc_t _RTC __attribute__((section(".rtc")));
+volatile crc_t _CRC __attribute__((section(".crc")));
 
 volatile flash_t FLASH __attribute__((section(".flash")));
 
