@@ -58,7 +58,7 @@ public:
 
 		Pushing when the FIFO is full is a legal no-op.
 	 */
-	void Push(objtype item)
+	bool Push(objtype item)
 	{
 		#ifndef SIMULATION
 			uint32_t sr = EnterCriticalSection();
@@ -71,7 +71,12 @@ public:
 			m_empty = false;
 		}
 		else
-			asm("nop");
+		{
+			#ifndef SIMULATION
+				LeaveCriticalSection(sr);
+			#endif
+			return false;
+		}
 
 		if(m_wptr == depth)
 			m_wptr = 0;
@@ -79,6 +84,8 @@ public:
 		#ifndef SIMULATION
 			LeaveCriticalSection(sr);
 		#endif
+
+		return true;
 	}
 
 	/**
