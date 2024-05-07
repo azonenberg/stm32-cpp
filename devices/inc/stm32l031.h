@@ -244,49 +244,9 @@ typedef struct
 
 extern volatile i2c_t I2C1;
 
-typedef struct
-{
-	uint32_t ACR;
-	uint32_t PECR;
-	uint32_t PDKEYR;
-	uint32_t PKEYR;
-	uint32_t PRGKEYR;
-	uint32_t OPTKEYR;
-	uint32_t SR;
-	uint32_t OPTR;
-	uint32_t WRPROT1;
-	uint32_t WRPROT2;
-} flash_t;
-
+#define FLASH_T_VERSION 3
+#include "stm32-flash.h"
 extern volatile flash_t FLASH;
-
-enum flash_acr
-{
-	FLASH_ACR_PREFETCHEN	= 0x2,
-	FLASH_ACR_LATENCY		= 0x1
-};
-/*
-enum flash_cr
-{
-	FLASH_CR_LOCK			= 0x80000000,
-	FLASH_CR_STRT			= 0x10000,
-
-	FLASH_CR_PSIZE_MASK		= 0x300,
-	FLASH_CR_PSIZE_X8		= 0x000,
-	FLASH_CR_PSIZE_X16		= 0x100,
-	FLASH_CR_PSIZE_X32		= 0x200,
-	FLASH_CR_PSIZE_X64		= 0x300,
-
-	FLASH_CR_SECTOR_MASK	= 0xf8,
-
-	FLASH_CR_SER			= 0x2,
-	FLASH_CR_PG				= 0x1
-};
-*/
-enum flash_sr
-{
-	FLASH_SR_BUSY			= 0x1
-};
 
 typedef struct
 {
@@ -355,6 +315,5 @@ extern volatile uint16_t F_ID;
 #define HAVE_TIM
 #define HAVE_ADC
 #define HAVE_PWR
-#define HAVE_FLASH
 
 #endif

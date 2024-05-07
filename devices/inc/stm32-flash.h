@@ -136,6 +136,43 @@ enum flash_sr
 	FLASH_SR_ERR_MASK		= 0xC3FA
 };
 
+//STM32L031
+#elif FLASH_T_VERSION == 3
+
+typedef struct
+{
+	uint32_t ACR;
+	uint32_t PECR;
+	uint32_t PDKEYR;
+	uint32_t PKEYR;
+	uint32_t PRGKEYR;
+	uint32_t OPTKEYR;
+	uint32_t SR;
+	uint32_t OPTR;
+	uint32_t WRPROT1;
+	uint32_t WRPROT2;
+} flash_t;
+
+enum flash_acr
+{
+	FLASH_ACR_PREFETCHEN	= 0x2,
+	FLASH_ACR_LATENCY		= 0x1
+};
+
+enum flash_pecr
+{
+	FLASH_PECR_ERASE		= 0x200,
+	FLASH_PECR_PROG			= 0x008,
+	FLASH_PECR_PRGLOCK		= 0x002,
+	FLASH_PECR_PELOCK		= 0x001
+};
+
+enum flash_sr
+{
+	FLASH_SR_ERR_MASK		= 0x10600,
+	FLASH_SR_BUSY			= 0x1
+};
+
 #else
 
 #error Undefined or unspecified FLASH_T_VERSION

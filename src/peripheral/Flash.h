@@ -73,10 +73,14 @@ public:
 protected:
 	static void Unlock()
 	{
-		#ifdef STM32L031
-			//not yet implemented
-			while(1)
-			{}
+		#if FLASH_T_VERSION == 3
+			//enable access to FLASH_PECR
+			FLASH.PKEYR = 0x89abcdef;
+			FLASH.PKEYR = 0x02030405;
+
+			//eanble actual flash programming
+			FLASH.PRGKEYR = 0x8c9daebf;
+			FLASH.PRGKEYR = 0x13141516;
 		#else
 			FLASH.KEYR = 0x45670123;
 			FLASH.KEYR = 0xCDEF89AB;
@@ -84,7 +88,14 @@ protected:
 	}
 
 	static void Lock()
-	{ FLASH.CR |= FLASH_CR_LOCK; }
+	{
+		#if FLASH_T_VERSION == 3
+			FLASH.PECR |= FLASH_PECR_PRGLOCK;
+			FLASH.PECR |= FLASH_PECR_PELOCK;
+		#else
+			FLASH.CR |= FLASH_CR_LOCK;
+		#endif
+	}
 
 	#ifdef STM32H735
 	static uint32_t m_maxPsize;
