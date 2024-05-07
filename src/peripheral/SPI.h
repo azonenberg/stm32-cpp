@@ -141,11 +141,17 @@ public:
 	{ return !m_rxFifo.IsEmpty(); }
 
 	//Interrupt handlers
-	void OnIRQRxData(uint8_t value)
-	{ m_rxFifo.Push(SPIEvent(SPIEvent::TYPE_DATA, value) ); }
+	bool OnIRQRxData(uint8_t value)
+	{ return m_rxFifo.Push(SPIEvent(SPIEvent::TYPE_DATA, value) ); }
 
 	void OnIRQCSEdge(bool value)
 	{ m_rxFifo.Push(SPIEvent(SPIEvent::TYPE_CS, value)); }
+
+	void ClearEvents()
+	{ m_rxFifo.Reset(); }
+
+	uint32_t GetEventCount()
+	{ return m_rxFifo.size(); }
 
 protected:
 	FIFO<SPIEvent, rxsize> m_rxFifo;
