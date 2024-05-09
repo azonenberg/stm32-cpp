@@ -215,7 +215,7 @@ void DoPrintf(CharacterDevice* target, const char* format, __builtin_va_list arg
 
 						//Print fractional part, with fixed 3-digit precision
 						int frac = fixval & 0xff;
-						itoa(frac * 1000 / 2560, buf);
+						itoa(frac * 1000 / 256, buf);
 						target->WritePadded(buf, 3, '0', true);
 					}
 				}
