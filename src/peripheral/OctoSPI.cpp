@@ -209,8 +209,8 @@ void OctoSPI::BlockingWrite(uint32_t insn, uint32_t addr, const uint8_t* data, u
 
 	m_lane->CR = (m_lane->CR & ~OCTOSPI_FMODE_MASK) | OCTOSPI_FMODE_INDIRECT_WRITE;
 	m_lane->DLR = len - 1;
-	m_lane->AR = addr;
 	m_lane->IR = insn;
+	m_lane->AR = addr;
 
 	//for now, simple dumb bytewise copy
 	volatile uint8_t* buf = reinterpret_cast<volatile uint8_t*>(&m_lane->DR);
@@ -234,8 +234,8 @@ void OctoSPI::BlockingRead(uint32_t insn, uint32_t addr, uint8_t* data, uint32_t
 
 	m_lane->CR = (m_lane->CR & ~OCTOSPI_FMODE_MASK) | OCTOSPI_FMODE_INDIRECT_READ;
 	m_lane->DLR = len - 1;
-	m_lane->AR = addr;
 	m_lane->IR = insn;
+	m_lane->AR = addr;
 
 	//for now, simple dumb bytewise copy
 	volatile uint8_t* buf = reinterpret_cast<volatile uint8_t*>(&m_lane->DR);
