@@ -113,3 +113,5 @@ volatile rng_t RNG __attribute__((section(".rng")));
 volatile hash_t HASH __attribute__((section(".chash")));
 
 volatile dts_t DTS __attribute__((section(".dts")));
+
+volatile mpu_t _MPU __attribute__((section(".mpu")));

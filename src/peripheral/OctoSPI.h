@@ -1,8 +1,8 @@
 /***********************************************************************************************************************
 *                                                                                                                      *
-* STM32-CPP v0.1                                                                                                       *
+* STM32-CPP                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2020-2023 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2024 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -58,7 +58,7 @@ public:
 	void SetDQSEnable(bool enable);
 	void SetSampleDelay(bool delay);
 
-	void SetMemoryMapMode();
+	void SetMemoryMapMode(uint32_t rdinsn, uint32_t wrinsn);
 
 	void SetFifoThreshold(uint8_t threshold);
 
@@ -75,6 +75,9 @@ public:
 		BlockingRead(insn, addr, reinterpret_cast<uint8_t*>(&data), 2);
 		return data;
 	}
+
+	void Abort()
+	{ m_lane->CR |= OCTOSPI_ABORT; }
 
 protected:
 	volatile octospi_t*	m_lane;

@@ -269,6 +269,8 @@ SECTIONS
 		*(.scb)
 		. += 0x4;
 		*(.cpuid)
+		. += 0x18;
+		*(.mpu)
 		. = ALIGN(1024);
 	} > MCU
 

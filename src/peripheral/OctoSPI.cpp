@@ -1,8 +1,8 @@
 /***********************************************************************************************************************
 *                                                                                                                      *
-* STM32-CPP v0.1                                                                                                       *
+* STM32-CPP                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2020-2023 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2024 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -72,7 +72,9 @@ OctoSPI::OctoSPI(volatile octospi_t* lane, uint32_t sizeBytes, uint8_t prescale)
 	lane->DCR4 = 0;
 	lane->FCR = OCTOSPI_TOF | OCTOSPI_SMF | OCTOSPI_TCF | OCTOSPI_TEF;
 	lane->CCR = 0;
+	lane->WCCR = 0;
 	lane->TCR = 0;
+	lane->WTCR = 0;
 	lane->IR = 0;
 	lane->CR = OCTOSPI_EN;
 }
@@ -98,9 +100,15 @@ void OctoSPI::SetDoubleRateMode(bool ddr)
 {
 	uint32_t mask = OCTOSPI_DDTR | OCTOSPI_ABDTR | OCTOSPI_ADDTR | OCTOSPI_IDTR;
 	if(ddr)
+	{
 		m_lane->CCR |= mask;
+		m_lane->WCCR |= mask;
+	}
 	else
+	{
 		m_lane->CCR &= ~mask;
+		m_lane->WCCR &= ~mask;
+	}
 }
 
 /**
@@ -113,6 +121,9 @@ void OctoSPI::SetInstructionMode(mode_t mode, uint8_t nbytes)
 
 	m_lane->CCR &= ~(OCTOSPI_ISIZE_MASK | OCTOSPI_IMODE_MASK);
 	m_lane->CCR |= (nbytes << 4) | (mode);
+
+	m_lane->WCCR &= ~(OCTOSPI_ISIZE_MASK | OCTOSPI_IMODE_MASK);
+	m_lane->WCCR |= (nbytes << 4) | (mode);
 }
 
 /**
@@ -125,6 +136,9 @@ void OctoSPI::SetAddressMode(mode_t mode, uint8_t nbytes)
 
 	m_lane->CCR &= ~(OCTOSPI_ADSIZE_MASK | OCTOSPI_ADMODE_MASK);
 	m_lane->CCR |= (nbytes << 12) | (mode << 8);
+
+	m_lane->WCCR &= ~(OCTOSPI_ADSIZE_MASK | OCTOSPI_ADMODE_MASK);
+	m_lane->WCCR |= (nbytes << 12) | (mode << 8);
 }
 
 /**
@@ -137,6 +151,9 @@ void OctoSPI::SetAltBytesMode(mode_t mode, uint8_t nbytes)
 
 	m_lane->CCR &= ~(OCTOSPI_ABSIZE_MASK | OCTOSPI_ABMODE_MASK);
 	m_lane->CCR |= (nbytes << 20) | (mode << 16);
+
+	m_lane->WCCR &= ~(OCTOSPI_ABSIZE_MASK | OCTOSPI_ABMODE_MASK);
+	m_lane->WCCR |= (nbytes << 20) | (mode << 16);
 }
 
 /**
@@ -146,6 +163,9 @@ void OctoSPI::SetDataMode(mode_t mode)
 {
 	m_lane->CCR &= ~OCTOSPI_DMODE_MASK;
 	m_lane->CCR |= (mode << 24);
+
+	m_lane->WCCR &= ~OCTOSPI_DMODE_MASK;
+	m_lane->WCCR |= (mode << 24);
 }
 
 /**
@@ -155,6 +175,7 @@ void OctoSPI::SetDummyCycleCount(uint8_t ncycles)
 {
 	ncycles &= 0x1f;
 	m_lane->TCR = (m_lane->TCR & ~OCTOSPI_DCYC_MASK) | ncycles;
+	m_lane->WTCR = (m_lane->TCR & ~OCTOSPI_DCYC_MASK) | ncycles;
 }
 
 /**
@@ -163,9 +184,15 @@ void OctoSPI::SetDummyCycleCount(uint8_t ncycles)
 void OctoSPI::SetDQSEnable(bool enable)
 {
 	if(enable)
+	{
 		m_lane->CCR |= OCTOSPI_DQSE;
+		m_lane->WCCR |= OCTOSPI_DQSE;
+	}
 	else
+	{
 		m_lane->CCR &= ~OCTOSPI_DQSE;
+		m_lane->WCCR &= ~OCTOSPI_DQSE;
+	}
 }
 
 /**
@@ -246,8 +273,13 @@ void OctoSPI::BlockingRead(uint32_t insn, uint32_t addr, uint8_t* data, uint32_t
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Memory map the OCTOSPI
 
-void OctoSPI::SetMemoryMapMode()
+void OctoSPI::SetMemoryMapMode(uint32_t rdinsn, uint32_t wrinsn)
 {
+	//Enable DQS for writes even if not pinned out (STM32H735 errata 2.7.6)
+	m_lane->WCCR |= OCTOSPI_DQSE;
+
+	m_lane->WIR = wrinsn;
+	m_lane->IR = rdinsn;
 	m_lane->CR = (m_lane->CR & ~OCTOSPI_FMODE_MASK) | OCTOSPI_FMODE_MMAP;
 }
 

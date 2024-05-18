@@ -786,7 +786,7 @@ typedef struct
 	uint32_t		WPIR;
 	uint32_t		field_154[3];
 	uint32_t		WPABR;
-	uint32_t		field_164[3];
+	uint32_t		field_164[7];
 	uint32_t		WCCR;
 	uint32_t		field_184;
 	uint32_t		WTCR;
@@ -883,6 +883,9 @@ typedef struct
 } dts_t;
 
 extern volatile dts_t DTS;
+
+#include "stm32-mpu.h"
+extern volatile mpu_t _MPU;
 
 //Defines for what peripherals are present / implemented
 #define HAVE_I2C
