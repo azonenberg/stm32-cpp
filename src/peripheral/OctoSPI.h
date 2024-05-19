@@ -56,7 +56,7 @@ public:
 	void SetDeselectTime(uint8_t ncycles);
 
 	void SetDQSEnable(bool enable);
-	void SetSampleDelay(bool delay);
+	void SetSampleDelay(bool delay, bool delayHoldQuarterCycle);
 
 	void SetMemoryMapMode(uint32_t rdinsn, uint32_t wrinsn);
 

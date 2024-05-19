@@ -201,12 +201,17 @@ void OctoSPI::SetDQSEnable(bool enable)
 	True = sample 1/2 clock late
 	False = sample at normal time
  */
-void OctoSPI::SetSampleDelay(bool delay)
+void OctoSPI::SetSampleDelay(bool delay, bool delayHoldQuarterCycle)
 {
 	if(delay)
 		m_lane->TCR |= OCTOSPI_SSHIFT;
 	else
 		m_lane->TCR &= ~OCTOSPI_SSHIFT;
+
+	if(delayHoldQuarterCycle)
+		m_lane->TCR |= OCTOSPI_DHQC;
+	else
+		m_lane->TCR &= ~OCTOSPI_DHQC;
 }
 
 /**
