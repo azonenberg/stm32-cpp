@@ -79,6 +79,12 @@ public:
 	void Abort()
 	{ m_lane->CR |= OCTOSPI_ABORT; }
 
+	void WaitIdle()
+	{
+		while(m_lane->SR & OCTOSPI_BUSY)
+		{}
+	}
+
 protected:
 	volatile octospi_t*	m_lane;
 };

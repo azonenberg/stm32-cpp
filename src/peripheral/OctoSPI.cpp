@@ -231,8 +231,7 @@ void OctoSPI::SetFifoThreshold(uint8_t threshold)
 void OctoSPI::BlockingWrite(uint32_t insn, uint32_t addr, const uint8_t* data, uint32_t len)
 {
 	//Block until the previous operation completes
-	while(m_lane->SR & OCTOSPI_BUSY)
-	{}
+	WaitIdle();
 
 	m_lane->CR = (m_lane->CR & ~OCTOSPI_FMODE_MASK) | OCTOSPI_FMODE_INDIRECT_WRITE;
 	m_lane->DLR = len - 1;
@@ -256,8 +255,7 @@ void OctoSPI::BlockingWrite(uint32_t insn, uint32_t addr, const uint8_t* data, u
 void OctoSPI::BlockingRead(uint32_t insn, uint32_t addr, uint8_t* data, uint32_t len)
 {
 	//Block until the previous operation completes
-	while(m_lane->SR & OCTOSPI_BUSY)
-	{}
+	WaitIdle();
 
 	m_lane->CR = (m_lane->CR & ~OCTOSPI_FMODE_MASK) | OCTOSPI_FMODE_INDIRECT_READ;
 	m_lane->DLR = len - 1;
@@ -275,6 +273,8 @@ void OctoSPI::BlockingRead(uint32_t insn, uint32_t addr, uint8_t* data, uint32_t
 
 void OctoSPI::SetMemoryMapMode(uint32_t rdinsn, uint32_t wrinsn)
 {
+	WaitIdle();
+
 	//Enable DQS for writes even if not pinned out (STM32H735 errata 2.7.6)
 	m_lane->WCCR |= OCTOSPI_DQSE;
 

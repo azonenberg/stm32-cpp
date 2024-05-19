@@ -63,7 +63,8 @@ public:
 
 	enum texscb
 	{
-		STRONGLY_ORDERED	= 0x000
+		STRONGLY_ORDERED	= 0x000,
+		SHARED_DEVICE		= 0x001
 	};
 
 	enum aperm
