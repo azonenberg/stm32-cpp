@@ -29,8 +29,12 @@ SECTIONS
 		__dtor_end = .;
 	} > FLASH
 
-	/* Initialized data needs special handling because it lives in two places */
-	.data :
+	/*
+		Initialized data needs special handling because it lives in two places
+
+		Also needs to be aligned on a flash write block boundary to avoid problems when flashing targets
+	 */
+	.data : ALIGN(16)
 	{
 		__data_romstart = LOADADDR(.data);
 		__data_start = .;

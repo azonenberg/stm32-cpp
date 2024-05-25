@@ -497,7 +497,10 @@ bool Flash::Write(uint8_t* address, const uint8_t* data, uint32_t len)
 			while(FLASH.SR & FLASH_SR_BUSY)
 			{}
 			if(FLASH.SR & FLASH_SR_ERR_MASK)
+			{
+				Unlock();
 				return false;
+			}
 		}
 
 	#elif defined(STM32L031)
@@ -559,7 +562,10 @@ bool Flash::Write(uint8_t* address, const uint8_t* data, uint32_t len)
 			while(FLASH.SR & FLASH_SR_BUSY)
 			{}
 			if(FLASH.SR & FLASH_SR_ERR_MASK)
+			{
+				Lock();
 				return false;
+			}
 		}
 
 	#endif
