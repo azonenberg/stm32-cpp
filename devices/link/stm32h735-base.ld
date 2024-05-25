@@ -6,6 +6,11 @@ SECTIONS
 	.text :
 	{
 		*(.vector)
+		. = ALIGN(32);
+		*(.fwver)
+		. = ALIGN(32);
+		*(.fwid)
+		. = ALIGN(32);
 		*(.text.*)
 		*(.rodata)
 		*(.ctors)
