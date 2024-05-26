@@ -355,6 +355,9 @@ bool Flash::BlockErase(uint8_t* address)
 
 	#elif defined(STM32H735)
 
+		//Clear any errors we had going in
+		FLASH.CCR |= FLASH_SR_ERR_MASK;
+
 		//uniform 128 kB sectors
 		static const uint32_t sectorEnds[8] =
 		{
