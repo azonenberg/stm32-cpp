@@ -27,87 +27,16 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef Flash_h
-#define Flash_h
-
 #include <stm32.h>
 
-/**
-	@brief Flash memory
-
-	All functions are static because there's only one flash subsystem in the device.
- */
-class Flash
+uint32_t SCB_DisableDataFaults()
 {
-public:
+	SCB.CCR |= 0x100;
+	return DisableFaults();
+}
 
-	#ifdef STM32L031
-	static void SetConfiguration(int hclkFreqMHz, VoltageRange range);
-	#endif
-
-	#ifdef STM32L4
-	static void SetConfiguration(int hclkFreqMHz, VoltageRange range);
-	#endif
-
-	#ifdef STM32H7
-	static void SetConfiguration(int axiClockFreqMHz, VoltageRange range);
-	#endif
-
-	#ifdef HAVE_FLASH_ECC
-	static bool CheckForECCFaults()
-	{ return (FLASH.SR & FLASH_SR_DBECCERR) != 0; }
-
-	static void ClearECCFaults()
-	{ FLASH.CCR |= FLASH_SR_DBECCERR; }
-	#endif
-
-	#ifdef STM32F7
-
-	enum VoltageRange
-	{
-		RANGE_1V8,	//1.8V - 2.1V
-		RANGE_2V1,	//2.1V - 2.4V
-		RANGE_2V4,	//2.4V - 2.7V
-		RANGE_2V7,	//2.7V and up
-	};
-
-	static void SetConfiguration(bool cacheEnable, bool prefetchEnable, int cpuFreqMHz, VoltageRange range);
-
-	#endif
-
-	static bool BlockErase(uint8_t* address);
-	static bool Write(uint8_t* address, const uint8_t* data, uint32_t len);
-
-protected:
-	static void Unlock()
-	{
-		#if FLASH_T_VERSION == 3
-			//enable access to FLASH_PECR
-			FLASH.PKEYR = 0x89abcdef;
-			FLASH.PKEYR = 0x02030405;
-
-			//eanble actual flash programming
-			FLASH.PRGKEYR = 0x8c9daebf;
-			FLASH.PRGKEYR = 0x13141516;
-		#else
-			FLASH.KEYR = 0x45670123;
-			FLASH.KEYR = 0xCDEF89AB;
-		#endif
-	}
-
-	static void Lock()
-	{
-		#if FLASH_T_VERSION == 3
-			FLASH.PECR |= FLASH_PECR_PRGLOCK;
-			FLASH.PECR |= FLASH_PECR_PELOCK;
-		#else
-			FLASH.CR |= FLASH_CR_LOCK;
-		#endif
-	}
-
-	#ifdef STM32H735
-	static uint32_t m_maxPsize;
-	#endif
-};
-
-#endif
+void SCB_EnableDataFaults(uint32_t faultmask)
+{
+	SCB.CCR &= ~0x100;
+	EnableFaults(faultmask);
+}

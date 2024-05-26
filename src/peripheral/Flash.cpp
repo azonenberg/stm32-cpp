@@ -514,7 +514,11 @@ bool Flash::Write(uint8_t* address, const uint8_t* data, uint32_t len)
 		//Set PSIZE to our maximum
 		FLASH.CR = (FLASH.CR & ~FLASH_CR_PSIZE_MASK) | m_maxPsize;
 
+		//Clear any errors we had going in
+		FLASH.CCR |= FLASH_SR_ERR_MASK;
+
 		//Write the data in blocks of 32 bytes; force write after the last one
+		uint32_t tmp[8];
 		for(uint32_t i=0; i<len; i+=32)
 		{
 			//Enable programming
@@ -522,24 +526,32 @@ bool Flash::Write(uint8_t* address, const uint8_t* data, uint32_t len)
 
 			//Put stuff in write buffer
 			uint32_t blocksize = 32;
-			bool partialblock = false;
 			if(i+32 > len)
 			{
-				partialblock = true;
 				blocksize = len - i;
+				memset(tmp, 0, sizeof(tmp));
 			}
-			memcpy(address+i, data+i, blocksize);
+			memcpy((void*)(&tmp[0]), data+i, blocksize);
 
-			//Force write if partial block
-			if(partialblock)
-				FLASH.CR |= FLASH_CR_FW;
+			//Write the buffer to flash
+			*reinterpret_cast<volatile uint32_t*>(address + i) = tmp[0];
+			*reinterpret_cast<volatile uint32_t*>(address + i+4) = tmp[1];
+			*reinterpret_cast<volatile uint32_t*>(address + i+8) = tmp[2];
+			*reinterpret_cast<volatile uint32_t*>(address + i+12) = tmp[3];
+			*reinterpret_cast<volatile uint32_t*>(address + i+16) = tmp[4];
+			*reinterpret_cast<volatile uint32_t*>(address + i+20) = tmp[5];
+			*reinterpret_cast<volatile uint32_t*>(address + i+24) = tmp[6];
+			*reinterpret_cast<volatile uint32_t*>(address + i+28) = tmp[7];
 
 			//Wait until done, then check for errors
 			asm("dmb st");
 			while(FLASH.SR & FLASH_SR_BUSY)
 			{}
 			if(FLASH.SR & FLASH_SR_ERR_MASK)
+			{
+				FLASH.CCR |= FLASH_SR_ERR_MASK;
 				return false;
+			}
 		}
 
 	#else

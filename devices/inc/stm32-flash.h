@@ -82,15 +82,18 @@ enum flash_cr
 	FLASH_CR_FW				= 0x40,
 	FLASH_CR_SER			= 0x4,
 	FLASH_CR_PG				= 0x2
-
 };
 
 enum flash_sr
 {
 	FLASH_SR_BUSY			= 0x1,
 
+	FLASH_SR_DBECCERR		= 0x04000000,
+
 	FLASH_SR_ERR_MASK		= 0x7EE0400
 };
+
+#define HAVE_FLASH_ECC
 
 //STM32L431
 #elif FLASH_T_VERSION == 2

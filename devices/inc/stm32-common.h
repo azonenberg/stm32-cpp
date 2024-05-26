@@ -62,5 +62,21 @@ extern uint8_t __data_end;
  */
 void NVIC_EnableIRQ(int lane);
 
+/**
+	@brief Disables bus fault errors for data accesses
+ */
+uint32_t SCB_DisableDataFaults();
+
+/**
+	@brief Re-enables bus fault errors for data accesses
+ */
+void SCB_EnableDataFaults(uint32_t faultmask);
+
+///@brief Disable faults via FAULTMASK
+extern "C" uint32_t DisableFaults();
+
+///@brief Enable faults via FAULTMASK
+extern "C" uint32_t EnableFaults(uint32_t faultmask);
+
 #endif
 

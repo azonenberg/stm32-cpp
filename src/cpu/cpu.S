@@ -18,3 +18,14 @@ EnterCriticalSection:
 LeaveCriticalSection:
 	msr		primask, r0
 	bx		lr
+
+.globl DisableFaults
+DisableFaults:
+	mrs		r0, faultmask
+	cpsid	f
+	bx		lr
+
+.globl EnableFaults
+EnableFaults:
+	msr		faultmask, r0
+	bx		lr
