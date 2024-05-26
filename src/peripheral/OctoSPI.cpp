@@ -59,6 +59,7 @@ OctoSPI::OctoSPI(volatile octospi_t* lane, uint32_t sizeBytes, uint8_t prescale)
 	nbits --;
 
 	//Wait until not busy, then disable
+	Abort();
 	while(lane->SR & OCTOSPI_BUSY)
 	{}
 	lane->CR = 0;
