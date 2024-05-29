@@ -39,7 +39,7 @@ SECTIONS
 
 		Also needs to be aligned on a flash write block boundary to avoid problems when flashing targets
 	 */
-	.data : ALIGN(16)
+	.data : ALIGN(32)
 	{
 		__data_romstart = LOADADDR(.data);
 		__data_start = .;
