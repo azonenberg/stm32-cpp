@@ -320,7 +320,7 @@ bool Flash::BlockErase(uint8_t* address)
 
 	const uint32_t flashStart = 0x08000000;
 
-	//TODO: STM32L431, L031
+	//TODO: STM32L031
 
 	#ifdef STM32F777
 
