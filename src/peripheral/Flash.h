@@ -59,6 +59,9 @@ public:
 
 	static void ClearECCFaults()
 	{ FLASH.CCR |= FLASH_SR_DBECCERR; }
+
+	static uint32_t GetFaultAddress()
+	{ return 0x08000000 + FLASH.ECC_FAR*32; }
 	#endif
 
 	#ifdef STM32F7
