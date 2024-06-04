@@ -27,25 +27,39 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef stm32_h
-#define stm32_h
+#ifndef stm32_raii_h
+#define stm32_raii_h
 
 /**
-	@file
-	@author Andrew D. Zonenberg
-	@brief	Master include file for all STM32 parts
-
-	Pulls in the correct part depending on a global define
-
-	The user is responsible for externally defining the part number, e.g. STM32F031.
-
-	This header will define a family macro, e.g. STM32F0, based on that.
+	@brief RAII wrapper for disabling interrupts
  */
+class CriticalSection
+{
+public:
+	CriticalSection()
+	{ m_sr = EnterCriticalSection(); }
 
-#include "stm32fxxx.h"
-#include "stm32hxxx.h"
-#include "stm32lxxx.h"
+	~CriticalSection()
+	{ LeaveCriticalSection(m_sr); }
 
-#include "stm32-raii.h"
+protected:
+	uint32_t m_sr;
+};
+
+/**
+	@brief RAII wrapper for temporarily disabling data faults
+ */
+class DataFaultDisabler
+{
+public:
+	DataFaultDisabler()
+	{ m_sr = SCB_DisableDataFaults(); }
+
+	~DataFaultDisabler()
+	{ SCB_EnableDataFaults(m_sr); }
+
+protected:
+	uint32_t m_sr;
+};
 
 #endif
