@@ -27,62 +27,74 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#include <stm32l431.h>
+#ifndef stm32_quadspi_h
+#define stm32_quadspi_h
 
-volatile gpio_t GPIOA __attribute__((section(".gpioa")));
-volatile gpio_t GPIOB __attribute__((section(".gpiob")));
-volatile gpio_t GPIOC __attribute__((section(".gpioc")));
-volatile gpio_t GPIOD __attribute__((section(".gpiod")));
-volatile gpio_t GPIOE __attribute__((section(".gpioe")));
-volatile gpio_t GPIOH __attribute__((section(".gpioh")));
+#define HAVE_QUADSPI
 
-volatile rcc_t RCC __attribute__((section(".rcc")));
+//STM32L431
+#if QUADSPI_T_VERSION == 1
 
-volatile rtc_t _RTC __attribute__((section(".rtc")));
+typedef struct
+{
+	uint32_t	CR;
+	uint32_t	DCR;
+	uint32_t	SR;
+	uint32_t	FCR;
+	uint32_t	DLR;
+	uint32_t	CCR;
+	uint32_t	AR;
+	uint32_t	ABR;
+	uint32_t	DR;
+	uint32_t	PSMKR;
+	uint32_t	PSMAR;
+	uint32_t	PIR;
+	uint32_t	LPTR;
+} quadspi_t;
 
-volatile pwr_t PWR __attribute__((section(".pwr")));
+enum quadspi_cr_t
+{
+	QUADSPI_FTHRES_MASK	= 0xf00,
+	QUADSPI_ABORT		= 0x02,
+	QUADSPI_ENABLE 		= 0x01
+};
 
-volatile flash_t FLASH __attribute__((section(".flash")));
+enum quadspi_sr_t
+{
+	QUADSPI_BUSY	= 0x20,
+	QUADSPI_TOF		= 0x10,
+	QUADSPI_SMF		= 0x08,
+	QUADSPI_FTF		= 0x04,
+	QUADSPI_TCF		= 0x02,
+	QUADSPI_TEF		= 0x01
+};
 
-volatile crc_t _CRC __attribute__((section(".crc")));
+enum quadspi_dcr_t
+{
+	QUADSPI_CSHT_MASK	= 0x700
+};
 
-volatile i2c_t I2C1 __attribute__((section(".i2c1")));
-volatile i2c_t I2C2 __attribute__((section(".i2c2")));
-volatile i2c_t I2C3 __attribute__((section(".i2c3")));
+enum quadspi_ccr_t
+{
+	QUADSPI_DDRM					= 0x80000000,
+	QUADSPI_FMODE_MASK				= 0x0c000000,
+	QUADSPI_FMODE_INDIRECT_WRITE	= 0x00000000,
+	QUADSPI_FMODE_INDIRECT_READ		= 0x04000000,
+	QUADSPI_FMODE_MEMORY_MAP		= 0x0c000000,
+	QUADSPI_DMODE_MASK				= 0x03000000,
+	QUADSPI_DCYC_MASK				= 0x007c0000,
+	QUADSPI_ABSIZE_MASK				= 0x00030000,
+	QUADSPI_ABMODE_MASK				= 0x0000c000,
+	QUADSPI_ADSIZE_MASK				= 0x00003000,
+	QUADSPI_ADMODE_MASK				= 0x00000c00,
+	QUADSPI_IMODE_MASK				= 0x00000300,
+	QUADSPI_INSN_MASK				= 0x000000ff
+};
 
-volatile spi_t SPI1 __attribute__((section(".spi1")));
-volatile spi_t SPI2 __attribute__((section(".spi2")));
-volatile spi_t SPI3 __attribute__((section(".spi3")));
+#else
 
-volatile quadspi_t QUADSPI __attribute__((section(".quadspi")));
+#error Undefined or unspecified QUADSPI_T_VERSION
 
-//volatile adc_t ADC1 __attribute__((section(".adc1")));
+#endif	//version check
 
-volatile syscfg_t SYSCFG __attribute__((section(".syscfg")));
-
-volatile usart_t USART1 __attribute__((section(".usart1")));
-volatile usart_t USART2 __attribute__((section(".usart2")));
-volatile usart_t USART3 __attribute__((section(".usart3")));
-volatile usart_t UART4 __attribute__((section(".uart4")));
-
-volatile tim_t TIM1 __attribute__((section(".tim1")));
-volatile tim_t TIM2 __attribute__((section(".tim2")));
-volatile tim_t TIM3 __attribute__((section(".tim3")));
-volatile tim_t TIM6 __attribute__((section(".tim6")));
-volatile tim_t TIM7 __attribute__((section(".tim7")));
-volatile tim_t TIM15 __attribute__((section(".tim15")));
-volatile tim_t TIM16 __attribute__((section(".tim16")));
-
-volatile exti_t EXTI __attribute__((section(".exti")));
-
-volatile dbgmcu_t DBGMCU __attribute__((section(".dbgmcu")));
-volatile scb_t SCB __attribute__((section(".scb")));
-
-volatile uint32_t U_ID[3] __attribute__((section(".uid")));
-volatile uint16_t FLASH_SIZE __attribute__((section(".fid")));
-volatile uint16_t PKG __attribute__((section(".pkg")));
-/*
-volatile uint16_t VREFINT_CAL __attribute__((section(".vrefint")));
-volatile uint16_t TSENSE_CAL1 __attribute__((section(".tcal1")));
-volatile uint16_t TSENSE_CAL2 __attribute__((section(".tcal2")));
-*/
+#endif	//include guard

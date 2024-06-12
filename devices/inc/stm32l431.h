@@ -108,6 +108,11 @@ enum rcc_ahb2
 	RCC_AHB2_GPIOH	= 0x80
 };
 
+enum rcc_ahb3
+{
+	RCC_AHB3_QSPI	= 0x100
+};
+
 enum rcc_apb2
 {
 	RCC_APB2_TIM16	= 0x00020000,
@@ -389,6 +394,10 @@ extern volatile exti_t EXTI;
 
 #include "stm32-scb.h"
 extern volatile scb_t SCB;
+
+#define QUADSPI_T_VERSION 1
+#include "stm32-quadspi.h"
+extern volatile quadspi_t QUADSPI;
 
 extern volatile uint32_t U_ID[3];
 extern volatile uint16_t FLASH_SIZE;

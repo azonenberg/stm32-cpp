@@ -163,6 +163,11 @@ SECTIONS
 		*(.gpioh)
 	} > IOPORT
 
+	.sfr_qspi (NOLOAD):
+	{
+		*(.quadspi);
+	} > QSREG
+
 	.sfr_mcu  (NOLOAD):
 	{
 		. += 0xed00;

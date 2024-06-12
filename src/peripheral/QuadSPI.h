@@ -27,62 +27,64 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#include <stm32l431.h>
+#ifndef quadspi_h
+#define quadspi_h
 
-volatile gpio_t GPIOA __attribute__((section(".gpioa")));
-volatile gpio_t GPIOB __attribute__((section(".gpiob")));
-volatile gpio_t GPIOC __attribute__((section(".gpioc")));
-volatile gpio_t GPIOD __attribute__((section(".gpiod")));
-volatile gpio_t GPIOE __attribute__((section(".gpioe")));
-volatile gpio_t GPIOH __attribute__((section(".gpioh")));
+#ifdef HAVE_QUADSPI
 
-volatile rcc_t RCC __attribute__((section(".rcc")));
+class QuadSPI
+{
+public:
 
-volatile rtc_t _RTC __attribute__((section(".rtc")));
+	enum mode_t
+	{
+		MODE_NONE	= 0,
+		MODE_SINGLE = 1,
+		MODE_DUAL	= 2,
+		MODE_QUAD	= 3
+	};
 
-volatile pwr_t PWR __attribute__((section(".pwr")));
+	QuadSPI(volatile quadspi_t* lane, uint32_t sizeBytes, uint8_t prescale);
 
-volatile flash_t FLASH __attribute__((section(".flash")));
+	void SetDoubleRateMode(bool ddr);
+	void SetInstructionMode(mode_t mode = MODE_SINGLE);
+	void SetAddressMode(mode_t mode = MODE_SINGLE, uint8_t nbytes = 0);
+	void SetAltBytesMode(mode_t mode = MODE_SINGLE, uint8_t nbytes = 0);
+	void SetDataMode(mode_t mode = MODE_SINGLE);
+	void SetDummyCycleCount(uint8_t ncycles);
+	void SetDeselectTime(uint8_t ncycles);
 
-volatile crc_t _CRC __attribute__((section(".crc")));
+	void SetMemoryMapMode(uint32_t insn);
 
-volatile i2c_t I2C1 __attribute__((section(".i2c1")));
-volatile i2c_t I2C2 __attribute__((section(".i2c2")));
-volatile i2c_t I2C3 __attribute__((section(".i2c3")));
+	void SetFifoThreshold(uint8_t threshold);
 
-volatile spi_t SPI1 __attribute__((section(".spi1")));
-volatile spi_t SPI2 __attribute__((section(".spi2")));
-volatile spi_t SPI3 __attribute__((section(".spi3")));
+	void BlockingWrite(uint32_t insn, uint32_t addr, const uint8_t* data, uint32_t len);
+	void BlockingWrite8(uint32_t insn, uint32_t addr, const uint8_t data)
+	{ BlockingWrite(insn, addr, &data, 1); }
+	void BlockingWrite16(uint32_t insn, uint32_t addr, const uint16_t data)
+	{ BlockingWrite(insn, addr, reinterpret_cast<const uint8_t*>(&data), 2); }
 
-volatile quadspi_t QUADSPI __attribute__((section(".quadspi")));
+	void BlockingRead(uint32_t insn, uint32_t addr, uint8_t* data, uint32_t len);
+	uint16_t BlockingRead16(uint32_t insn, uint32_t addr)
+	{
+		uint16_t data;
+		BlockingRead(insn, addr, reinterpret_cast<uint8_t*>(&data), 2);
+		return data;
+	}
 
-//volatile adc_t ADC1 __attribute__((section(".adc1")));
+	void Abort()
+	{ m_lane->CR |= QUADSPI_ABORT; }
 
-volatile syscfg_t SYSCFG __attribute__((section(".syscfg")));
+	void WaitIdle()
+	{
+		while(m_lane->SR & QUADSPI_BUSY)
+		{}
+	}
 
-volatile usart_t USART1 __attribute__((section(".usart1")));
-volatile usart_t USART2 __attribute__((section(".usart2")));
-volatile usart_t USART3 __attribute__((section(".usart3")));
-volatile usart_t UART4 __attribute__((section(".uart4")));
+protected:
+	volatile quadspi_t*	m_lane;
+};
 
-volatile tim_t TIM1 __attribute__((section(".tim1")));
-volatile tim_t TIM2 __attribute__((section(".tim2")));
-volatile tim_t TIM3 __attribute__((section(".tim3")));
-volatile tim_t TIM6 __attribute__((section(".tim6")));
-volatile tim_t TIM7 __attribute__((section(".tim7")));
-volatile tim_t TIM15 __attribute__((section(".tim15")));
-volatile tim_t TIM16 __attribute__((section(".tim16")));
+#endif
 
-volatile exti_t EXTI __attribute__((section(".exti")));
-
-volatile dbgmcu_t DBGMCU __attribute__((section(".dbgmcu")));
-volatile scb_t SCB __attribute__((section(".scb")));
-
-volatile uint32_t U_ID[3] __attribute__((section(".uid")));
-volatile uint16_t FLASH_SIZE __attribute__((section(".fid")));
-volatile uint16_t PKG __attribute__((section(".pkg")));
-/*
-volatile uint16_t VREFINT_CAL __attribute__((section(".vrefint")));
-volatile uint16_t TSENSE_CAL1 __attribute__((section(".tcal1")));
-volatile uint16_t TSENSE_CAL2 __attribute__((section(".tcal2")));
-*/
+#endif
