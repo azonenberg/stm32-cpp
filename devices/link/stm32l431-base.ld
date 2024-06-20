@@ -76,6 +76,15 @@ SECTIONS
 		*(.crc)
 	} > AHB1
 
+	.sfr_crypt(NOLOAD):
+	{
+		. = ALIGN(1024);
+		. += 1024;		/* AES not implemented */
+		. += 1024;		/* reserved 5006_0400 */
+		. = ALIGN(1024);
+		*(.rng)
+	} > CRYPT
+
 	.sfr_apb1 (NOLOAD):
 	{
 		. = ALIGN(1024);

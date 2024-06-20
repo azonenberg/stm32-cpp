@@ -1,8 +1,8 @@
 /***********************************************************************************************************************
 *                                                                                                                      *
-* STM32-CPP v0.1                                                                                                       *
+* STM32-CPP                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2020-2022 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2024 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -583,27 +583,8 @@ enum cryp_sr
 
 extern volatile cryp_t CRYP;
 
-typedef struct
-{
-	uint32_t	CR;
-	uint32_t	SR;
-	uint32_t	DR;
-} rng_t;
-
-enum rng_cr
-{
-	RNG_CED	= 0x20,
-	RNG_IE	= 0x08,
-	RNG_EN	= 0x04
-};
-
-enum rng_sr
-{
-	RNG_SECS	= 0x4,
-	RNG_CECS	= 0x2,
-	RNG_DRDY	= 0x1
-};
-
+#define RNG_T_VERSION 2
+#include "stm32-rng.h"
 extern volatile rng_t RNG;
 
 typedef struct
@@ -668,7 +649,6 @@ extern volatile cpuid_t CPUID;
 #define HAVE_SPI
 #define HAVE_EMAC
 #define HAVE_CRYP
-#define HAVE_RNG
 #define HAVE_HASH
 #define HAVE_UART
 

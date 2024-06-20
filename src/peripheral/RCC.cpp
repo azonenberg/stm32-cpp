@@ -369,6 +369,8 @@ void RCCHelper::Enable(volatile rng_t* /*ignored*/)
 		RCC.AHB2ENR |= RCC_AHB2_RNG;
 	#elif defined(STM32H735)
 		RCC.AHB2ENR |= RCC_AHB2_RNG;
+	#elif defined(STM32L431)
+		RCC.AHB2ENR |= RCC_AHB2_RNG;
 	#else
 	#error Unknown RNG configuration (unsupported part)
 	#endif

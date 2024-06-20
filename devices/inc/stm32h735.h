@@ -685,30 +685,8 @@ enum cryp_sr
 
 extern volatile cryp_t CRYP;
 
-typedef struct
-{
-	uint32_t	CR;
-	uint32_t	SR;
-	uint32_t	DR;
-	uint32_t	HTCR;
-} rng_t;
-
-enum rng_cr
-{
-	RNG_CONDRST	= 0x40000000,
-
-	RNG_CED		= 0x20,
-	RNG_IE		= 0x08,
-	RNG_EN		= 0x04
-};
-
-enum rng_sr
-{
-	RNG_SECS	= 0x4,
-	RNG_CECS	= 0x2,
-	RNG_DRDY	= 0x1
-};
-
+#define RNG_T_VERSION 1
+#include "stm32-rng.h"
 extern volatile rng_t RNG;
 
 typedef struct
@@ -894,7 +872,6 @@ extern volatile mpu_t _MPU;
 #define HAVE_TIM
 //#define HAVE_EMAC
 #define HAVE_CRYP
-#define HAVE_RNG
 #define HAVE_HASH
 #define HAVE_PWR
 #define HAVE_OCTOSPI

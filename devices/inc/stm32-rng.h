@@ -27,64 +27,66 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#include <stm32l431.h>
+#ifndef stm32_rng_h
+#define stm32_rng_h
 
-volatile gpio_t GPIOA __attribute__((section(".gpioa")));
-volatile gpio_t GPIOB __attribute__((section(".gpiob")));
-volatile gpio_t GPIOC __attribute__((section(".gpioc")));
-volatile gpio_t GPIOD __attribute__((section(".gpiod")));
-volatile gpio_t GPIOE __attribute__((section(".gpioe")));
-volatile gpio_t GPIOH __attribute__((section(".gpioh")));
+#define HAVE_RNG
 
-volatile rcc_t RCC __attribute__((section(".rcc")));
+//STM32H735
+#if RNG_T_VERSION == 1
 
-volatile rtc_t _RTC __attribute__((section(".rtc")));
+typedef struct
+{
+	uint32_t	CR;
+	uint32_t	SR;
+	uint32_t	DR;
+	uint32_t	HTCR;
+} rng_t;
 
-volatile pwr_t PWR __attribute__((section(".pwr")));
+enum rng_cr
+{
+	RNG_CONDRST	= 0x40000000,
 
-volatile flash_t FLASH __attribute__((section(".flash")));
+	RNG_CED		= 0x20,
+	RNG_IE		= 0x08,
+	RNG_EN		= 0x04
+};
 
-volatile crc_t _CRC __attribute__((section(".crc")));
+enum rng_sr
+{
+	RNG_SECS	= 0x4,
+	RNG_CECS	= 0x2,
+	RNG_DRDY	= 0x1
+};
 
-volatile i2c_t I2C1 __attribute__((section(".i2c1")));
-volatile i2c_t I2C2 __attribute__((section(".i2c2")));
-volatile i2c_t I2C3 __attribute__((section(".i2c3")));
+//STM32L431, STM32F777
+#elif RNG_T_VERSION == 2
 
-volatile spi_t SPI1 __attribute__((section(".spi1")));
-volatile spi_t SPI2 __attribute__((section(".spi2")));
-volatile spi_t SPI3 __attribute__((section(".spi3")));
+typedef struct
+{
+	uint32_t	CR;
+	uint32_t	SR;
+	uint32_t	DR;
+} rng_t;
 
-volatile quadspi_t QUADSPI __attribute__((section(".quadspi")));
+enum rng_cr
+{
+	RNG_CED	= 0x20,
+	RNG_IE	= 0x08,
+	RNG_EN	= 0x04
+};
 
-//volatile adc_t ADC1 __attribute__((section(".adc1")));
+enum rng_sr
+{
+	RNG_SECS	= 0x4,
+	RNG_CECS	= 0x2,
+	RNG_DRDY	= 0x1
+};
 
-volatile syscfg_t SYSCFG __attribute__((section(".syscfg")));
+#else
 
-volatile rng_t RNG __attribute__((section(".rng")));
+#error Undefined or unspecified RNG_T_VERSION
 
-volatile usart_t USART1 __attribute__((section(".usart1")));
-volatile usart_t USART2 __attribute__((section(".usart2")));
-volatile usart_t USART3 __attribute__((section(".usart3")));
-volatile usart_t UART4 __attribute__((section(".uart4")));
+#endif	//version check
 
-volatile tim_t TIM1 __attribute__((section(".tim1")));
-volatile tim_t TIM2 __attribute__((section(".tim2")));
-volatile tim_t TIM3 __attribute__((section(".tim3")));
-volatile tim_t TIM6 __attribute__((section(".tim6")));
-volatile tim_t TIM7 __attribute__((section(".tim7")));
-volatile tim_t TIM15 __attribute__((section(".tim15")));
-volatile tim_t TIM16 __attribute__((section(".tim16")));
-
-volatile exti_t EXTI __attribute__((section(".exti")));
-
-volatile dbgmcu_t DBGMCU __attribute__((section(".dbgmcu")));
-volatile scb_t SCB __attribute__((section(".scb")));
-
-volatile uint32_t U_ID[3] __attribute__((section(".uid")));
-volatile uint16_t FLASH_SIZE __attribute__((section(".fid")));
-volatile uint16_t PKG __attribute__((section(".pkg")));
-/*
-volatile uint16_t VREFINT_CAL __attribute__((section(".vrefint")));
-volatile uint16_t TSENSE_CAL1 __attribute__((section(".tcal1")));
-volatile uint16_t TSENSE_CAL2 __attribute__((section(".tcal2")));
-*/
+#endif	//include guard
