@@ -408,6 +408,17 @@ bool Flash::BlockErase(uint8_t* address)
 	while(FLASH.SR & FLASH_SR_BUSY)
 	{}
 
+	//Clear any errors we had going in
+	#ifdef STM32L431
+		FLASH.SR = FLASH_SR_ERR_MASK;
+	#elif defined(STM32H735)
+		FLASH.CCR |= FLASH_SR_ERR_MASK;
+	#else
+		//not implemented for this target device
+		while(1)
+		{}
+	#endif
+
 	//Enable writing
 	Unlock();
 
@@ -501,7 +512,12 @@ bool Flash::Write(uint8_t* address, const uint8_t* data, uint32_t len)
 			{}
 			if(FLASH.SR & FLASH_SR_ERR_MASK)
 			{
+				FLASH.SR |= FLASH_SR_ERR_MASK;
+
+				//Clear program enable before returning
+				FLASH.CR &= ~FLASH_CR_PG;
 				Lock();
+
 				return false;
 			}
 		}
@@ -553,6 +569,10 @@ bool Flash::Write(uint8_t* address, const uint8_t* data, uint32_t len)
 			if(FLASH.SR & FLASH_SR_ERR_MASK)
 			{
 				FLASH.CCR |= FLASH_SR_ERR_MASK;
+
+				//Clear program enable before returning
+				FLASH.CR &= ~FLASH_CR_PG;
+				Lock();
 				return false;
 			}
 		}
