@@ -598,6 +598,9 @@ bool Flash::Write(uint8_t* address, const uint8_t* data, uint32_t len)
 			{}
 			if(FLASH.SR & FLASH_SR_ERR_MASK)
 			{
+				//Clear program enable before returning
+				FLASH.CR &= ~FLASH_CR_PG;
+
 				Lock();
 				return false;
 			}
