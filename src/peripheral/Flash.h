@@ -55,13 +55,37 @@ public:
 
 	#ifdef HAVE_FLASH_ECC
 	static bool CheckForECCFaults()
-	{ return (FLASH.SR & FLASH_SR_DBECCERR) != 0; }
+	{
+		#if FLASH_T_VERSION == 1
+			return (FLASH.SR & FLASH_SR_DBECCERR) != 0;
+		#elif FLASH_T_VERSION == 2
+			return (FLASH.ECCR & FLASH_ECCR_ECCD) != 0;
+		#else
+			#error not implemented
+		#endif
+	}
 
 	static void ClearECCFaults()
-	{ FLASH.CCR |= FLASH_SR_DBECCERR; }
+	{
+		#if FLASH_T_VERSION == 1
+			FLASH.CCR |= FLASH_SR_DBECCERR;
+		#elif FLASH_T_VERSION == 2
+			FLASH.ECCR |= FLASH_ECCR_ECCD;
+		#else
+			#error not implemented
+		#endif
+	}
 
 	static uint32_t GetFaultAddress()
-	{ return 0x08000000 + FLASH.ECC_FAR*32; }
+	{
+		#if FLASH_T_VERSION == 1
+			return 0x08000000 + FLASH.ECC_FAR*32;
+		#elif FLASH_T_VERSION == 2
+			return 0x08000000 + (FLASH.ECCR & 0x7ffff);
+		#else
+			#error not implemented
+		#endif
+	}
 	#endif
 
 	#ifdef STM32F7

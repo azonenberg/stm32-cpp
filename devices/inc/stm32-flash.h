@@ -106,7 +106,7 @@ typedef struct
 	uint32_t OPTKEYR;
 	uint32_t SR;
 	uint32_t CR;
-	uint32_t ECR;
+	uint32_t ECCR;
 	uint32_t OPTR;
 	uint32_t PCROP1SR;
 	uint32_t PCROP1ER;
@@ -138,6 +138,14 @@ enum flash_sr
 
 	FLASH_SR_ERR_MASK		= 0xC3FA
 };
+
+enum flash_eccr
+{
+	FLASH_ECCR_ECCD			= 0x80000000,
+	FLASH_ECCR_ECCC			= 0x40000000
+};
+
+#define HAVE_FLASH_ECC
 
 //STM32L031
 #elif FLASH_T_VERSION == 3
