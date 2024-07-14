@@ -32,7 +32,7 @@
 
 #ifdef HAVE_SPI
 
-#include <util/FIFO.h>
+#include <embedded-utils/FIFO.h>
 
 class SPIEvent
 {

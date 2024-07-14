@@ -32,8 +32,8 @@
 
 #include <stm32.h>
 #include <peripheral/RCC.h>
-#include <util/StringHelpers.h>
-#include <util/BufferedCharacterDevice.h>
+#include <embedded-utils/StringHelpers.h>
+#include <embedded-utils/BufferedCharacterDevice.h>
 
 #ifdef HAVE_UART
 
