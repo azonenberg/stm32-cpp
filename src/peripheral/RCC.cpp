@@ -31,6 +31,17 @@
 #include <peripheral/RCC.h>
 #include <peripheral/Power.h>
 
+#ifdef HAVE_FMC
+void RCCHelper::Enable([[maybe_unused]] volatile fmc_t* fmc)
+{
+	#if defined(STM32H735)
+		RCC.AHB3ENR |= RCC_AHB3_FMC;
+	#else
+		#error Dont know what to do with quadspi on this part
+	#endif
+}
+#endif
+
 #ifdef HAVE_QUADSPI
 void RCCHelper::Enable([[maybe_unused]] volatile quadspi_t* quadspi)
 {

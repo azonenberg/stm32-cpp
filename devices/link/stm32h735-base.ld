@@ -5,11 +5,11 @@ SECTIONS
 	/* Code comes right after the vector tables */
 	.text :
 	{
-		*(.vector)
+		KEEP (*(.vector))
 		. = ALIGN(32);
-		*(.fwver)
+		KEEP (*(.fwver))
 		. = ALIGN(32);
-		*(.fwid)
+		KEEP (*(.fwid))
 		. = ALIGN(32);
 		*(.text.*)
 		*(.rodata)
@@ -77,48 +77,48 @@ SECTIONS
 	.sfr_apb1  (NOLOAD):
 	{
 		. = ALIGN(1024);
-		*(.tim2)
+		KEEP (*(.tim2))
 		. = ALIGN(1024);
-		*(.tim3)
+		KEEP (*(.tim3))
 		. = ALIGN(1024);
-		*(.tim4)
+		KEEP (*(.tim4))
 		. = ALIGN(1024);
-		*(.tim5)
+		KEEP (*(.tim5))
 		. = ALIGN(1024);
-		*(.tim6)
+		KEEP (*(.tim6))
 		. = ALIGN(1024);
-		*(.tim7)
+		KEEP (*(.tim7))
 		. = ALIGN(1024);
-		*(.tim12)
+		KEEP (*(.tim12))
 		. = ALIGN(1024);
-		*(.tim13)
+		KEEP (*(.tim13))
 		. = ALIGN(1024);
-		*(.tim14)
+		KEEP (*(.tim14))
 		. = ALIGN(1024);
 		. += 1024;			/* LPTIM1 not implemented */
 		. += 4096;			/* 4000_2800 - 4000_37ff reserved */
 		. = ALIGN(1024);
-		*(.spi2)
+		KEEP (*(.spi2))
 		. = ALIGN(1024);
-		*(.spi3)
+		KEEP (*(.spi3))
 		. += 1024;			/* SPDIFRX1 not implemented */
 		. = ALIGN(1024);
-		*(.usart2)
+		KEEP (*(.usart2))
 		. = ALIGN(1024);
-		*(.usart3)
+		KEEP (*(.usart3))
 		. = ALIGN(1024);
-		*(.uart4)
+		KEEP (*(.uart4))
 		. = ALIGN(1024);
-		*(.uart5)
+		KEEP (*(.uart5))
 		. = ALIGN(1024);
-		*(.i2c1)
+		KEEP (*(.i2c1))
 		. = ALIGN(1024);
-		*(.i2c2)
+		KEEP (*(.i2c2))
 		. = ALIGN(1024);
-		*(.i2c3)
+		KEEP (*(.i2c3))
 		/* I2C4 is elsewhere */
 		. = ALIGN(1024);
-		*(.i2c5)
+		KEEP (*(.i2c5))
 	} > APB1
 
 	.sfr_apb2  (NOLOAD):
@@ -132,16 +132,16 @@ SECTIONS
 		. += 1024;			/* USART10 not implemented */
 		. += 4096;			/* 40012000 - 40012fff reserved */
 		. = ALIGN(1024);
-		*(.spi1)
+		KEEP (*(.spi1))
 		. = ALIGN(1024);
-		*(.spi4)
+		KEEP (*(.spi4))
 		. += 2048;			/* 40013800 - 40013fff reserved */
 		. += 1024;			/* TIM15 not implemented */
 		. += 1024;			/* TIM16 not implemented */
 		. += 1024;			/* TIM17 not implemented */
 		. += 1024;			/* 40014c00 - 40014fff reserved */
 		. = ALIGN(1024);
-		*(.spi5)
+		KEEP (*(.spi5))
 	} > APB2
 
 	.sfr_ahb2  (NOLOAD):
@@ -150,11 +150,11 @@ SECTIONS
 		. += 1024;			/* PSSI not implemented */
 		. += 2048;			/* reserved */
 		. = ALIGN(1024);
-		*(.cryp)
+		KEEP (*(.cryp))
 		. = ALIGN(1024);
-		*(.chash)
+		KEEP (*(.chash))
 		. = ALIGN(1024);
-		*(.rng)
+		KEEP (*(.rng))
 	} > AHB2
 
 	.sfr_ahb3  (NOLOAD):
@@ -164,57 +164,59 @@ SECTIONS
 		. += 4096;			/* MDMA not implemented */
 		. += 4096;			/* DMA2D not implemented */
 		. = ALIGN(1024);
-		*(.flash)
-		. = ALIGN(1024);
-		. += 11264;
-		*(.octospi1);
+		KEEP (*(.flash))
+		. += 4096;			/* 5200_3000 to 5200_3fff reserved */
+		. = ALIGN(4096);
+		KEEP (*(.fmc))
+		. = ALIGN(4096);
+		KEEP (*(.octospi1));
 		. = ALIGN(4096);
 		. += 4096;			/* DLYB not implemented */
 		. += 4096;			/* SDMMC1 not implemented */
 		. += 4096;			/* DLYB not implemented */
 		. += 1024;			/* RAMECC not implemented */
 		. += 3072;			/* 5200_9400 - 5200_9fff reserved */
-		*(.octospi2);
+		KEEP (*(.octospi2));
 		. = ALIGN(4096);
 		. += 1024;			/* DLYB not implemented */
-		*(.octospim);
+		KEEP (*(.octospim));
 		/* TODO: OTFDEC */
 	} > AHB3
 
 	.sfr_ahb4  (NOLOAD):
 	{
 		. = ALIGN(1024);
-		*(.gpioa)
+		KEEP (*(.gpioa))
 		. = ALIGN(1024);
-		*(.gpiob)
+		KEEP (*(.gpiob))
 		. = ALIGN(1024);
-		*(.gpioc)
+		KEEP (*(.gpioc))
 		. = ALIGN(1024);
-		*(.gpiod)
+		KEEP (*(.gpiod))
 		. = ALIGN(1024);
-		*(.gpioe)
+		KEEP (*(.gpioe))
 		. = ALIGN(1024);
-		*(.gpiof)
+		KEEP (*(.gpiof))
 		. = ALIGN(1024);
-		*(.gpiog)
+		KEEP (*(.gpiog))
 		. = ALIGN(1024);
-		*(.gpioh)
+		KEEP (*(.gpioh))
 		. = ALIGN(1024);
 		. += 1024;		/* no GPIOI */
 		. = ALIGN(1024);
-		*(.gpioj)
+		KEEP (*(.gpioj))
 		. = ALIGN(1024);
-		*(.gpiok)
+		KEEP (*(.gpiok))
 
 		. = ALIGN(1024);
 		. += 6144;		/* reserved 5802_8000 */
 
 		. = ALIGN(1024);
-		*(.rcc)
+		KEEP (*(.rcc))
 		. = ALIGN(1024);
-		*(.pwr)
+		KEEP (*(.pwr))
 		. = ALIGN(1024);
-		*(.crc)
+		KEEP (*(.crc))
 
 		/*
 			TODO: BDMA, DMAMUX2, ADC3, HSEM
@@ -225,16 +227,16 @@ SECTIONS
 	{
 		. += 1024;	/* EXTI not yet implemented */
 		. = ALIGN(1024);
-		*(.syscfg)
+		KEEP (*(.syscfg))
 		. = ALIGN(1024);
 		. += 1024;	/* reserved 5800_0800 */
 		. += 1024;	/* LPUART1 not implemented */
 		. += 1024;	/* reserved 5800_1000 */
 		. = ALIGN(1024);
-		*(.spi6)
+		KEEP (*(.spi6))
 		. += 1024;	/* reserved 5800_1800 */
 		. = ALIGN(1024);
-		*(.i2c4);
+		KEEP (*(.i2c4));
 		. = ALIGN(1024);
 		. += 1024;	/* reserved 5800_2000 */
 		. = ALIGN(1024);
@@ -252,7 +254,7 @@ SECTIONS
 		. = ALIGN(1024);
 		. += 1024;	/* VREF not yet implemented */
 		. = ALIGN(1024);
-		*(.rtc);
+		KEEP (*(.rtc));
 		. = ALIGN(1024);
 		. += 1024;	/* reserved 5800_4400 */
 		. = ALIGN(1024);
@@ -264,7 +266,7 @@ SECTIONS
 		. = ALIGN(1024);
 		. += 4096;	/* reserved 5800_5800 */
 		. = ALIGN(1024);
-		*(.dts);
+		KEEP (*(.dts));
 		. = ALIGN(1024);
 
 		/*
@@ -275,26 +277,26 @@ SECTIONS
 	.sfr_mcu  (NOLOAD):
 	{
 		. += 0xed00;
-		*(.scb)
+		KEEP (*(.scb))
 		. += 0x4;
-		*(.cpuid)
+		KEEP (*(.cpuid))
 		. += 0x18;
-		*(.mpu)
+		KEEP (*(.mpu))
 		. = ALIGN(1024);
 	} > MCU
 
 	.sfr_mcu2  (NOLOAD):
 	{
-		*(.dbgmcu)
+		KEEP (*(.dbgmcu))
 	} > MCU2
 
 	.sfr_sig  (NOLOAD):
 	{
 		. += 0x1e800;
-		*(.uid)
+		KEEP (*(.uid))
 		. += 0x74;
-		*(.fid)
+		KEEP (*(.fid))
 		. += 0x3c;
-		*(.lid)
+		KEEP (*(.lid))
 	} > SIG
 }

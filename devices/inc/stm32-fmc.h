@@ -1,8 +1,8 @@
 /***********************************************************************************************************************
 *                                                                                                                      *
-* stm32-cpp                                                                                                            *
+* STM32-CPP                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2021-2024 Andrew D. Zonenberg and contributors                                                         *
+* Copyright (c) 2020-2024 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -27,38 +27,63 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-/**
-	@file
-	@brief Declaration of UARTOutputStream
- */
-#ifndef UARTOutputStream_h
-#define UARTOutputStream_h
+#ifndef stm32_fmc_h
+#define stm32_fmc_h
 
-#include <stdint.h>
-#include <stm32.h>
-#include <embedded-cli/CLIOutputStream.h>
-#include <peripheral/UART.h>
-#include <embedded-utils/FIFO.h>
+#define HAVE_FMC
 
-/**
-	@brief CLI output stream for a UART or other character device (for use with embedded-cli)
+//STM32H735
+#if FMC_T_VERSION == 1
 
-	Mostly just a passthrough, but converts \r to \r\n
- */
-class UARTOutputStream : public CLIOutputStream
+typedef struct
 {
-public:
-	UARTOutputStream();
-	virtual ~UARTOutputStream();
+	//Configuration and timing registers
+	uint32_t	BCR1;
+	uint32_t	BTR1;
+	uint32_t	BCR2;
+	uint32_t	BTR2;
+	uint32_t	BCR3;
+	uint32_t	BTR3;
+	uint32_t	BCR4;
+	uint32_t	BTR4;
 
-	void Initialize(CharacterDevice* uart);
+	uint32_t	field_20[56];
 
-	virtual void PutCharacter(char ch);
-	virtual void PutString(const char* str);
-	virtual void Flush();
+	uint32_t	field_100;
+	uint32_t	BWTR1;
+	uint32_t	field_108;
+	uint32_t	BWTR2;
+	uint32_t	field_110;
+	uint32_t	BWTR3;
+	uint32_t	field_118;
+	uint32_t	BWTR4;
+} fmc_t;
 
-protected:
-	CharacterDevice* m_uart;
+enum fmc_bcr_t
+{
+	//only valid in bank 1
+	FMC_BCR_FMCEN		= 0x8000'0000,
+	FMC_BCR_CCLKEN		= 0x0010'0000,
+	FMC_BCR_BMAP_SWAP	= 0x0100'0000,
+
+	FMC_BCR_CBURSTRW	= 0x0008'0000,
+	FMC_BCR_WAITEN		= 0x0000'2000,
+	FMC_BCR_WREN		= 0x0000'1000,
+	FMC_BCR_WAITCFG		= 0x0000'0800,
+	FMC_BCR_BURSTEN		= 0x0000'0100,
+	FMC_BCR_WIDTH_16	= 0x0000'0010,
+	FMC_BCR_TYPE_SRAM	= 0x0000'0000,
+	FMC_BCR_TYPE_PSRAM	= 0x0000'0004,
+	FMC_BCR_MUXEN		= 0x0000'0002,
+	FMC_BCR_MBKEN		= 0x0000'0001,
+
+	FMC_RESERVED_BITS	= 0x0000'0080
 };
 
-#endif
+#else
+
+#error Undefined or unspecified FMC_T_VERSION
+
+#endif	//version check
+
+#endif	//include guard

@@ -120,7 +120,8 @@ enum rcc_ahb3
 {
 	RCC_AHB3_OCTOSPIM	= 0x00200000,
 	RCC_AHB3_OCTOSPI2	= 0x00080000,
-	RCC_AHB3_OCTOSPI1	= 0x00004000
+	RCC_AHB3_OCTOSPI1	= 0x00004000,
+	RCC_AHB3_FMC		= 0x00001000
 };
 
 enum rcc_ahb2
@@ -865,6 +866,10 @@ extern volatile dts_t DTS;
 
 #include "stm32-mpu.h"
 extern volatile mpu_t _MPU;
+
+#define FMC_T_VERSION 1
+#include "stm32-fmc.h"
+extern volatile fmc_t _FMC;
 
 //Defines for what peripherals are present / implemented
 #define HAVE_I2C

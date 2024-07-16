@@ -44,6 +44,10 @@ class RCCHelper
 public:
 	static void Enable(volatile gpio_t* gpio);
 
+	#ifdef HAVE_FMC
+	static void Enable(volatile fmc_t* fmc);
+	#endif
+
 	#ifdef HAVE_QUADSPI
 	static void Enable(volatile quadspi_t* quadspi);
 	#endif
