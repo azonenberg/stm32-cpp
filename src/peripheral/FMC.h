@@ -27,65 +27,145 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef stm32_fmc_h
-#define stm32_fmc_h
+#ifndef fmc_h
+#define fmc_h
 
-#define HAVE_FMC
+#ifdef HAVE_FMC
 
-//STM32H735
-#if FMC_T_VERSION == 1
+/**
+	@file
+	@author Andrew D. Zonenberg
+	@brief Flexible memory controller
+ */
 
-typedef struct
+/**
+	@brief Driver for the STM32H7 (and possibly other) flexible memory controller
+ */
+class FMCBank
 {
-	//Configuration and timing registers
-	uint32_t	BCR1;
-	uint32_t	BTR1;
-	uint32_t	BCR2;
-	uint32_t	BTR2;
-	uint32_t	BCR3;
-	uint32_t	BTR3;
-	uint32_t	BCR4;
-	uint32_t	BTR4;
+public:
 
-	uint32_t	field_20[56];
+	/**
+		@brief Initialize the FMC
+	 */
+	FMCBank([[maybe_unused]] volatile fmc_t* fmc, uint8_t bank)
+	{
+		//TODO: support other banks
+		if(bank != 0)
+		{
+			while(1)
+			{}
+		}
 
-	uint32_t	field_100;
-	uint32_t	BWTR1;
-	uint32_t	field_108;
-	uint32_t	BWTR2;
-	uint32_t	field_110;
-	uint32_t	BWTR3;
-	uint32_t	field_118;
-	uint32_t	BWTR4;
-} fmc_t;
+		//Default configuration
+		_FMC.BTR1 =
+			(0 << 24) |		//data latency 2 clocks
+			(1 << 20) |		//clock frequency fmc_ker_clk / 2
+			(0 << 16);		//no bus turnaround delay added
 
-enum fmc_bcr_t
-{
-	//only valid in bank 1
-	FMC_BCR_FMCEN		= 0x8000'0000,
-	FMC_BCR_CCLKEN		= 0x0010'0000,
-	FMC_BCR_BMAP_SWAP	= 0x0100'0000,
+		_FMC.BWTR1 =
+			(0 << 16);		//no bus turnaround delay added
 
-	FMC_BCR_CBURSTRW	= 0x0008'0000,
-	FMC_BCR_WAITEN		= 0x0000'2000,
-	FMC_BCR_WREN		= 0x0000'1000,
-	FMC_BCR_WAITCFG		= 0x0000'0800,
-	FMC_BCR_BURSTEN		= 0x0000'0100,
-	FMC_BCR_WIDTH_16	= 0x0000'0010,
-	FMC_BCR_WIDTH_MASK	= 0x0000'0030,
-	FMC_BCR_TYPE_SRAM	= 0x0000'0000,
-	FMC_BCR_TYPE_PSRAM	= 0x0000'0004,
-	FMC_BCR_TYPE_MASK	= 0x0000'000c,
-	FMC_BCR_MUXEN		= 0x0000'0002,
-	FMC_BCR_MBKEN		= 0x0000'0001,
+		_FMC.BCR1 = FMC_BCR_FMCEN | FMC_BCR_MBKEN | FMC_RESERVED_BITS;
+	}
 
-	FMC_RESERVED_BITS	= 0x0000'0080
+	/**
+		@brief Makes the FMC clock run even when not issuing a memory transaciton
+	 */
+	void EnableFreeRunningClock(bool enable = true)
+	{
+		if(enable)
+			_FMC.BCR1 |= FMC_BCR_CCLKEN;
+		else
+			_FMC.BCR1 &= ~FMC_BCR_CCLKEN;
+	}
+
+	/**
+		@brief Enable the memory to be written
+	 */
+	void EnableWrites(bool enable = true)
+	{
+		if(enable)
+			_FMC.BCR1 |= FMC_BCR_WREN;
+		else
+			_FMC.BCR1 &= ~FMC_BCR_WREN;
+	}
+
+	/**
+		@brief Sets the memory as synchronous
+	 */
+	void SetSynchronous(bool enable = true)
+	{
+		if(enable)
+			_FMC.BCR1 |= (FMC_BCR_CBURSTRW | FMC_BCR_BURSTEN);
+		else
+			_FMC.BCR1 &= ~(FMC_BCR_CBURSTRW | FMC_BCR_BURSTEN);
+	}
+
+	/**
+		@brief Enables address/data bus multiplexing
+	 */
+	void SetAddressDataMultiplex(bool enable = true)
+	{
+		if(enable)
+			_FMC.BCR1 |= FMC_BCR_MUXEN;
+		else
+			_FMC.BCR1 &= ~FMC_BCR_MUXEN;
+	}
+
+	/**
+		@brief Set the bus width
+	 */
+	void SetBusWidth(fmc_bcr_t width)
+	{
+		_FMC.BCR1 = (_FMC.BCR1 & ~FMC_BCR_WIDTH_MASK) | width;
+	}
+
+	/**
+		@brief Set the memory type
+	 */
+	void SetMemoryType(fmc_bcr_t type)
+	{
+		_FMC.BCR1 = (_FMC.BCR1 & ~FMC_BCR_TYPE_MASK) | type;
+	}
+
+	/**
+		@brief Puts the PSRAM bank in bank 1 so it's treated as device memory by default
+	 */
+	void SetPsramBankAs1(bool enable = true)
+	{
+		if(enable)
+			_FMC.BCR1 |= FMC_BCR_BMAP_SWAP;
+		else
+			_FMC.BCR1 &= ~FMC_BCR_BMAP_SWAP;
+	}
+
+	/**
+		@brief Enable wait states for synchronous memory
+	 */
+	void EnableSynchronousWaitStates(bool enable = true)
+	{
+		if(enable)
+			_FMC.BCR1 |= FMC_BCR_WAITEN;
+		else
+			_FMC.BCR1 &= ~FMC_BCR_WAITEN;
+	}
+
+	/**
+		@brief Configure timing of the wait state
+	 */
+	void SetEarlyWaitState(bool early = true)
+	{
+		if(!early)
+			_FMC.BCR1 |= FMC_BCR_WAITCFG;
+		else
+			_FMC.BCR1 &= ~FMC_BCR_WAITCFG;
+	}
+
+
+protected:
 };
 
-#else
+#endif
 
-#error Undefined or unspecified FMC_T_VERSION
-
-#endif	//version check
-
-#endif	//include guard
+#endif

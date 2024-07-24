@@ -146,6 +146,24 @@ public:
 		);
 	#endif
 
+	#ifdef STM32H735
+	enum FMCClockSource
+	{
+		FMC_CLOCK_HCLK3		= 0,
+		FMC_CLOCK_PLL1_Q	= 1,
+		FMC_CLOCK_PLL2_R	= 2,
+		FMC_CLOCK_CKPER		= 3,
+		FMC_CLOCK_MASK		= 3
+	};
+
+	/**
+		@brief Selects the kernel clock for the FMC
+	 */
+	static void SetFMCKernelClock(FMCClockSource src)
+	{ RCC.D1CCIPR = (RCC.D1CCIPR & ~FMC_CLOCK_MASK) | src; }
+
+	#endif
+
 	#ifdef STM32H7
 	enum ClockSource
 	{
