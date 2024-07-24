@@ -48,8 +48,10 @@ SECTIONS
 	} > AXISRAM AT> FLASH
 
 	/* Stack goes in TCM to keep it fast. We probably won't be DMAing etc to/from it. */
-	.stack  (NOLOAD):
+	.tcmbss (NOLOAD):
 	{
+		__tcmstart = .;
+		*(.tcmbss)
 		__end = .;
 		. = ORIGIN(DTCM) + LENGTH(DTCM) - 4;
 		__stack = .;
