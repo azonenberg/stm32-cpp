@@ -72,6 +72,11 @@ enum pwr_d3cr
 
 extern volatile crc_t _CRC;
 
+#define MDMA_T_VERSION 1
+#include "stm32-mdma.h"
+
+extern volatile mdma_t _MDMA;
+
 #define FLASH_T_VERSION 1
 #include "stm32-flash.h"
 
@@ -121,7 +126,8 @@ enum rcc_ahb3
 	RCC_AHB3_OCTOSPIM	= 0x00200000,
 	RCC_AHB3_OCTOSPI2	= 0x00080000,
 	RCC_AHB3_OCTOSPI1	= 0x00004000,
-	RCC_AHB3_FMC		= 0x00001000
+	RCC_AHB3_FMC		= 0x00001000,
+	RCC_AHB3_MDMA		= 0x00000001
 };
 
 enum rcc_ahb2

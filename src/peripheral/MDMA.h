@@ -27,186 +27,70 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef RCC_h
-#define RCC_h
+#ifndef mdma_h
+#define mdma_h
 
-#include <stm32fxxx.h>
+#ifdef HAVE_MDMA
+
+#include <embedded-utils/FIFO.h>
 
 /**
-	@brief Reset and Clock Control
-
-	Helper class for enabling various devices.
-
-	All functions are static because there's only one RCC in the device.
+	@brief A single channel of the MDMA
  */
-class RCCHelper
+class MDMAChannel
 {
 public:
-	static void Enable(volatile gpio_t* gpio);
-
-	#ifdef HAVE_MDMA
-	static void Enable(volatile mdma_t* mdma);
-	#endif
-
-	#ifdef HAVE_FMC
-	static void Enable(volatile fmc_t* fmc);
-	#endif
-
-	#ifdef HAVE_QUADSPI
-	static void Enable(volatile quadspi_t* quadspi);
-	#endif
-
-	#ifdef HAVE_CRC
-	static void Enable(volatile crc_t* crc);
-	#endif
-
-	#ifdef HAVE_RTC
-	static void Enable(volatile rtc_t* rtc);
-	#endif
-
-	#ifdef HAVE_DTS
-	static void Enable(volatile dts_t* dts);
-	#endif
-
-	#if defined(STM32L4) || defined(STM32L0)
-	static void Enable(volatile pwr_t* pwr);
-	#endif
-
-	#ifdef HAVE_ADC
-	static void Enable(volatile adc_t* adc);
-	#endif
-
-	#ifdef HAVE_I2C
-	static void Enable(volatile i2c_t* i2c);
-	#endif
-
-	#ifdef HAVE_SPI
-	static void Enable(volatile spi_t* spi);
-	#endif
-
-	#ifdef HAVE_TIM
-	static void Enable(volatile tim_t* tim);
-	#endif
-
-	#ifdef HAVE_EMAC
-	static void Enable(volatile emac_t* mac);
-	#endif
-
-	#ifdef HAVE_RNG
-	static void Enable(volatile rng_t* rng);
-	#endif
-
-	#ifdef HAVE_HASH
-	static void Enable(volatile hash_t* hash);
-	#endif
-
-	#ifdef HAVE_CRYP
-	static void Enable(volatile cryp_t* cryp);
-	#endif
-
-	#ifdef HAVE_UART
-	static void Enable(volatile usart_t* uart);
-	#endif
-
-	#ifdef HAVE_OCTOSPI
-	static void Enable(volatile octospim_t* octospim);
-	static void Enable(volatile octospi_t* octospi);
-	#endif
-
-	#ifdef STM32F0
-	static void InitializePLLFromInternalOscillator(
-		uint8_t prediv,
-		uint8_t mult,
-		uint16_t ahbdiv,
-		uint8_t apbdiv
-		);
-	#endif
-
-	#ifdef STM32L0
-	static void InitializePLLFromHSI16(uint8_t mult, uint8_t hclkdiv, uint16_t ahbdiv, uint8_t apb2div, uint8_t apb1div);
-	#endif
-
-	#ifdef STM32L4
-	static void InitializePLLFromHSI16(
-		uint8_t prediv,
-		uint8_t mult,
-		uint8_t qdiv,
-		uint8_t rdiv,
-		uint16_t ahbdiv,
-		uint8_t apb1div,
-		uint8_t apb2div);
-	#endif
-
-	#ifdef STM32F7
-	static void InitializePLLFromInternalOscillator(
-		uint8_t prediv,
-		uint16_t mult,
-		uint8_t pdiv,
-		uint8_t qdiv,
-		uint8_t rdiv,
-		uint16_t ahbdiv,
-		uint16_t apb1div,
-		uint16_t apb2div
-		);
-	#endif
-
-	#ifdef STM32H735
-	enum FMCClockSource
-	{
-		FMC_CLOCK_HCLK3		= 0,
-		FMC_CLOCK_PLL1_Q	= 1,
-		FMC_CLOCK_PLL2_R	= 2,
-		FMC_CLOCK_CKPER		= 3,
-		FMC_CLOCK_MASK		= 3
-	};
+	MDMAChannel()
+	{}
 
 	/**
-		@brief Selects the kernel clock for the FMC
+		@brief
 	 */
-	static void SetFMCKernelClock(FMCClockSource src)
-	{ RCC.D1CCIPR = (RCC.D1CCIPR & ~FMC_CLOCK_MASK) | src; }
+	uint32_t GetIndex()
+	{ return m_index; }
 
-	#endif
+	//Internals, only used by MDMA class (not part of public API)
+public:
+	/**
+		@brief Initializes the channel after creation
+	 */
+	void Initialize(uint32_t index)
+	{ m_index = index; }
 
-	#ifdef STM32H7
-	enum ClockSource
-	{
-		CLOCK_SOURCE_HSE,
-		CLOCK_SOURCE_HSI
-	};
+	void ConfigureDefaults();
 
-	static void EnableHighSpeedExternalClock();
-	static void EnableHighSpeedInternalClock(int mhz);
-	static void InitializePLL(
-		uint8_t npll,
-		float in_mhz,
-		uint8_t prediv,
-		uint16_t mult,
-		uint8_t divP,
-		uint8_t divQ,
-		uint8_t divR,
-		ClockSource source
-		);
-	static void SelectSystemClockFromPLL1();
-	static void InitializeSystemClocks(
-		uint16_t sysckdiv,
-		uint16_t ahbdiv,
-		uint8_t apb1div,
-		uint8_t apb2div,
-		uint8_t apb3div,
-		uint8_t apb4div
-		);
-	static uint8_t GetDivider512Code(uint16_t div);
-	static uint8_t GetDivider16Code(uint8_t div);
-
-	static void EnableSram2();
-	static void EnableSram1();
-	static void EnableBackupSram();
-	#endif
-
-	#if defined(STM32L0) || defined(STM32L4) || defined(STM32H7)
-	static void EnableSyscfg();
-	#endif
+protected:
+	uint32_t	m_index;
 };
+
+/**
+	@brief Top level wrapper for the MDMA
+
+	Mostly just an allocator for DMA channels.
+
+	Exactly one instance of this class should be created, at global scope, if the MDMA is being used.
+ */
+class MDMA
+{
+public:
+	MDMA();
+
+	MDMAChannel* AllocateChannel();
+
+	/**
+		@brief Returns a channel to the free list
+	 */
+	void FreeChannel(MDMAChannel* chan)
+	{ m_freeChannels.Push(chan->GetIndex()); }
+
+protected:
+	FIFO<uint8_t, NUM_MDMA_CHANNELS> m_freeChannels;
+
+	MDMAChannel m_channels[NUM_MDMA_CHANNELS];
+};
+
+extern MDMA g_mdma;
+
+#endif
 
 #endif

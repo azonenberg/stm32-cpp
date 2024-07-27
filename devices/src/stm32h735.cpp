@@ -47,6 +47,8 @@ volatile crc_t _CRC __attribute__((section(".crc")));
 
 volatile flash_t FLASH __attribute__((section(".flash")));
 
+volatile mdma_t _MDMA __attribute__((section(".mdma")));
+
 volatile pwr_t PWR __attribute__((section(".pwr")));
 
 volatile i2c_t I2C1 __attribute__((section(".i2c1")));

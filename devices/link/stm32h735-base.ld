@@ -163,7 +163,9 @@ SECTIONS
 	{
 		. += 1048576;		/* GPV not implemented */
 		. += 15728640;		/* 5110_0000 - 51ff_ffff reserved */
-		. += 4096;			/* MDMA not implemented */
+		. = ALIGN(4096);
+		KEEP (*(.mdma))
+		. = ALIGN(4096);
 		. += 4096;			/* DMA2D not implemented */
 		. = ALIGN(1024);
 		KEEP (*(.flash))

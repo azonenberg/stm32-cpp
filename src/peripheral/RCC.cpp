@@ -31,13 +31,24 @@
 #include <peripheral/RCC.h>
 #include <peripheral/Power.h>
 
+#ifdef HAVE_MDMA
+void RCCHelper::Enable([[maybe_unused]] volatile mdma_t* mdma)
+{
+	#if defined(STM32H735)
+		RCC.AHB3ENR |= RCC_AHB3_MDMA;
+	#else
+		#error Dont know what to do with MDMA on this part
+	#endif
+}
+#endif
+
 #ifdef HAVE_FMC
 void RCCHelper::Enable([[maybe_unused]] volatile fmc_t* fmc)
 {
 	#if defined(STM32H735)
 		RCC.AHB3ENR |= RCC_AHB3_FMC;
 	#else
-		#error Dont know what to do with quadspi on this part
+		#error Dont know what to do with FMC on this part
 	#endif
 }
 #endif
