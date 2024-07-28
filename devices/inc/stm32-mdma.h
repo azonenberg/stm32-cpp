@@ -74,47 +74,47 @@ enum mdma_tbr_t
 	MDMA_TBR_SRC_TCM		= 0x0001'0000
 };
 
-typedef struct
+struct mdma_linkedlist_t
 {
-	uint32_t	TCR;		//verify
-	uint32_t	BNDTR;
-	uint32_t	SAR;
-	uint32_t	DAR;
-	uint32_t	BRUR;
-	uint32_t	LAR;
-	uint32_t	TBR;
-	uint32_t	field_1c;
-	uint32_t	MAR;
-	uint32_t	MDR;
-} mdma_linkedlist_t;
+	uint32_t			TCR;
+	uint32_t			BNDTR;
+	void*				SAR;
+	void*				DAR;
+	uint32_t			BRUR;
+	mdma_linkedlist_t*	LAR;
+	uint32_t			TBR;
+	uint32_t			field_1c;	//reserved
+	uint32_t			MAR;
+	uint32_t			MDR;
+} ;
 
-typedef struct
+struct mdma_chan_t
 {
-	uint32_t	ISR;
-	uint32_t	IFCR;
-	uint32_t	ESR;
-	uint32_t	CR;
-	uint32_t	TCR;
-	uint32_t	BNDTR;
-	uint32_t	SAR;
-	uint32_t	DAR;
-	uint32_t	BRUR;
-	uint32_t	LAR;
-	uint32_t	TBR;
-	uint32_t	field_2c;
-	uint32_t	MAR;
-	uint32_t	MDR;
-	uint32_t	field_38;
-	uint32_t	field_3c;
-} mdma_chan_t;
+	uint32_t			ISR;
+	uint32_t			IFCR;
+	uint32_t			ESR;
+	uint32_t			CR;
+	uint32_t			TCR;
+	uint32_t			BNDTR;
+	void*				SAR;
+	void*				DAR;
+	uint32_t			BRUR;
+	mdma_linkedlist_t*	LAR;
+	uint32_t			TBR;
+	uint32_t			field_2c;	//reserved
+	uint32_t			MAR;
+	uint32_t			MDR;
+	uint32_t			field_38;	//padding
+	uint32_t			field_3c;
+};
 
-typedef struct
+struct mdma_t
 {
 	uint32_t GISR0;
 	uint32_t field_04[15];
 
 	mdma_chan_t	channels[NUM_MDMA_CHANNELS];
-} mdma_t;
+};
 
 #else
 
