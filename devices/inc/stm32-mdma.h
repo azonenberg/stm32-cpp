@@ -71,41 +71,33 @@ enum mdma_tbr_t
 {
 	MDMA_TBR_DEST_AXI		= 0x0000'0000,
 	MDMA_TBR_DEST_TCM		= 0x0002'0000,
-	MDMA_TBR_SRC_TCM		= 0x0001'0000
+	MDMA_TBR_SRC_TCM		= 0x0001'0000,
+	MDMA_TBR_SRC_AXI		= 0x0000'0000
 };
 
 struct mdma_linkedlist_t
 {
-	uint32_t			TCR;
-	uint32_t			BNDTR;
-	void*				SAR;
-	void*				DAR;
-	uint32_t			BRUR;
-	mdma_linkedlist_t*	LAR;
-	uint32_t			TBR;
-	uint32_t			field_1c;	//reserved
-	uint32_t			MAR;
-	uint32_t			MDR;
+	uint32_t					TCR;
+	uint32_t					BNDTR;
+	volatile void*				SAR;
+	volatile void*				DAR;
+	uint32_t					BRUR;
+	volatile mdma_linkedlist_t*	LAR;
+	uint32_t					TBR;
+	uint32_t					field_1c;	//reserved
+	uint32_t					MAR;
+	uint32_t					MDR;
 } ;
 
 struct mdma_chan_t
 {
-	uint32_t			ISR;
-	uint32_t			IFCR;
-	uint32_t			ESR;
-	uint32_t			CR;
-	uint32_t			TCR;
-	uint32_t			BNDTR;
-	void*				SAR;
-	void*				DAR;
-	uint32_t			BRUR;
-	mdma_linkedlist_t*	LAR;
-	uint32_t			TBR;
-	uint32_t			field_2c;	//reserved
-	uint32_t			MAR;
-	uint32_t			MDR;
-	uint32_t			field_38;	//padding
-	uint32_t			field_3c;
+	uint32_t					ISR;
+	uint32_t					IFCR;
+	uint32_t					ESR;
+	uint32_t					CR;
+	volatile mdma_linkedlist_t	state;
+	uint32_t					field_38;	//padding
+	uint32_t					field_3c;
 };
 
 struct mdma_t

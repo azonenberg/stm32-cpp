@@ -71,6 +71,25 @@ MDMAChannel* MDMA::AllocateChannel()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// MDMATransferConfig
+
+/**
+	@brief Resets a channel to the default state
+ */
+void MDMATransferConfig::ConfigureDefaults() volatile
+{
+	TCR = 0;
+	BNDTR = 0;
+	SAR = 0;
+	DAR = 0;
+	BRUR = 0;
+	LAR = 0;
+	TBR = 0;
+	MAR = 0;
+	MDR = 0;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // MDMAChannel
 
 /**
@@ -84,15 +103,7 @@ void MDMAChannel::ConfigureDefaults()
 	//no need to clear IFCR
 	//no need to clear ESR
 	chan.CR = 0;
-	chan.TCR = 0;
-	chan.BNDTR = 0;
-	chan.SAR = 0;
-	chan.DAR = 0;
-	chan.BRUR = 0;
-	chan.LAR = 0;
-	chan.TBR = 0;
-	chan.MAR = 0;
-	chan.MDR = 0;
+	GetTransferConfig().ConfigureDefaults();
 }
 
 #endif

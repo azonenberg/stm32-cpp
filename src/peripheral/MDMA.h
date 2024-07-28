@@ -35,6 +35,32 @@
 #include <embedded-utils/FIFO.h>
 
 /**
+	@brief Configuration for a single MDMA transfer
+ */
+class MDMATransferConfig : public mdma_linkedlist_t
+{
+public:
+
+	enum mdma_src_t
+	{
+		SRC_AXI	= MDMA_TBR_SRC_AXI,
+		SRC_TCM	= MDMA_TBR_SRC_TCM
+	};
+
+	enum mdma_dst_t
+	{
+		DST_AXI = MDMA_TBR_DEST_AXI,
+		DST_TCM = MDMA_TBR_DEST_TCM
+	};
+
+	///@brief Sets which buses to use for source and destination pointers
+	void SetBusConfig(MDMATransferConfig::mdma_src_t src, MDMATransferConfig::mdma_dst_t dst) volatile
+	{ TBR = (uint32_t)src | (uint32_t)dst; }
+
+	void ConfigureDefaults() volatile;
+};
+
+/**
 	@brief A single channel of the MDMA
  */
 class MDMAChannel
@@ -43,11 +69,13 @@ public:
 	MDMAChannel()
 	{}
 
-	/**
-		@brief
-	 */
-	uint32_t GetIndex()
+	///@brief Gets the index of the channel
+	 uint32_t GetIndex()
 	{ return m_index; }
+
+	///@brief Gets the transfer configuration for this channel
+	volatile MDMATransferConfig& GetTransferConfig()
+	{ return *reinterpret_cast<volatile MDMATransferConfig*>(&_MDMA.channels[m_index].state); }
 
 	//Internals, only used by MDMA class (not part of public API)
 public:
