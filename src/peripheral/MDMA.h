@@ -57,6 +57,18 @@ public:
 	void SetBusConfig(MDMATransferConfig::mdma_src_t src, MDMATransferConfig::mdma_dst_t dst) volatile
 	{ TBR = (uint32_t)src | (uint32_t)dst; }
 
+	///@brief Sets the source buffer pointer (must be aligned to source transfer size)
+	void SetSourcePointer(volatile void* p) volatile
+	{ SAR = p; }
+
+	///@brief Sets the destination buffer pointer (must be aligned to destination transfer size)
+	void SetDestPointer(volatile void* p) volatile
+	{ DAR = p; }
+
+	///@brief Sets the next MDMATransferConfig to chain to in linked-list mode
+	void AppendTransfer(volatile MDMATransferConfig* next) volatile
+	{ LAR = next; }
+
 	void ConfigureDefaults() volatile;
 };
 
