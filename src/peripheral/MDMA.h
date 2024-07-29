@@ -95,9 +95,18 @@ public:
 			TCR &= ~MDMA_TCR_SWRM;
 	}
 
+	///@brief Enables (true) or disables (false) packing and unpacking of unequal source/dest accesses
+	void EnablePackMode(bool enable = true) volatile
+	{
+		if(enable)
+			TCR |= MDMA_TCR_PKE;
+		else
+			TCR &= ~MDMA_TCR_PKE;
+	}
+
 	///@brief Selects the trigger mode
 	void SetTriggerMode(mdma_trigger_t mode) volatile
-	{ TCR = (TCR & ~MDMA_TCR_TRGM_MASK) | (uint32_t)mode; }
+	{ TCR = (TCR & ~(uint32_t)MDMA_TCR_TRGM_MASK) | (uint32_t)mode; }
 
 	void ConfigureDefaults() volatile;
 };
