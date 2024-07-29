@@ -53,6 +53,14 @@ public:
 		DST_TCM = MDMA_TBR_DEST_TCM
 	};
 
+	enum mdma_trigger_t
+	{
+		MODE_LINKED_LIST	= MDMA_TCR_TRGM_LINK,
+		MODE_BLOCK			= MDMA_TCR_TRGM_BLOCK,
+		MODE_REPEATED_BLOCK	= MDMA_TCR_TRGM_REP_BLOCK,
+		MODE_BUFFER			= MDMA_TCR_TRGM_BUFFER,
+	};
+
 	///@brief Sets which buses to use for source and destination pointers
 	void SetBusConfig(MDMATransferConfig::mdma_src_t src, MDMATransferConfig::mdma_dst_t dst) volatile
 	{ TBR = (uint32_t)src | (uint32_t)dst; }
@@ -68,6 +76,28 @@ public:
 	///@brief Sets the next MDMATransferConfig to chain to in linked-list mode
 	void AppendTransfer(volatile MDMATransferConfig* next) volatile
 	{ LAR = next; }
+
+	///@brief Enable or disable the write buffer
+	void EnableWriteBuffer(bool enable = true) volatile
+	{
+		if(enable)
+			TCR |= MDMA_TCR_BWM;
+		else
+			TCR &= ~MDMA_TCR_BWM;
+	}
+
+	///@brief Selects software (true) or hardware (false) triggering for DMA transfers
+	void SetSoftwareRequestMode(bool enable = true) volatile
+	{
+		if(enable)
+			TCR |= MDMA_TCR_SWRM;
+		else
+			TCR &= ~MDMA_TCR_SWRM;
+	}
+
+	///@brief Selects the trigger mode
+	void SetTriggerMode(mdma_trigger_t mode) volatile
+	{ TCR = (TCR & ~MDMA_TCR_TRGM_MASK) | (uint32_t)mode; }
 
 	void ConfigureDefaults() volatile;
 };
