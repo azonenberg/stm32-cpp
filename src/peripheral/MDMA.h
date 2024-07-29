@@ -41,6 +41,20 @@ class MDMATransferConfig : public mdma_linkedlist_t
 {
 public:
 
+	void operator=(volatile const MDMATransferConfig& rhs) volatile
+	{
+		TCR = rhs.TCR;
+		BNDTR = rhs.BNDTR;
+		SAR = rhs.SAR;
+		DAR = rhs.DAR;
+		BRUR = rhs.BRUR;
+		LAR = rhs.LAR;
+		TBR = rhs.TBR;
+		MAR = rhs.MAR;
+		MDR = rhs.MDR;
+		//no return value
+	}
+
 	enum mdma_src_t
 	{
 		SRC_AXI	= MDMA_TBR_SRC_AXI,
@@ -59,6 +73,49 @@ public:
 		MODE_BLOCK			= MDMA_TCR_TRGM_BLOCK,
 		MODE_REPEATED_BLOCK	= MDMA_TCR_TRGM_REP_BLOCK,
 		MODE_BUFFER			= MDMA_TCR_TRGM_BUFFER,
+	};
+
+	enum mdma_sinc_t
+	{
+		SOURCE_FIXED		= MDMA_TCR_SRC_FIX,
+		SOURCE_INCREMENT	= MDMA_TCR_SRC_INC,
+		SOURCE_DECREMENT	= MDMA_TCR_SRC_DEC
+	};
+
+	enum mdma_sincos_t
+	{
+		SOURCE_INC_8		= MDMA_TCR_SRC_INC_8,
+		SOURCE_INC_16		= MDMA_TCR_SRC_INC_16,
+		SOURCE_INC_32		= MDMA_TCR_SRC_INC_32,
+		SOURCE_INC_64		= MDMA_TCR_SRC_INC_64
+	};
+
+	enum mdma_ssize_t
+	{
+		SOURCE_SIZE_8		= MDMA_TCR_SRC_SIZE_8,
+		SOURCE_SIZE_16		= MDMA_TCR_SRC_SIZE_16,
+		SOURCE_SIZE_32		= MDMA_TCR_SRC_SIZE_32,
+		SOURCE_SIZE_64		= MDMA_TCR_SRC_SIZE_64,
+	};
+
+	enum mdma_sburst_t
+	{
+		SOURCE_BURST_1		= 0,
+		SOURCE_BURST_2		= (1 << 15),
+		SOURCE_BURST_4		= (2 << 15),
+		SOURCE_BURST_8		= (3 << 15),
+		SOURCE_BURST_16		= (4 << 15),
+		SOURCE_BURST_32		= (5 << 15),
+		SOURCE_BURST_64		= (6 << 15),
+		SOURCE_BURST_128	= (7 << 15),
+		SOURCE_BURST_MASK	= (7 << 15)
+	};
+
+	enum mdma_dinc_t
+	{
+		DEST_FIXED			= MDMA_TCR_DEST_FIX,
+		DEST_INCREMENT		= MDMA_TCR_DEST_INC,
+		DEST_DECREMENT		= MDMA_TCR_DEST_DEC
 	};
 
 	///@brief Sets which buses to use for source and destination pointers
@@ -107,6 +164,27 @@ public:
 	///@brief Selects the trigger mode
 	void SetTriggerMode(mdma_trigger_t mode) volatile
 	{ TCR = (TCR & ~(uint32_t)MDMA_TCR_TRGM_MASK) | (uint32_t)mode; }
+
+	///@brief Selects the source pointer increment mode
+	void SetSourcePointerMode(mdma_sinc_t sincmode, mdma_sincos_t offmode, mdma_ssize_t srcsize) volatile
+	{
+		TCR = (TCR & ~(
+				(uint32_t)MDMA_TCR_SRC_MODEMASK | (uint32_t)MDMA_TCR_SRC_INC_MASK | (uint32_t)MDMA_TCR_SRC_SIZE_MASK )
+			) |
+			(uint32_t)sincmode | (uint32_t) offmode | (uint32_t) srcsize;
+	}
+
+	///@brief Selects the destination pointer increment mode
+	void SetDestIncrementMode(mdma_dinc_t mode) volatile
+	{ TCR = (TCR & ~(uint32_t)MDMA_TCR_DEST_INCMASK) | (uint32_t)mode; }
+
+	///@brief Set the buffer transaction length
+	void SetBufferTransactionLength(uint32_t len) volatile
+	{ TCR = (TCR & 0xFE03FFFF) | ((len-1) << 18); }
+
+	///@brief Set source AHB/AXI burst length
+	void SetSourceBurstLength(mdma_sburst_t burst) volatile
+	{ TCR = (TCR & ~(uint32_t)SOURCE_BURST_MASK ) | burst; }
 
 	void ConfigureDefaults() volatile;
 };
