@@ -41,10 +41,6 @@ UARTOutputStream::UARTOutputStream()
 {
 }
 
-UARTOutputStream::~UARTOutputStream()
-{
-}
-
 void UARTOutputStream::Initialize(CharacterDevice* uart)
 {
 	m_uart = uart;

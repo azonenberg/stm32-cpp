@@ -49,7 +49,6 @@ class UARTOutputStream : public CLIOutputStream
 {
 public:
 	UARTOutputStream();
-	virtual ~UARTOutputStream();
 
 	void Initialize(CharacterDevice* uart);
 
