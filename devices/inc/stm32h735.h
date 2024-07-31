@@ -886,5 +886,6 @@ extern volatile fmc_t _FMC;
 #define HAVE_HASH
 #define HAVE_PWR
 #define HAVE_OCTOSPI
+#define HAVE_ITCM
 
 #endif

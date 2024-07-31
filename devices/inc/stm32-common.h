@@ -56,6 +56,9 @@ extern "C" void LeaveCriticalSection(uint32_t cpu_sr);
 extern uint8_t __data_romstart;
 extern uint8_t __data_start;
 extern uint8_t __data_end;
+extern uint8_t __itcm_start;
+extern uint8_t __itcm_romstart;
+extern uint8_t __itcm_end;
 
 /**
 	@brief Enables an IRQ lane in the NVIC

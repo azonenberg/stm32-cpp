@@ -13,6 +13,7 @@ SECTIONS
 		. = ALIGN(32);
 		*(.text.*)
 		*(.rodata)
+		*(.rodata.*)
 		*(.ctors)
 
 		. = ALIGN(4);
@@ -29,10 +30,28 @@ SECTIONS
 		KEEP(*(.init_array))
 		__init_array_end = .;
 
+		/* TODO: consider not emitting global destructors since they're never called */
 		__dtor_start = .;
 		*(.fini_array)
 		__dtor_end = .;
 	} > FLASH
+
+	/*
+		Hot functions designated by user go in ITCM
+
+		Also needs to be aligned on a flash write block boundary to avoid problems when flashing targets
+	 */
+	.tcmtext : ALIGN(32)
+	{
+		__itcm_romstart = LOADADDR(.tcmtext);
+		__itcm_start = .;
+	
+		/* DEBUG: block off first 256 bytes of ITCM since it's mapped at 0 and we want to catch null derefs */
+		. += 256;
+
+		*(.tcmtext)
+		__itcm_end = .;
+	} > ITCM AT> FLASH
 
 	/*
 		Initialized data needs special handling because it lives in two places
