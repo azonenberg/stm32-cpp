@@ -51,6 +51,15 @@ typedef struct
 	uint32_t	ADR;
 	uint32_t	MMFR[4];
 	uint32_t	ISAR[5];
+	uint32_t	field_e000ed74;
+#if SCB_T_VERSION == 2
+	uint32_t	CLIDR;
+	uint32_t	CTR;
+	uint32_t	CCSIDR;
+	uint32_t	CSSELR;
+	uint32_t	CPACR;
+	//more after this
+#endif
 } scb_t;
 
 #endif	//include guard
