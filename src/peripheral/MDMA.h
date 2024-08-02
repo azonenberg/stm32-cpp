@@ -95,7 +95,7 @@ public:
 		SOURCE_SIZE_8		= MDMA_TCR_SRC_SIZE_8,
 		SOURCE_SIZE_16		= MDMA_TCR_SRC_SIZE_16,
 		SOURCE_SIZE_32		= MDMA_TCR_SRC_SIZE_32,
-		SOURCE_SIZE_64		= MDMA_TCR_SRC_SIZE_64,
+		SOURCE_SIZE_64		= MDMA_TCR_SRC_SIZE_64
 	};
 
 	enum mdma_sburst_t
@@ -117,6 +117,23 @@ public:
 		DEST_INCREMENT		= MDMA_TCR_DEST_INC,
 		DEST_DECREMENT		= MDMA_TCR_DEST_DEC
 	};
+
+	enum mdma_dincos_t
+	{
+		DEST_INC_8			= MDMA_TCR_DEST_INC_8,
+		DEST_INC_16			= MDMA_TCR_DEST_INC_16,
+		DEST_INC_32			= MDMA_TCR_DEST_INC_32,
+		DEST_INC_64			= MDMA_TCR_DEST_INC_64
+	};
+
+	enum mdma_dsize_t
+	{
+		DEST_SIZE_8			= MDMA_TCR_DEST_SIZE_8,
+		DEST_SIZE_16		= MDMA_TCR_DEST_SIZE_16,
+		DEST_SIZE_32		= MDMA_TCR_DEST_SIZE_32,
+		DEST_SIZE_64		= MDMA_TCR_DEST_SIZE_64
+	};
+
 
 	///@brief Sets which buses to use for source and destination pointers
 	void SetBusConfig(MDMATransferConfig::mdma_src_t src, MDMATransferConfig::mdma_dst_t dst) volatile
@@ -169,22 +186,35 @@ public:
 	void SetSourcePointerMode(mdma_sinc_t sincmode, mdma_sincos_t offmode, mdma_ssize_t srcsize) volatile
 	{
 		TCR = (TCR & ~(
-				(uint32_t)MDMA_TCR_SRC_MODEMASK | (uint32_t)MDMA_TCR_SRC_INC_MASK | (uint32_t)MDMA_TCR_SRC_SIZE_MASK )
-			) |
+				(uint32_t)MDMA_TCR_SRC_MODEMASK | (uint32_t)MDMA_TCR_SRC_INC_MASK | (uint32_t)MDMA_TCR_SRC_SIZE_MASK
+			)) |
 			(uint32_t)sincmode | (uint32_t) offmode | (uint32_t) srcsize;
 	}
 
 	///@brief Selects the destination pointer increment mode
-	void SetDestIncrementMode(mdma_dinc_t mode) volatile
-	{ TCR = (TCR & ~(uint32_t)MDMA_TCR_DEST_INCMASK) | (uint32_t)mode; }
+	void SetDestPointerMode(mdma_dinc_t dincmode, mdma_dincos_t offmode, mdma_dsize_t dstsize) volatile
+	{
+		TCR = (TCR & ~(
+			(uint32_t)MDMA_TCR_DEST_INCMASK | (uint32_t)MDMA_TCR_DEST_INC_MASK | (uint32_t)MDMA_TCR_DEST_SIZE_MASK
+			)) |
+			(uint32_t)dincmode | (uint32_t)offmode | (uint32_t) dstsize;
+	}
 
 	///@brief Set the buffer transaction length
 	void SetBufferTransactionLength(uint32_t len) volatile
 	{ TCR = (TCR & 0xFE03FFFF) | ((len-1) << 18); }
 
-	///@brief Set source AHB/AXI burst length
+	///@brief Set source AHB/AXI burst length, in beats
 	void SetSourceBurstLength(mdma_sburst_t burst) volatile
 	{ TCR = (TCR & ~(uint32_t)SOURCE_BURST_MASK ) | burst; }
+
+	///@brief Sets number of bytes to transfer per burst
+	void SetTransferBytes(uint32_t len) volatile
+	{ TCR = (TCR & ~0x01fc0000) | ((len-1) << 18); }
+
+	///@brief Sets the number of bytes per block, and number of blocks, to send
+	void SetTransferBlockConfig(uint32_t bytesPerBlock, uint32_t blocksToTransfer) volatile
+	{ BNDTR = ( (blocksToTransfer - 1) << 20 ) | bytesPerBlock; }
 
 	void ConfigureDefaults() volatile;
 };
@@ -205,6 +235,21 @@ public:
 	///@brief Gets the transfer configuration for this channel
 	volatile MDMATransferConfig& GetTransferConfig()
 	{ return *reinterpret_cast<volatile MDMATransferConfig*>(&_MDMA.channels[m_index].state); }
+
+	///@brief Blocks until the previous transaction, if any, completes
+	void WaitIdle()
+	{
+		while(_MDMA.channels[m_index].ISR & MDMA_ISR_CRQA)
+		{}
+	}
+
+	///@brief Starts the DMA transaction
+	void Start()
+	{
+		asm("dmb st");
+		_MDMA.channels[m_index].CR |= MDMA_CR_EN;
+		_MDMA.channels[m_index].CR |= MDMA_CR_SWRQ;
+	}
 
 	//Internals, only used by MDMA class (not part of public API)
 public:
