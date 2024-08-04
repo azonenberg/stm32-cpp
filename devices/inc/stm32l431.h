@@ -393,6 +393,7 @@ typedef struct
 
 extern volatile exti_t EXTI;
 
+#define SCB_T_VERSION 2
 #include "stm32-scb.h"
 extern volatile scb_t SCB;
 
