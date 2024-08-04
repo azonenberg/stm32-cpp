@@ -11,6 +11,7 @@ SECTIONS
 		. = ALIGN(32);
 		*(.text.*)
 		*(.rodata)
+		*(.rodata.*)
 		*(.ctors)
 
 		. = ALIGN(4);
