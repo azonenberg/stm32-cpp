@@ -248,49 +248,8 @@ extern volatile i2c_t I2C1;
 #include "stm32-flash.h"
 extern volatile flash_t FLASH;
 
-typedef struct
-{
-	uint32_t	ISR;
-	uint32_t	IER;
-	uint32_t	CR;
-	uint32_t	CFGR1;
-	uint32_t	CFGR2;
-	uint32_t	SMPR;
-	uint32_t	field_18;
-	uint32_t	field_1c;
-	uint32_t	TR;
-	uint32_t	field_24;
-	uint32_t	CHSELR;
-	uint32_t	field_2c;
-	uint32_t	field_30;
-	uint32_t	field_34;
-	uint32_t	field_38;
-	uint32_t	field_3c;
-	uint32_t	DR;
-	uint32_t	field_44[28];
-	uint32_t	CALFACT;
-	uint32_t	field_b8[148];
-	uint32_t	CCR;
-} adc_t;
-
-enum adc_cr
-{
-	ADC_CR_ADCAL	= 0x80000000,
-	ADC_CR_ADSTART	= 0x00000004,
-	ADC_CR_ADEN		= 0x00000001
-};
-
-enum adc_ccr
-{
-	ADC_CCR_TSEN	= 0x00800000,
-	ADC_CCR_VREFEN	= 0x00400000
-};
-
-enum adc_isr
-{
-	ADC_ISR_ADRDY	= 0x00000001
-};
-
+#define ADC_T_VERSION 1
+#include "stm32-adc.h"
 extern volatile adc_t ADC1;
 
 extern volatile uint16_t VREFINT_CAL;
@@ -313,7 +272,6 @@ extern volatile uint16_t F_ID;
 //Defines for what peripherals are present / implemented
 #define HAVE_I2C
 #define HAVE_TIM
-#define HAVE_ADC
 #define HAVE_PWR
 
 #endif
