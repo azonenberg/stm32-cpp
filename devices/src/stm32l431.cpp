@@ -56,7 +56,10 @@ volatile spi_t SPI3 __attribute__((section(".spi3")));
 
 volatile quadspi_t QUADSPI __attribute__((section(".quadspi")));
 
-//volatile adc_t ADC1 __attribute__((section(".adc1")));
+volatile adc_t _ADC __attribute__((section(".adc")));
+volatile uint16_t VREFINT_CAL __attribute__((section(".vrefint")));
+volatile uint16_t TSENSE_CAL1 __attribute__((section(".tcal1")));
+volatile uint16_t TSENSE_CAL2 __attribute__((section(".tcal2")));
 
 volatile syscfg_t SYSCFG __attribute__((section(".syscfg")));
 

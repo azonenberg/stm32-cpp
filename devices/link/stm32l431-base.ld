@@ -86,6 +86,12 @@ SECTIONS
 		KEEP (*(.rng))
 	} > CRYPT
 
+	.sfr_adc(NOLOAD):
+	{
+		. = ALIGN(1024);
+		KEEP (*(.adc))
+	} > ADC
+
 	.sfr_apb1 (NOLOAD):
 	{
 		. = ALIGN(1024);
@@ -195,7 +201,12 @@ SECTIONS
 		KEEP (*(.pkg))
 		. += 0x8c;
 		KEEP (*(.uid))
-		. += 0x44;
+		. += 0xc;
+		KEEP (*(.tcal1))
+		KEEP (*(.vrefint))
+		. += 0x1e;
+		KEEP (*(.tcal2))
+		. += 0x14;
 		KEEP (*(.fid))
 	} > SIG
 }

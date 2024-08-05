@@ -106,6 +106,7 @@ enum rcc_ahb2
 	RCC_AHB2_GPIOD	= 0x08,
 	RCC_AHB2_GPIOE	= 0x10,
 	RCC_AHB2_GPIOH	= 0x80,
+	RCC_AHB2_ADC	= 0x00002000,
 	RCC_AHB2_RNG	= 0x00040000
 };
 
@@ -405,6 +406,13 @@ extern volatile quadspi_t QUADSPI;
 #include "stm32-rng.h"
 extern volatile rng_t RNG;
 
+#define ADC_T_VERSION 2
+#include "stm32-adc.h"
+extern volatile adc_t _ADC;
+extern volatile uint16_t VREFINT_CAL;
+extern volatile uint16_t TSENSE_CAL1;
+extern volatile uint16_t TSENSE_CAL2;
+
 extern volatile uint32_t U_ID[3];
 extern volatile uint16_t FLASH_SIZE;
 extern volatile uint16_t PKG;
@@ -414,5 +422,6 @@ extern volatile uint16_t PKG;
 #define HAVE_TIM
 //#define HAVE_ADC
 #define HAVE_PWR
+#define HAVE_FPU
 
 #endif

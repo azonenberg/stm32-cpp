@@ -1,8 +1,8 @@
 /***********************************************************************************************************************
 *                                                                                                                      *
-* STM32-CPP v0.1                                                                                                       *
+* STM32-CPP                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2020-2023 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2024 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -36,17 +36,41 @@ class ADC
 {
 public:
 
-	ADC(volatile adc_t* lane, int16_t prescale);
+	#if (ADC_T_VERSION == 2)
+		ADC(volatile adc_t* lane, volatile adcchan_t* chan, int16_t prescale);
+	#else
+		ADC(volatile adc_t* lane, int16_t prescale);
+	#endif
 
 	uint16_t ReadChannel(uint8_t channel);
 
 	uint16_t GetTemperature();
 	uint16_t GetSupplyVoltage();
 
-	void SetSampleTime(int16_t tsample);
+	#if (ADC_T_VERSION == 1)
+		void SetSampleTime(int16_t tsample);
+	#elif (ADC_T_VERSION == 2)
+		void SetSampleTime(int16_t tsample, uint8_t channel);
+	#endif
+
+	#ifdef HAVE_FPU
+
+		/**
+			@brief Reads a channel, returning a value in millivolts corrected for Vref
+		 */
+		float ReadChannelScaled(uint8_t channel)
+		{
+			float code = ReadChannel(channel);
+			return (code / 4095) * GetSupplyVoltage();
+		}
+	#endif
 
 protected:
 	volatile adc_t*	m_lane;
+
+	#if (ADC_T_VERSION == 2)
+		volatile adcchan_t* m_chan;
+	#endif
 };
 
 #endif

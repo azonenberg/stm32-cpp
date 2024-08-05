@@ -888,5 +888,6 @@ extern volatile fmc_t _FMC;
 #define HAVE_PWR
 #define HAVE_OCTOSPI
 #define HAVE_ITCM
+#define HAVE_FPU
 
 #endif

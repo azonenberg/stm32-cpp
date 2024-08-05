@@ -78,6 +78,99 @@ enum adc_isr
 	ADC_ISR_ADRDY	= 0x00000001
 };
 
+//STM32L431
+#elif ADC_T_VERSION == 2
+
+typedef struct
+{
+	uint32_t	ISR;
+	uint32_t	IER;
+	uint32_t	CR;
+	uint32_t	CFGR;
+	uint32_t	CFGR2;
+	uint32_t	SMPR1;
+	uint32_t	SMPR2;
+	uint32_t	field_1c;
+	uint32_t	TR1;
+	uint32_t	TR2;
+	uint32_t	TR3;
+	uint32_t	field_2c;
+	uint32_t	SQR1;
+	uint32_t	SQR2;
+	uint32_t	SQR3;
+	uint32_t	SQR4;
+	uint32_t	DR;
+	uint32_t	field_44;
+	uint32_t	field_48;
+	uint32_t	JSQR;
+	uint32_t	field_50;
+	uint32_t	field_54;
+	uint32_t	field_58;
+	uint32_t	field_5c;
+	uint32_t	OFR1;
+	uint32_t	OFR2;
+	uint32_t	OFR3;
+	uint32_t	OFR4;
+	uint32_t	field_70;
+	uint32_t	field_74;
+	uint32_t	field_78;
+	uint32_t	field_7c;
+	uint32_t	JDR1;
+	uint32_t	JDR2;
+	uint32_t	JDR3;
+	uint32_t	JDR4;
+	uint32_t	field_90;
+	uint32_t	field_94;
+	uint32_t	field_98;
+	uint32_t	field_9c;
+	uint32_t	AWD2CR;
+	uint32_t	AWD3CR;
+	uint32_t	field_a8;
+	uint32_t	field_ac;
+	uint32_t	DIFSEL;
+	uint32_t	CALFACT;
+
+	//padding to total struct size 0x100
+	uint32_t	field_b8[18];
+} adcchan_t;
+
+typedef struct
+{
+	//ADC2 only present on some SKUs, but still takes up space in the register map
+	adcchan_t	chans[2];
+
+	//space in the register map for a third ADC but it's not used
+	uint32_t	padding[64];
+
+	//Common registers
+	uint32_t	CSR;
+	uint32_t	field_304;
+	uint32_t	CCR;
+	uint32_t	CDR;
+} adc_t;
+
+enum adcchan_cr_t
+{
+	ADC_CR_ADCAL	= 0x8000'0000,
+	ADC_CR_DEEPPWD	= 0x2000'0000,
+	ADC_CR_ADVREGEN	= 0x1000'0000,
+	ADC_CR_ADSTART	= 0x0000'0004,
+	ADC_CR_ADEN		= 0x0000'0001,
+};
+
+enum adcchan_isr_t
+{
+	ADC_ISR_ADRDY	= 0x0000'0001,
+	ADC_ISR_EOC		= 0x0000'0004
+};
+
+enum adc_ccr_t
+{
+	ADC_CCR_CH18SEL	= 0x0100'0000,
+	ADC_CCR_CH17SEL	= 0x0080'0000,
+	ADC_CCR_VREFEN	= 0x0040'0000
+};
+
 #else
 
 #error Undefined or unspecified ADC_T_VERSION

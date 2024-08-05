@@ -361,6 +361,8 @@ void RCCHelper::Enable(volatile adc_t* /*ignored*/)
 {
 	#if defined(STM32L031)
 		RCC.APB2ENR |= RCC_APB2_ADC;
+	#elif defined(STM32L431)
+		RCC.AHB2ENR |= RCC_AHB2_ADC;
 	#else
 	#error Unknown ADC configuration (unsupported part)
 	#endif
