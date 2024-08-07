@@ -27,59 +27,28 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef itm_h
-#define itm_h
+#ifndef itmstream_h
+#define itmstream_h
 
-/**
-	@brief The Instrumentation Trace Macrocell
- */
-class ITM
+#include <peripheral/ITM.h>
+
+class ITMStream : public CharacterDevice
 {
 public:
+	ITMStream(uint8_t stream)
+		: m_stream(stream)
+	{}
 
-	/**
-		@brief Unlock the ITM
-	 */
-	static void Unlock()
-	{ _ITM.LAR = ITM_LAR_UNLOCK; }
+	///@brief Sends data to the ITM
+	void PrintBinary(char ch)
+	{ ITM::SendByte(m_stream, ch); }
 
-	/**
-		@brief Enable the ITM (also turns on trace support globally)
-	 */
-	static void Enable()
-	{
-		Unlock();
+	///@brief No reads supported
+	char BlockingRead()
+	{ return 0; }
 
-		//Enable tracing system wide (turns on DWT and ITM)
-		DEMCR |= DEMCR_TRCENA;
-
-		//Enable the ITM itself
-		_ITM.TCR |= ITM_TCR_ITMENA;
-	}
-
-	/**
-		@brief Enable an ITM stimulus channel
-	 */
-	static void EnableChannel(uint8_t chan)
-	{ _ITM.TER[chan / 32] |= (1 << (chan % 32)); }
-
-	/**
-		@brief Enable forwarding of hardware events from the DWT to the ITM and TPIU
-	 */
-	static void EnableDwtForwarding()
-	{ _ITM.TCR |= ITM_TCR_TXENA; }
-
-	/**
-		@brief Send a byte of data out a stimulus channel
-	 */
-	static void SendByte(uint8_t chan, uint8_t val)
-	{
-		while(_ITM.STIM[chan] == 0)
-		{}
-
-		*reinterpret_cast<volatile uint8_t*>(&_ITM.STIM[chan]) = val;
-	}
-
+protected:
+	uint8_t m_stream;
 };
 
 #endif
