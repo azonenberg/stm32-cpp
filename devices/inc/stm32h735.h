@@ -735,6 +735,12 @@ extern volatile uint32_t DEMCR;
 #include "stm32-itm.h"
 extern volatile itm_t _ITM;
 
+#include "stm32-dwt.h"
+extern volatile dwt_t _DWT;
+
+#include "stm32-tpiu.h"
+extern volatile tpiu_t _TPIU;
+
 typedef struct
 {
 	uint32_t		CR;

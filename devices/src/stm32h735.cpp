@@ -90,6 +90,8 @@ volatile dbgmcu_t DBGMCU __attribute__((section(".dbgmcu")));
 volatile scb_t SCB __attribute__((section(".scb")));
 volatile cpuid_t CPUID __attribute__((section(".cpuid")));
 volatile itm_t _ITM __attribute__((section(".itm")));
+volatile dwt_t _DWT __attribute__((section(".dwt")));
+volatile tpiu_t _TPIU __attribute__((section(".tpiu")));
 volatile uint32_t DEMCR __attribute__((section(".demcr")));
 
 //volatile tim_t TIM1 __attribute__((section(".tim1")));

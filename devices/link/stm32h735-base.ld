@@ -301,7 +301,9 @@ SECTIONS
 	{
 		KEEP (*(.itm))
 		. = ALIGN(4096);
-		. += 0xdd00;
+		KEEP (*(.dwt))
+		. = ALIGN(4096);
+		. += 0xcd00;
 		KEEP (*(.scb))
 		. += 0x4;
 		KEEP (*(.cpuid))
@@ -309,6 +311,9 @@ SECTIONS
 		KEEP (*(.mpu))
 		. += 48;
 		KEEP (*(.demcr))
+		. = ALIGN(4096);
+		. += 0xe6000;
+		KEEP (*(.tpiu))
 	} > MCU
 
 	.sfr_mcu2  (NOLOAD):
