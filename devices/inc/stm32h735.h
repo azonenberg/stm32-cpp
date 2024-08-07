@@ -730,6 +730,10 @@ typedef struct
 } cpuid_t;
 
 extern volatile cpuid_t CPUID;
+extern volatile uint32_t DEMCR;
+
+#include "stm32-itm.h"
+extern volatile itm_t _ITM;
 
 typedef struct
 {

@@ -45,7 +45,7 @@ SECTIONS
 	{
 		__itcm_romstart = LOADADDR(.tcmtext);
 		__itcm_start = .;
-	
+
 		/* DEBUG: block off first 256 bytes of ITCM since it's mapped at 0 and we want to catch null derefs */
 		. += 256;
 
@@ -299,13 +299,16 @@ SECTIONS
 
 	.sfr_mcu  (NOLOAD):
 	{
-		. += 0xed00;
+		KEEP (*(.itm))
+		. = ALIGN(4096);
+		. += 0xdd00;
 		KEEP (*(.scb))
 		. += 0x4;
 		KEEP (*(.cpuid))
 		. += 0x18;
 		KEEP (*(.mpu))
-		. = ALIGN(1024);
+		. += 48;
+		KEEP (*(.demcr))
 	} > MCU
 
 	.sfr_mcu2  (NOLOAD):
