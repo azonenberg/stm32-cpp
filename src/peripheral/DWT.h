@@ -37,16 +37,22 @@ class DWT
 {
 public:
 
+	enum SampleType
+	{
+		PC_SAMPLE_FAST,
+		PC_SAMPLE_SLOW
+	};
+
 	/**
 		@brief Enable PC sampling over trace
 
 		If cyctapFast is set, POSTCNT tap at CYCCNT[6]
 		If not set, POSTCNT tap at CYCCNT[10]
 	 */
-	static void EnablePCSampling(bool cyctapFast)
+	static void EnablePCSampling(DWT::SampleType sampleType)
 	{
 		uint32_t tapsel = 0;
-		if(!cyctapFast)
+		if(sampleType == PC_SAMPLE_SLOW)
 			tapsel = DWT_CTRL_CYCTAP;
 
 		_DWT.CTRL |=
