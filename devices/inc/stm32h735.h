@@ -333,40 +333,8 @@ extern volatile usart_t UART7;
 extern volatile usart_t UART8;
 */
 
-enum i2c_cr2_bits
-{
-	I2C_AUTO_END	= 0x02000000,
-	I2C_STOP		= 0x00004000,
-	I2C_START		= 0x00002000,
-	I2C_READ		= 0x00000400
-};
-
-enum i2c_isr_bits
-{
-	I2C_DIR_READ			= 0x10000,
-	I2C_BUSY				= 0x08000,
-	I2C_TRANSFER_COMPLETE	= 0x00040,
-	I2C_NACK 				= 0x00010,
-	I2C_ADDR				= 0x00008,
-	I2C_RX_READY			= 0x00004,
-	I2C_TX_EMPTY			= 0x00001
-};
-
-
-typedef struct
-{
-	uint32_t CR1;
-	uint32_t CR2;
-	uint32_t OAR1;
-	uint32_t OAR2;
-	uint32_t TIMINGR;
-	uint32_t TIMEOUTR;
-	uint32_t ISR;
-	uint32_t ICR;
-	uint32_t PECR;
-	uint32_t RXDR;
-	uint32_t TXDR;
-} i2c_t;
+#define I2C_T_VERSION 1
+#include "stm32-i2c.h"
 
 extern volatile i2c_t I2C5;
 extern volatile i2c_t I2C4;
@@ -889,7 +857,6 @@ extern volatile mpu_t _MPU;
 extern volatile fmc_t _FMC;
 
 //Defines for what peripherals are present / implemented
-#define HAVE_I2C
 #define HAVE_DTS
 #define HAVE_TIM
 //#define HAVE_EMAC
