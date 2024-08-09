@@ -38,39 +38,33 @@ public:
 	I2C(volatile i2c_t* lane, uint8_t prescale, uint8_t clkdiv);
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Nonblocking host API (polling or interrupt based)
+	// Nonblocking host/device API (polling or interrupt based)
 
 	void NonblockingStart(uint8_t len, uint8_t addr, bool read);
 
-	/**
-		@brief Checks if the start/address sequence has completed
-	 */
+	///@brief Checks if the start/address sequence has completed
 	bool IsStartDone()
 	{ return (m_lane->CR2 & I2C_START) != I2C_START; }
 
-	/**
-		@brief Sends a byte of write data, returning immediately and not waiting for it to finish
-	 */
+	///@brief Sends a byte of write data, returning immediately and not waiting for it to finish
 	void NonblockingWrite(uint8_t data)
 	{ m_lane->TXDR = data; }
 
-	/**
-		@brief Checks if the write is finished
-	 */
+	///@brief Checks if the write is finished
 	bool IsWriteDone()
 	{ return (m_lane->ISR & I2C_TX_EMPTY) == I2C_TX_EMPTY; }
 
-	/**
-		@brief Checks if read data is available
-	 */
+	///@brief Checks if read data is available
 	bool IsReadReady()
 	{ return (m_lane->ISR & I2C_RX_READY) == I2C_RX_READY; }
 
-	/**
-		@brief Gets the read data
-	 */
+	///@brief Gets the read data
 	uint8_t GetReadData()
 	{ return m_lane->RXDR;	}
+
+	///@brief Flush the transmit buffer to cancel a written, but not sent, byte
+	void FlushTxBuffer()
+	{ m_lane->ISR |= I2C_TX_EMPTY; }
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Nonblocking device API (polling or interrupt based)
@@ -86,18 +80,6 @@ public:
 	///@brief Returns true if the bus is ready for us to send a reply
 	bool IsReadyForReply()
 	{ return (m_lane->ISR & I2C_TX_READY); }
-
-	///@brief Sends a byte of data to the host without stalling (only legal if IsReadyForReply returns true)
-	void NonblockingDeviceWrite8(uint8_t data)
-	{ m_lane->TXDR = data; }
-
-	///@brief Checks if there's read data available
-	bool IsReadDataAvailable()
-	{ return (m_lane->ISR & I2C_RX_READY); }
-
-	///@brief Reads a byte of data from the host without stalling (only legal if IsReadDataAvailable returns true)
-	uint8_t NonblockingDeviceRead8()
-	{ return m_lane->RXDR; }
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Blocking API (slow and simple)

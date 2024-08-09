@@ -34,7 +34,9 @@
 // Main polling path
 
 #include <embedded-utils/Logger.h>
+#include <peripheral/Timer.h>
 extern Logger g_log;
+extern Timer g_logTimer;
 
 /**
 	@brief Polls for new I2C data and processes it
@@ -50,6 +52,10 @@ void I2CServer::Poll()
 
 		if(!m_txbuf.IsEmpty())
 			m_txbuf.Reset();
+
+		//Flush any un-sent transmit data
+		if(!m_i2c.IsWriteDone())
+			m_i2c.FlushTxBuffer();
 	}
 
 	PollIncomingData();
@@ -58,7 +64,13 @@ void I2CServer::Poll()
 	if(m_readActive && m_i2c.IsReadyForReply())
 	{
 		if( !m_txbuf.IsEmpty() )
-			m_i2c.NonblockingDeviceWrite8(m_txbuf.Pop());
+			m_i2c.NonblockingWrite(m_txbuf.Pop());
+
+		//Send an 0x00 byte if we have nothing to send to avoid stalling the bus
+		//if the host tries to read more data than we have to send
+		//(also called once at the end of each read burst)
+		else
+			m_i2c.NonblockingWrite(0x00);
 	}
 }
 
@@ -67,11 +79,13 @@ void I2CServer::Poll()
  */
 void I2CServer::PollIncomingData()
 {
-	if(m_i2c.IsReadDataAvailable())
+	if(m_i2c.IsReadReady())
 	{
+		//Expect an address match event before data shows up, deal with that
 		if(m_i2c.PollAddressMatch())
 			OnAddressMatch();
-		OnWriteData(m_i2c.NonblockingDeviceRead8());
+
+		OnWriteData(m_i2c.GetReadData());
 	}
 }
 
@@ -104,6 +118,8 @@ void I2CServer::OnAddressMatch()
 	}
 
 	//If it's a write, no action needed
+	else
+		m_readActive = false;
 }
 
 /**
