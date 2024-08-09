@@ -31,6 +31,7 @@
 #define I2CServer_h
 
 #include <peripheral/I2C.h>
+#include <embedded-utils/FIFO.h>
 
 /**
 	@brief Base class for an I2C peripheral
@@ -41,11 +42,24 @@ public:
 	I2CServer(I2C& i2c)
 	: m_i2c(i2c)
 	, m_regid(0)
+	, m_readActive(false)
+	, m_writeIndex(0)
 	{}
 
 	void Poll();
 
 protected:
+	void OnAddressMatch();
+	void PollIncomingData();
+
+	void SendReply8(uint8_t data)
+	{ m_txbuf.Push(data); }
+
+	void SendReply16(uint16_t data)
+	{
+		m_txbuf.Push(static_cast<uint8_t>(data >> 8));
+		m_txbuf.Push(static_cast<uint8_t>(data & 0xff));
+	}
 
 	/**
 		@brief Called when a new address byte matching us is received
@@ -57,16 +71,22 @@ protected:
 	 */
 	virtual void OnRequestRead() =0;
 
-	/**
-		@brief Called when a new write request is received
-	 */
-	virtual void OnRequestWrite();
+	virtual void OnWriteData(uint8_t data);
 
 	///@brief Our I2C device
 	I2C& m_i2c;
 
 	///@brief Register ID sent in the last request
 	uint32_t m_regid;
+
+	///@brief Transmit buffer
+	FIFO<uint8_t, 32> m_txbuf;
+
+	///@brief True if a read transaction is in progress
+	bool m_readActive;
+
+	///@brief Write byte index
+	uint8_t m_writeIndex;
 };
 
 #endif

@@ -75,13 +75,29 @@ public:
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Nonblocking device API (polling or interrupt based)
 
-	/**
-		@brief Checks if the most recent incoming request was a read
-	 */
+	///@brief Checks if the most recent incoming request was a read
 	bool IsDeviceRequestRead()
 	{ return (m_lane->ISR & I2C_DIR_READ) == I2C_DIR_READ; }
 
 	bool PollAddressMatch();
+	bool PollStop();
+	bool PollNack();
+
+	///@brief Returns true if the bus is ready for us to send a reply
+	bool IsReadyForReply()
+	{ return (m_lane->ISR & I2C_TX_READY); }
+
+	///@brief Sends a byte of data to the host without stalling (only legal if IsReadyForReply returns true)
+	void NonblockingDeviceWrite8(uint8_t data)
+	{ m_lane->TXDR = data; }
+
+	///@brief Checks if there's read data available
+	bool IsReadDataAvailable()
+	{ return (m_lane->ISR & I2C_RX_READY); }
+
+	///@brief Reads a byte of data from the host without stalling (only legal if IsReadDataAvailable returns true)
+	uint8_t NonblockingDeviceRead8()
+	{ return m_lane->RXDR; }
 
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Blocking API (slow and simple)
