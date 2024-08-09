@@ -27,129 +27,31 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef i2c_h
-#define i2c_h
+#include <stm32.h>
+#include "I2CServer.h"
 
-#ifdef HAVE_I2C
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Main polling path
 
-class I2C
+/**
+	@brief Polls for new I2C data and processes it
+ */
+void I2CServer::Poll()
 {
-public:
-	I2C(volatile i2c_t* lane, uint8_t prescale, uint8_t clkdiv);
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Nonblocking host API (polling or interrupt based)
-
-	void NonblockingStart(uint8_t len, uint8_t addr, bool read);
-
-	/**
-		@brief Checks if the start/address sequence has completed
-	 */
-	bool IsStartDone()
-	{ return (m_lane->CR2 & I2C_START) != I2C_START; }
-
-	/**
-		@brief Sends a byte of write data, returning immediately and not waiting for it to finish
-	 */
-	void NonblockingWrite(uint8_t data)
-	{ m_lane->TXDR = data; }
-
-	/**
-		@brief Checks if the write is finished
-	 */
-	bool IsWriteDone()
-	{ return (m_lane->ISR & I2C_TX_EMPTY) == I2C_TX_EMPTY; }
-
-	/**
-		@brief Checks if read data is available
-	 */
-	bool IsReadReady()
-	{ return (m_lane->ISR & I2C_RX_READY) == I2C_RX_READY; }
-
-	/**
-		@brief Gets the read data
-	 */
-	uint8_t GetReadData()
-	{ return m_lane->RXDR;	}
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Nonblocking device API (polling or interrupt based)
-
-	/**
-		@brief Checks if the most recent incoming request was a read
-	 */
-	bool IsDeviceRequestRead()
-	{ return (m_lane->ISR & I2C_DIR_READ) == I2C_DIR_READ; }
-
-	bool PollAddressMatch();
-
-	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// Blocking API (slow and simple)
-
-	void Start();
-
-	bool BlockingRead(uint8_t addr, uint8_t* data, uint8_t len);
-	void BlockingDeviceRead(uint8_t* data, uint8_t len);
-
-	bool BlockingWrite(uint8_t addr, const uint8_t* data, uint8_t len);
-	void BlockingDeviceWrite(const uint8_t* data, uint8_t len);
-
-	bool BlockingWrite8(uint8_t addr, uint8_t data)
-	{ return BlockingWrite(addr, &data, 1); }
-
-	void BlockingDeviceWrite8(uint8_t data)
-	{ BlockingDeviceWrite(&data, 1); }
-
-	/**
-		@brief Sends a 16-bit value to a device in host mode
-	 */
-	bool BlockingWrite16(uint8_t addr, uint16_t data)
+	if(m_i2c.PollAddressMatch())
 	{
-		uint8_t buf[2] =
-		{
-			static_cast<uint8_t>(data >> 8),
-			static_cast<uint8_t>(data & 0xff)
-		};
-		return BlockingWrite(addr, buf, 2);
+		OnRequestStart();
+		if(m_i2c.IsDeviceRequestRead())
+			OnRequestRead();
+		else
+			OnRequestWrite();
 	}
+}
 
-	/**
-		@brief Sends a 16-bit value in response to a request from a host
-	 */
-	void BlockingDeviceWrite16(uint16_t data)
-	{
-		uint8_t buf[2] =
-		{
-			static_cast<uint8_t>(data >> 8),
-			static_cast<uint8_t>(data & 0xff)
-		};
-		BlockingDeviceWrite(buf, 2);
-	}
+void I2CServer::OnRequestWrite()
+{
+	m_regid = 0;
 
-	bool BlockingRead16(uint8_t addr, uint16_t& result)
-	{
-		uint8_t buf[2];
-		if(!BlockingRead(addr, buf, sizeof(buf)))
-			return false;
-		result = (buf[0] << 8) | buf[1];
-		return true;
-	}
-
-	/**
-		@brief Read an 8-bit value in device mode (typically a register address someone is requesting from us)
-	 */
-	uint8_t BlockingDeviceRead8()
-	{
-		uint8_t tmp;
-		BlockingDeviceRead(&tmp, 1);
-		return tmp;
-	}
-	void SetThisNodeAddress(uint8_t addr);
-
-protected:
-	volatile i2c_t*	m_lane;
-};
-
-#endif
-
-#endif
+	//for now, just assume its a single write to the address register
+	m_regid = m_i2c.BlockingDeviceRead8();
+}
