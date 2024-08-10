@@ -66,6 +66,15 @@ public:
 	void FlushTxBuffer()
 	{ m_lane->ISR |= I2C_TX_EMPTY; }
 
+	///@brief Full reset of the I2C peripheral
+	void Reset()
+	{
+		m_lane->CR1 &= ~1;
+		for(int i=0; i<50; i++)
+			asm("nop");
+		m_lane->CR1 |= 1;
+	}
+
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Nonblocking device API (polling or interrupt based)
 
