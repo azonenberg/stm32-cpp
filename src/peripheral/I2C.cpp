@@ -240,4 +240,34 @@ bool I2C::PollAddressMatch()
 	return false;
 }
 
+/**
+	@brief Checks if we got a stop bit.
+
+	Self clears.
+ */
+bool I2C::PollStop()
+{
+	if(m_lane->ISR & I2C_STOP_RECEIVED)
+	{
+		m_lane->ICR = I2C_STOP_RECEIVED;
+		return true;
+	}
+	return false;
+}
+
+/**
+	@brief Checks if we got a NACK to our last transmission
+
+	Self clears.
+ */
+bool I2C::PollNack()
+{
+	if(m_lane->ISR & I2C_NACK)
+	{
+		m_lane->ICR = I2C_NACK;
+		return true;
+	}
+	return false;
+}
+
 #endif

@@ -27,54 +27,66 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef stm32_i2c_h
-#define stm32_i2c_h
+#ifndef I2CServer_h
+#define I2CServer_h
 
-#define HAVE_I2C
+#include <peripheral/I2C.h>
+#include <embedded-utils/FIFO.h>
 
-//STM32L431
-#if I2C_T_VERSION == 1
-
-enum i2c_cr2_bits
+/**
+	@brief Base class for an I2C peripheral
+ */
+class I2CServer
 {
-	I2C_AUTO_END	= 0x02000000,
-	I2C_STOP		= 0x00004000,
-	I2C_START		= 0x00002000,
-	I2C_READ		= 0x00000400
+public:
+	I2CServer(I2C& i2c)
+	: m_i2c(i2c)
+	, m_regid(0)
+	, m_readActive(false)
+	, m_writeIndex(0)
+	{}
+
+	void Poll();
+
+protected:
+	void OnAddressMatch();
+	void PollIncomingData();
+
+	void SendReply8(uint8_t data)
+	{ m_txbuf.Push(data); }
+
+	void SendReply16(uint16_t data)
+	{
+		m_txbuf.Push(static_cast<uint8_t>(data >> 8));
+		m_txbuf.Push(static_cast<uint8_t>(data & 0xff));
+	}
+
+	/**
+		@brief Called when a new address byte matching us is received
+	 */
+	virtual void OnRequestStart() =0;
+
+	/**
+		@brief Called when a new read request is received
+	 */
+	virtual void OnRequestRead() =0;
+
+	virtual void OnWriteData(uint8_t data);
+
+	///@brief Our I2C device
+	I2C& m_i2c;
+
+	///@brief Register ID sent in the last request
+	uint32_t m_regid;
+
+	///@brief Transmit buffer
+	FIFO<uint8_t, 32> m_txbuf;
+
+	///@brief True if a read transaction is in progress
+	bool m_readActive;
+
+	///@brief Write byte index
+	uint8_t m_writeIndex;
 };
 
-enum i2c_isr_bits
-{
-	I2C_DIR_READ			= 0x10000,
-	I2C_BUSY				= 0x08000,
-	I2C_TRANSFER_COMPLETE	= 0x00040,
-	I2C_STOP_RECEIVED		= 0x00020,
-	I2C_NACK 				= 0x00010,
-	I2C_ADDR				= 0x00008,
-	I2C_RX_READY			= 0x00004,
-	I2C_TX_READY			= 0x00002,
-	I2C_TX_EMPTY			= 0x00001
-};
-
-typedef struct
-{
-	uint32_t	CR1;
-	uint32_t	CR2;
-	uint32_t	OAR1;
-	uint32_t	OAR2;
-	uint32_t	TIMINGR;
-	uint32_t	TIMEOUTR;
-	uint32_t	ISR;
-	uint32_t	ICR;
-	uint32_t	PECR;
-	uint32_t	RXDR;
-	uint32_t	TXDR;
-} i2c_t;
-
-#else
-
-#error Undefined or unspecified I2C_T_VERSION
-
-#endif	//version check
-
-#endif	//include guard
+#endif

@@ -27,54 +27,112 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef stm32_i2c_h
-#define stm32_i2c_h
+#include <stm32.h>
+#include "I2CServer.h"
 
-#define HAVE_I2C
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Main polling path
 
-//STM32L431
-#if I2C_T_VERSION == 1
+#include <embedded-utils/Logger.h>
+#include <peripheral/Timer.h>
+extern Logger g_log;
+extern Timer g_logTimer;
 
-enum i2c_cr2_bits
+/**
+	@brief Polls for new I2C data and processes it
+ */
+void I2CServer::Poll()
 {
-	I2C_AUTO_END	= 0x02000000,
-	I2C_STOP		= 0x00004000,
-	I2C_START		= 0x00002000,
-	I2C_READ		= 0x00000400
-};
+	if(m_i2c.PollAddressMatch())
+		OnAddressMatch();
 
-enum i2c_isr_bits
+	if(m_i2c.PollStop())
+	{
+		m_readActive = false;
+
+		if(!m_txbuf.IsEmpty())
+			m_txbuf.Reset();
+
+		//Flush any un-sent transmit data
+		if(!m_i2c.IsWriteDone())
+			m_i2c.FlushTxBuffer();
+	}
+
+	PollIncomingData();
+
+	//Send reply data if we have any
+	if(m_readActive && m_i2c.IsReadyForReply())
+	{
+		if( !m_txbuf.IsEmpty() )
+			m_i2c.NonblockingWrite(m_txbuf.Pop());
+
+		//Send an 0x00 byte if we have nothing to send to avoid stalling the bus
+		//if the host tries to read more data than we have to send
+		//(also called once at the end of each read burst)
+		else
+			m_i2c.NonblockingWrite(0x00);
+	}
+}
+
+/**
+	@brief Checks for incoming data
+ */
+void I2CServer::PollIncomingData()
 {
-	I2C_DIR_READ			= 0x10000,
-	I2C_BUSY				= 0x08000,
-	I2C_TRANSFER_COMPLETE	= 0x00040,
-	I2C_STOP_RECEIVED		= 0x00020,
-	I2C_NACK 				= 0x00010,
-	I2C_ADDR				= 0x00008,
-	I2C_RX_READY			= 0x00004,
-	I2C_TX_READY			= 0x00002,
-	I2C_TX_EMPTY			= 0x00001
-};
+	if(m_i2c.IsReadReady())
+	{
+		//Expect an address match event before data shows up, deal with that
+		if(m_i2c.PollAddressMatch())
+			OnAddressMatch();
 
-typedef struct
+		OnWriteData(m_i2c.GetReadData());
+	}
+}
+
+/**
+	@brief Handles reception of our address
+ */
+void I2CServer::OnAddressMatch()
 {
-	uint32_t	CR1;
-	uint32_t	CR2;
-	uint32_t	OAR1;
-	uint32_t	OAR2;
-	uint32_t	TIMINGR;
-	uint32_t	TIMEOUTR;
-	uint32_t	ISR;
-	uint32_t	ICR;
-	uint32_t	PECR;
-	uint32_t	RXDR;
-	uint32_t	TXDR;
-} i2c_t;
+	bool isRead = m_i2c.IsDeviceRequestRead();
+	m_writeIndex = 0;
 
-#else
+	//Discard any pending stop request
+	if(m_i2c.PollStop())
+	{}
 
-#error Undefined or unspecified I2C_T_VERSION
+	//Clear transmit buffer when a new sequence starts
+	m_txbuf.Reset();
 
-#endif	//version check
+	//Notify derived class to do any init it requires
+	OnRequestStart();
 
-#endif	//include guard
+	//Handle read or write
+	if(isRead)
+	{
+		//need to account for any last minute regid writes
+		PollIncomingData();
+
+		m_readActive = true;
+		OnRequestRead();
+	}
+
+	//If it's a write, no action needed
+	else
+		m_readActive = false;
+}
+
+/**
+	@brief Called when write data arrives
+
+	The default implementation expects a big endian register ID of up to 32 bits
+ */
+void I2CServer::OnWriteData(uint8_t data)
+{
+	//Clear on the first byte
+	if(m_writeIndex == 0)
+		m_regid = 0;
+
+	m_regid = (m_regid << 8) | data;
+	m_writeIndex ++;
+}
