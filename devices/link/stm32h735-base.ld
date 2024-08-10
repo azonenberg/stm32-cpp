@@ -312,13 +312,14 @@ SECTIONS
 		. += 48;
 		KEEP (*(.demcr))
 		. = ALIGN(4096);
-		. += 0xe6000;
-		KEEP (*(.tpiu))
 	} > MCU
 
 	.sfr_mcu2  (NOLOAD):
 	{
 		KEEP (*(.dbgmcu))
+		. = ALIGN(4096);
+		. += 0x13000;
+		KEEP (*(.tpiu))
 	} > MCU2
 
 	.sfr_sig  (NOLOAD):

@@ -38,6 +38,25 @@ struct tpiu_t
 	uint32_t ACPR;
 	uint32_t field_14[55];
 	uint32_t SPPR;
+	uint32_t field_f4[3];
+	uint32_t field_100[940];
+	uint32_t LAR;
+	uint32_t field_fb4[3];
+	uint32_t field_fc0[2];
+	uint32_t DEVID;
+	uint32_t DEVTYPE;
+	uint32_t PID4;
+	uint32_t PID5;
+	uint32_t PID6;
+	uint32_t PID7;
+	uint32_t PID0;
+	uint32_t PID1;
+	uint32_t PID2;
+	uint32_t PID3;
+	uint32_t CID0;
+	uint32_t CID1;
+	uint32_t CID2;
+	uint32_t CID3;
 };
 
 #endif	//include guard
