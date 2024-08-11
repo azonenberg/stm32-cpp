@@ -67,35 +67,6 @@ enum pwr_d3cr
 	PWR_D3CR_VOSMASK = 0xc000
 };
 
-#define CRC_T_VERSION 1
-#include "stm32-crc.h"
-
-extern volatile crc_t _CRC;
-
-#define MDMA_T_VERSION 1
-#include "stm32-mdma.h"
-
-extern volatile mdma_t _MDMA;
-
-#define FLASH_T_VERSION 1
-#include "stm32-flash.h"
-
-extern volatile flash_t FLASH;
-
-#define GPIO_T_VERSION 1
-#include "stm32-gpio.h"
-
-extern volatile gpio_t GPIOA;
-extern volatile gpio_t GPIOB;
-extern volatile gpio_t GPIOC;
-extern volatile gpio_t GPIOD;
-extern volatile gpio_t GPIOE;
-extern volatile gpio_t GPIOF;
-extern volatile gpio_t GPIOG;
-extern volatile gpio_t GPIOH;
-extern volatile gpio_t GPIOJ;
-extern volatile gpio_t GPIOK;
-
 enum rcc_ahb4
 {
 	RCC_AHB4_GPIOA		= 0x00000001,
@@ -319,44 +290,6 @@ typedef struct
 
 extern volatile rcc_t RCC;
 
-#define USART_T_VERSION 2
-#include "stm32-usart.h"
-
-//extern volatile usart_t USART1;
-extern volatile usart_t USART2;
-extern volatile usart_t USART3;
-extern volatile usart_t UART4;
-extern volatile usart_t UART5;
-/*
-extern volatile usart_t USART6;
-extern volatile usart_t UART7;
-extern volatile usart_t UART8;
-*/
-
-#define I2C_T_VERSION 1
-#include "stm32-i2c.h"
-
-extern volatile i2c_t I2C5;
-extern volatile i2c_t I2C4;
-extern volatile i2c_t I2C3;
-extern volatile i2c_t I2C2;
-extern volatile i2c_t I2C1;
-
-#define SPI_T_VERSION 2
-#include "stm32-spi.h"
-
-extern volatile spi_t SPI1;
-extern volatile spi_t SPI2;
-extern volatile spi_t SPI3;
-extern volatile spi_t SPI4;
-extern volatile spi_t SPI5;
-extern volatile spi_t SPI6;
-
-#define RTC_T_VERSION 1
-#include "stm32-rtc.h"
-
-extern volatile rtc_t _RTC;
-
 /*
 typedef struct
 {
@@ -407,23 +340,7 @@ typedef struct
 	uint32_t	padding_16c[10];
 	uint32_t	MMCRFCECR;
 	uint32_t	MMCRFAECR;
-	uint32_t	padding_1
-enum i2c_cr2_bits
-{
-	I2C_AUTO_END	= 0x02000000,
-	I2C_STOP		= 0x00004000,
-	I2C_START		= 0x00002000,
-	I2C_READ		= 0x00000400
-};
-
-enum i2c_isr_bits
-{
-	I2C_BUSY				= 0x8000,
-	I2C_TRANSFER_COMPLETE	= 0x0040,
-	I2C_RX_READY			= 0x0004,
-	I2C_TX_EMPTY			= 0x0001
-};
-9c[10];
+	uint32_t	padding_19c[10];
 	uint32_t	MMCRGUFCR;
 } emac_t;
 
@@ -660,10 +577,6 @@ enum cryp_sr
 
 extern volatile cryp_t CRYP;
 
-#define RNG_T_VERSION 1
-#include "stm32-rng.h"
-extern volatile rng_t RNG;
-
 typedef struct
 {
 	uint32_t	CR;
@@ -685,10 +598,6 @@ enum hash_sr
 
 extern volatile hash_t HASH;
 
-#define SCB_T_VERSION 2
-#include "stm32-scb.h"
-extern volatile scb_t SCB;
-
 typedef struct
 {
 	uint32_t	CLIDR;
@@ -699,15 +608,6 @@ typedef struct
 
 extern volatile cpuid_t CPUID;
 extern volatile uint32_t DEMCR;
-
-#include "stm32-itm.h"
-extern volatile itm_t _ITM;
-
-#include "stm32-dwt.h"
-extern volatile dwt_t _DWT;
-
-#include "stm32-tpiu.h"
-extern volatile tpiu_t _TPIU;
 
 typedef struct
 {
@@ -849,12 +749,86 @@ typedef struct
 
 extern volatile dts_t DTS;
 
+#define USART_T_VERSION 2
+#include "stm32-usart.h"
+//extern volatile usart_t USART1;
+extern volatile usart_t USART2;
+extern volatile usart_t USART3;
+extern volatile usart_t UART4;
+extern volatile usart_t UART5;
+//extern volatile usart_t USART6;
+//extern volatile usart_t UART7;
+//extern volatile usart_t UART8;
+
+#define CRC_T_VERSION 1
+#include "stm32-crc.h"
+extern volatile crc_t _CRC;
+
+#define MDMA_T_VERSION 1
+#include "stm32-mdma.h"
+extern volatile mdma_t _MDMA;
+
+#define FLASH_T_VERSION 1
+#include "stm32-flash.h"
+extern volatile flash_t FLASH;
+
+#define GPIO_T_VERSION 1
+#include "stm32-gpio.h"
+extern volatile gpio_t GPIOA;
+extern volatile gpio_t GPIOB;
+extern volatile gpio_t GPIOC;
+extern volatile gpio_t GPIOD;
+extern volatile gpio_t GPIOE;
+extern volatile gpio_t GPIOF;
+extern volatile gpio_t GPIOG;
+extern volatile gpio_t GPIOH;
+extern volatile gpio_t GPIOJ;
+extern volatile gpio_t GPIOK;
+
+#define I2C_T_VERSION 1
+#include "stm32-i2c.h"
+extern volatile i2c_t I2C5;
+extern volatile i2c_t I2C4;
+extern volatile i2c_t I2C3;
+extern volatile i2c_t I2C2;
+extern volatile i2c_t I2C1;
+
+#define SPI_T_VERSION 2
+#include "stm32-spi.h"
+extern volatile spi_t SPI1;
+extern volatile spi_t SPI2;
+extern volatile spi_t SPI3;
+extern volatile spi_t SPI4;
+extern volatile spi_t SPI5;
+extern volatile spi_t SPI6;
+
+#define RTC_T_VERSION 1
+#include "stm32-rtc.h"
+extern volatile rtc_t _RTC;
+
 #include "stm32-mpu.h"
 extern volatile mpu_t _MPU;
 
 #define FMC_T_VERSION 1
 #include "stm32-fmc.h"
 extern volatile fmc_t _FMC;
+
+#define SCB_T_VERSION 2
+#include "stm32-scb.h"
+extern volatile scb_t SCB;
+
+#include "stm32-itm.h"
+extern volatile itm_t _ITM;
+
+#include "stm32-dwt.h"
+extern volatile dwt_t _DWT;
+
+#include "stm32-tpiu.h"
+extern volatile tpiu_t _TPIU;
+
+#define RNG_T_VERSION 1
+#include "stm32-rng.h"
+extern volatile rng_t RNG;
 
 //Defines for what peripherals are present / implemented
 #define HAVE_DTS

@@ -78,21 +78,6 @@ enum pwr_sr2
 
 extern volatile pwr_t PWR;
 
-#define CRC_T_VERSION 1
-#include "stm32-crc.h"
-
-extern volatile crc_t _CRC;
-
-#define GPIO_T_VERSION 2
-#include "stm32-gpio.h"
-
-extern volatile gpio_t GPIOA;
-extern volatile gpio_t GPIOB;
-extern volatile gpio_t GPIOC;
-extern volatile gpio_t GPIOD;
-extern volatile gpio_t GPIOE;
-extern volatile gpio_t GPIOH;
-
 enum rcc_ahb1
 {
 	RCC_AHB1_CRC	= 0x1000
@@ -196,20 +181,6 @@ enum rcc_cr_bits
 };
 extern volatile rcc_t RCC;
 
-#define USART_T_VERSION 1
-#include "stm32-usart.h"
-
-extern volatile usart_t USART1;
-extern volatile usart_t USART2;
-extern volatile usart_t USART3;
-extern volatile usart_t UART4;
-
-//doesn't have a full RTC, but backup/tamper registers are in the RTC subsystem
-#define RTC_T_VERSION 2
-#include "stm32-rtc.h"
-
-extern volatile rtc_t _RTC;
-
 typedef struct
 {
 	uint32_t MEMRMP;
@@ -225,13 +196,6 @@ typedef struct
 } syscfg_t;
 
 extern volatile syscfg_t SYSCFG;
-
-#define SPI_T_VERSION 1
-#include "stm32-spi.h"
-
-extern volatile spi_t SPI1;
-extern volatile spi_t SPI2;
-extern volatile spi_t SPI3;
 
 typedef struct
 {
@@ -271,6 +235,53 @@ extern volatile tim_t TIM7;
 extern volatile tim_t TIM15;
 extern volatile tim_t TIM16;
 
+typedef struct
+{
+	uint32_t	IDCODE;
+	uint32_t	CR;
+	uint32_t	APB1FZR1;
+	uint32_t	APB1FZR2;
+	uint32_t	APB2FZR;
+} dbgmcu_t;
+
+extern volatile dbgmcu_t DBGMCU;
+
+#define CRC_T_VERSION 1
+#include "stm32-crc.h"
+
+extern volatile crc_t _CRC;
+
+#define GPIO_T_VERSION 2
+#include "stm32-gpio.h"
+
+extern volatile gpio_t GPIOA;
+extern volatile gpio_t GPIOB;
+extern volatile gpio_t GPIOC;
+extern volatile gpio_t GPIOD;
+extern volatile gpio_t GPIOE;
+extern volatile gpio_t GPIOH;
+
+#define USART_T_VERSION 1
+#include "stm32-usart.h"
+
+extern volatile usart_t USART1;
+extern volatile usart_t USART2;
+extern volatile usart_t USART3;
+extern volatile usart_t UART4;
+
+//doesn't have a full RTC, but backup/tamper registers are in the RTC subsystem
+#define RTC_T_VERSION 2
+#include "stm32-rtc.h"
+
+extern volatile rtc_t _RTC;
+
+#define SPI_T_VERSION 1
+#include "stm32-spi.h"
+
+extern volatile spi_t SPI1;
+extern volatile spi_t SPI2;
+extern volatile spi_t SPI3;
+
 #define I2C_T_VERSION 1
 #include "stm32-i2c.h"
 
@@ -284,84 +295,9 @@ extern volatile i2c_t I2C3;
 
 extern volatile flash_t FLASH;
 
-/*
-typedef struct
-{
-	uint32_t	ISR;
-	uint32_t	IER;
-	uint32_t	CR;
-	uint32_t	CFGR1;
-	uint32_t	CFGR2;
-	uint32_t	SMPR;
-	uint32_t	field_18;
-	uint32_t	field_1c;
-	uint32_t	TR;
-	uint32_t	field_24;
-	uint32_t	CHSELR;
-	uint32_t	field_2c;
-	uint32_t	field_30;
-	uint32_t	field_34;
-	uint32_t	field_38;
-	uint32_t	field_3c;
-	uint32_t	DR;
-	uint32_t	field_44[28];
-	uint32_t	CALFACT;
-	uint32_t	field_b8[148];
-	uint32_t	CCR;
-} adc_t;
-
-enum adc_cr
-{
-	ADC_CR_ADCAL	= 0x80000000,
-	ADC_CR_ADSTART	= 0x00000004,
-	ADC_CR_ADEN		= 0x00000001
-};
-
-enum adc_ccr
-{
-	ADC_CCR_TSEN	= 0x00800000,
-	ADC_CCR_VREFEN	= 0x00400000
-};
-
-enum adc_isr
-{
-	ADC_ISR_ADRDY	= 0x00000001
-};
-
-extern volatile adc_t ADC1;
-
-extern volatile uint16_t VREFINT_CAL;
-extern volatile uint16_t TSENSE_CAL1;
-extern volatile uint16_t TSENSE_CAL2;
-*/
-typedef struct
-{
-	uint32_t	IDCODE;
-	uint32_t	CR;
-	uint32_t	APB1FZR1;
-	uint32_t	APB1FZR2;
-	uint32_t	APB2FZR;
-} dbgmcu_t;
-
-extern volatile dbgmcu_t DBGMCU;
-
-typedef struct
-{
-	uint32_t	IMR1;
-	uint32_t	EMR1;
-	uint32_t	RTSR1;
-	uint32_t	FTSR1;
-	uint32_t	SWIER1;
-	uint32_t	PR1;
-	uint32_t	IMR2;
-	uint32_t	EMR2;
-	uint32_t	RTSR2;
-	uint32_t	FTSR2;
-	uint32_t	SWIER2;
-	uint32_t	PR2;
-} exti_t;
-
-extern volatile exti_t EXTI;
+#define EXTI_T_VERSION 1
+#include "stm32-exti.h"
+extern volatile exti_t _EXTI;
 
 #define SCB_T_VERSION 2
 #include "stm32-scb.h"
@@ -388,7 +324,6 @@ extern volatile uint16_t PKG;
 
 //Defines for what peripherals are present / implemented
 #define HAVE_TIM
-//#define HAVE_ADC
 #define HAVE_PWR
 #define HAVE_FPU
 

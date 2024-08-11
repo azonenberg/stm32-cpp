@@ -27,67 +27,71 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#include <stm32l431.h>
+#ifndef exti_h
+#define exti_h
 
-volatile gpio_t GPIOA __attribute__((section(".gpioa")));
-volatile gpio_t GPIOB __attribute__((section(".gpiob")));
-volatile gpio_t GPIOC __attribute__((section(".gpioc")));
-volatile gpio_t GPIOD __attribute__((section(".gpiod")));
-volatile gpio_t GPIOE __attribute__((section(".gpioe")));
-volatile gpio_t GPIOH __attribute__((section(".gpioh")));
+#ifdef HAVE_EXTI
 
-volatile rcc_t RCC __attribute__((section(".rcc")));
+/**
+	@brief The external interrupt controller
 
-volatile rtc_t _RTC __attribute__((section(".rtc")));
+	For now only tested on STM32L431
+ */
+class EXTI
+{
+public:
 
-volatile pwr_t PWR __attribute__((section(".pwr")));
+	enum ExtiPort
+	{
+		PORT_A = 0,
+		PORT_B = 1,
+		PORT_C = 2,
+		PORT_D = 3,
+		PORT_E = 4,
+		PORT_F = 5,
+		PORT_G = 6,
+		PORT_H = 7
+	};
 
-volatile flash_t FLASH __attribute__((section(".flash")));
+	static void SetExtInterruptMux(int channel, ExtiPort sel);
 
-volatile crc_t _CRC __attribute__((section(".crc")));
+	///@brief Clear a pending interrupt
+	static void ClearPending(int channel)
+	{
+		if(channel < 32)
+			_EXTI.PR1 = (1 << channel);
+		else
+			_EXTI.PR2 = (1 << (channel - 32));
+	}
 
-volatile i2c_t I2C1 __attribute__((section(".i2c1")));
-volatile i2c_t I2C2 __attribute__((section(".i2c2")));
-volatile i2c_t I2C3 __attribute__((section(".i2c3")));
+	///@brief Enables an interrupt lane
+	static void EnableChannel(int channel)
+	{
+		if(channel < 32)
+			_EXTI.IMR1 = (1 << channel);
+		else
+			_EXTI.IMR2 = (1 << (channel - 32));
+	}
 
-volatile spi_t SPI1 __attribute__((section(".spi1")));
-volatile spi_t SPI2 __attribute__((section(".spi2")));
-volatile spi_t SPI3 __attribute__((section(".spi3")));
+	///@brief Enable rising edge trigger
+	static void EnableRisingEdgeTrigger(int channel)
+	{
+		if(channel < 32)
+			_EXTI.RTSR1 = (1 << channel);
+		else
+			_EXTI.RTSR2 = (1 << (channel - 32));
+	}
 
-volatile quadspi_t QUADSPI __attribute__((section(".quadspi")));
+	///@brief Enable falling edge trigger
+	static void EnableFallingEdgeTrigger(int channel)
+	{
+		if(channel < 32)
+			_EXTI.FTSR1 = (1 << channel);
+		else
+			_EXTI.FTSR2 = (1 << (channel - 32));
+	}
+};
 
-volatile adc_t _ADC __attribute__((section(".adc")));
-volatile uint16_t VREFINT_CAL __attribute__((section(".vrefint")));
-volatile uint16_t TSENSE_CAL1 __attribute__((section(".tcal1")));
-volatile uint16_t TSENSE_CAL2 __attribute__((section(".tcal2")));
+#endif
 
-volatile syscfg_t SYSCFG __attribute__((section(".syscfg")));
-
-volatile rng_t RNG __attribute__((section(".rng")));
-
-volatile usart_t USART1 __attribute__((section(".usart1")));
-volatile usart_t USART2 __attribute__((section(".usart2")));
-volatile usart_t USART3 __attribute__((section(".usart3")));
-volatile usart_t UART4 __attribute__((section(".uart4")));
-
-volatile tim_t TIM1 __attribute__((section(".tim1")));
-volatile tim_t TIM2 __attribute__((section(".tim2")));
-volatile tim_t TIM3 __attribute__((section(".tim3")));
-volatile tim_t TIM6 __attribute__((section(".tim6")));
-volatile tim_t TIM7 __attribute__((section(".tim7")));
-volatile tim_t TIM15 __attribute__((section(".tim15")));
-volatile tim_t TIM16 __attribute__((section(".tim16")));
-
-volatile exti_t _EXTI __attribute__((section(".exti")));
-
-volatile dbgmcu_t DBGMCU __attribute__((section(".dbgmcu")));
-volatile scb_t SCB __attribute__((section(".scb")));
-
-volatile uint32_t U_ID[3] __attribute__((section(".uid")));
-volatile uint16_t FLASH_SIZE __attribute__((section(".fid")));
-volatile uint16_t PKG __attribute__((section(".pkg")));
-/*
-volatile uint16_t VREFINT_CAL __attribute__((section(".vrefint")));
-volatile uint16_t TSENSE_CAL1 __attribute__((section(".tcal1")));
-volatile uint16_t TSENSE_CAL2 __attribute__((section(".tcal2")));
-*/
+#endif
