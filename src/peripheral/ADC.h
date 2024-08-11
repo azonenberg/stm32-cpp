@@ -67,6 +67,10 @@ public:
 		float ReadChannelScaledAveraged(uint8_t channel, uint32_t navg);
 	#endif
 
+	#ifdef STM32L431
+		bool GetTemperatureNonblocking(uint16_t& temp);
+	#endif
+
 protected:
 	volatile adc_t*	m_lane;
 

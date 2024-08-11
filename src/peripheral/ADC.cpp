@@ -34,6 +34,7 @@
 #include <peripheral/ADC.h>
 #include <algorithm>
 #include <array>
+#include <math.h>
 
 #ifdef HAVE_ADC
 
@@ -451,6 +452,84 @@ uint16_t ADC::GetTemperature()
 		#error unimplemented for this device family
 	#endif
 }
+
+#ifdef STM32L431
+/**
+	@brief Gets the temperature, working around errata 2.5.3, without doing all acquisitions in one go
+
+	This function uses internal static variables and is not thread safe.
+
+	TODO: consider refactoring out of the ADC class??
+ */
+bool ADC::GetTemperatureNonblocking(uint16_t& temp)
+{
+	static int state = 0;
+	static int nsample = 0;
+
+	const int nsamples = 64;
+	static float samples[nsamples];
+
+	switch(state)
+	{
+		//Read and discard extra readings to work around STM32L431 errata 2.5.2
+		//(TODO: not needed if we've done another ADC reading in the last millisecond)
+		case 0:
+			ReadChannel(17);
+			state = 1;
+			nsample = 0;
+			return false;
+
+		//Collect the samples
+		case 1:
+			samples[nsample] = ReadChannel(17);
+			nsample ++;
+			if(nsample >= nsamples)
+				state = 2;
+			return false;
+
+		//Postprocess
+		case 2:
+		default:
+			{
+				//TS_CAL1 and TS_CAL2 were taken with VDDA=3.0V
+				//so we need to rescale given our higher Vdd
+				const float vdd = 3000 * VREFINT_CAL / ReadChannel(0);
+				const float vddscale = vdd / 3000;
+				const float cal2 = TSENSE_CAL2 / vddscale;
+				const float cal1 = TSENSE_CAL1 / vddscale;
+
+				//Then we can calculate the calibration equation from RM0394 16.4.32
+				const uint32_t tref1 = 30;
+				const uint32_t tref2 = 130;
+				const float dtemp = tref2 - tref1;
+				const float dcal = cal2 - cal1;
+				const float calscale = dtemp / dcal;
+
+				//Sort the samples
+				std::sort(std::begin(samples), std::end(samples));
+
+				//Average the middle half
+				const int nstart = nsamples / 4;
+				const int nend = nsamples * 3 / 4;
+				const int navg = nend - nstart;
+				float adcval = 0;
+				for(int i=nstart; i < nend; i++)
+					adcval += samples[i];
+				adcval /= navg;
+
+				//Convert ADC codes to degrees C
+				float ftemp = (calscale * (adcval - cal1)) + 30;
+
+				//Convert back to 8.8 fixed point
+				temp = round(ftemp * 256);
+
+				//Done, ready to go again
+				state = 0;
+			}
+			return true;
+	}
+}
+#endif
 
 /**
 	@brief Gets the supply voltage, in mV
