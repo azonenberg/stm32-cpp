@@ -63,6 +63,8 @@ public:
 			float code = ReadChannel(channel);
 			return (code / 4095) * GetSupplyVoltage();
 		}
+
+		float ReadChannelScaledAveraged(uint8_t channel, uint32_t navg);
 	#endif
 
 protected:

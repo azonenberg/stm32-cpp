@@ -478,4 +478,26 @@ uint16_t ADC::GetSupplyVoltage()
 	#endif
 }
 
-#endif
+#ifdef HAVE_FPU
+
+/**
+	@brief Reads a channel several times, average the result, and return a reading in millivolts
+ */
+float ADC::ReadChannelScaledAveraged(uint8_t channel, uint32_t navg)
+{
+	//read and throw out a value to wake up the ADC
+	ReadChannel(channel);
+
+	//Integrate a few samples to denoise
+	float vtemp = 0;
+	float vdd = GetSupplyVoltage();
+	for(uint32_t i=0; i<navg; i++)
+		vtemp += ReadChannel(channel);
+
+	//Convert sum of raw adc codes to average millivolts
+	//TODO: this assumes a 12-bit ADC, do any stm32s have more/less?
+	return (vtemp * vdd) / (navg * 4096);
+}
+#endif //HAVE_FPU
+
+#endif	//HAVE_ADC
