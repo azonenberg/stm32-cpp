@@ -27,107 +27,55 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#include <stm32.h>
-#include "I2CServer.h"
+#ifndef SPIServer_h
+#define SPIServer_h
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Main polling path
-
-/**
-	@brief Polls for new I2C data and processes it
- */
-void I2CServer::Poll()
-{
-	if(m_i2c.PollAddressMatch())
-		OnAddressMatch();
-
-	if(m_i2c.PollStop())
-	{
-		m_readActive = false;
-
-		if(!m_txbuf.IsEmpty())
-			m_txbuf.Reset();
-
-		//Flush any un-sent transmit data
-		if(!m_i2c.IsWriteDone())
-			m_i2c.FlushTxBuffer();
-	}
-
-	PollIncomingData();
-
-	//Send reply data if we have any
-	if(m_readActive && m_i2c.IsReadyForReply())
-	{
-		if( !m_txbuf.IsEmpty() )
-			m_i2c.NonblockingWrite(m_txbuf.Pop());
-
-		//Send an 0x00 byte if we have nothing to send to avoid stalling the bus
-		//if the host tries to read more data than we have to send
-		//(also called once at the end of each read burst)
-		else
-			m_i2c.NonblockingWrite(0x00);
-	}
-}
+#include <peripheral/SPI.h>
+#include <embedded-utils/FIFO.h>
 
 /**
-	@brief Checks for incoming data
+	@brief Base class for an SPI peripheral
  */
-void I2CServer::PollIncomingData()
+class SPIServer
 {
-	if(m_i2c.IsReadReady())
-	{
-		//Expect an address match event before data shows up, deal with that
-		if(m_i2c.PollAddressMatch())
-			OnAddressMatch();
-
-		OnWriteData(m_i2c.GetReadData());
-	}
-}
-
-/**
-	@brief Handles reception of our address
- */
-void I2CServer::OnAddressMatch()
-{
-	bool isRead = m_i2c.IsDeviceRequestRead();
-	m_writeIndex = 0;
-
-	//Discard any pending stop request
-	if(m_i2c.PollStop())
+public:
+	SPIServer(SPI<64, 64>& spi)
+	: m_spi(spi)
 	{}
 
-	//Clear transmit buffer when a new sequence starts
-	m_txbuf.Reset();
+	void Poll();
 
-	//Notify derived class to do any init it requires
-	OnRequestStart();
+protected:
 
-	//Handle read or write
-	if(isRead)
+	///@brief Called on CS# falling edge
+	void OnFallingEdge()
 	{
-		//need to account for any last minute regid writes
-		PollIncomingData();
-
-		m_readActive = true;
-		OnRequestRead();
+		m_nbyte = 0;
+		m_command = 0;
 	}
 
-	//If it's a write, no action needed
-	else
-		m_readActive = false;
-}
+	///@brief Called when a SPI byte arrives
+	void OnByte(uint8_t b)
+	{
+		if(m_nbyte == 0)
+			OnCommand(b);
+		else
+			OnDataByte(b);
 
-/**
-	@brief Called when write data arrives
+		m_nbyte ++;
+	}
 
-	The default implementation expects a big endian register ID of up to 32 bits
- */
-void I2CServer::OnWriteData(uint8_t data)
-{
-	//Clear on the first byte
-	if(m_writeIndex == 0)
-		m_regid = 0;
+	virtual void OnDataByte(uint8_t b);
+	virtual void OnCommand(uint8_t b) =0;
 
-	m_regid = (m_regid << 8) | data;
-	m_writeIndex ++;
-}
+	///@brief Our SPI device
+	SPI<64, 64>& m_spi;
+
+	///@brief Command ID sent in the last request
+	uint8_t m_command;
+
+	///@brief Data byte index
+	uint16_t m_nbyte;
+};
+
+#endif

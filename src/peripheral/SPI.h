@@ -32,6 +32,8 @@
 
 #ifdef HAVE_SPI
 
+#include <cstdint>
+#include <cstddef>
 #include <embedded-utils/FIFO.h>
 
 class SPIEvent
