@@ -13,6 +13,7 @@ add_library(stm32-cpp STATIC
 	src/peripheral/ADC.cpp
 	src/peripheral/CRC.cpp
 	src/peripheral/DTS.cpp
+	src/peripheral/EXTI.cpp
 	src/peripheral/Flash.cpp
 	src/peripheral/GPIO.cpp
 	src/peripheral/I2C.cpp
@@ -25,6 +26,9 @@ add_library(stm32-cpp STATIC
 	src/peripheral/RTC.cpp
 	src/peripheral/SPI.cpp
 	src/peripheral/Timer.cpp
+
+	src/helpers/I2CServer.cpp
+	src/helpers/SPIServer.cpp
 
 	devices/src/${TARGET_MCU}.cpp
 	)
