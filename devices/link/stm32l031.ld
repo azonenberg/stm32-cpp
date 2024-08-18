@@ -10,6 +10,7 @@ MEMORY
 	APB1(RW):	ORIGIN = 0x40000000, LENGTH = 32K
 
 	SIG(R):		ORIGIN = 0x1ff80000, LENGTH = 64K
+	MCU(RW):	ORIGIN = 0xe0000000, LENGTH = 64K
 }
 
 SECTIONS
@@ -68,14 +69,14 @@ SECTIONS
 		. += 1024;		/* DMA1 not implemented */
 		. += 3072;		/* Reserved */
 		. = ALIGN(1024);
-		*(.rcc)
+		KEEP(*(.rcc))
 		. = ALIGN(1024);
 		. += 3072;		/* Reserved */
-		*(.flash)
+		KEEP(*(.flash))
 		. = ALIGN(1024);
 		. += 3072;		/* Reserved */
 		. = ALIGN(1024);
-		. += 1024;		/* CRC not implemented */
+		KEEP(*(.crc))
 		. = ALIGN(1024);
 		. += 3072;		/* Reserved */
 		. += 3072;		/* Reserved */
@@ -87,15 +88,15 @@ SECTIONS
 	.sfr_io :
 	{
 		. = ALIGN(1024);
-		*(.gpioa)
+		KEEP(*(.gpioa))
 		. = ALIGN(1024);
-		*(.gpiob)
+		KEEP(*(.gpiob))
 		. = ALIGN(1024);
-		*(.gpioc)
+		KEEP(*(.gpioc))
 		. = ALIGN(1024);
-		*(.gpiod)
+		KEEP(*(.gpiod))
 		. = ALIGN(1024);
-		*(.gpioe)
+		KEEP(*(.gpioe))
 		. = ALIGN(1024);
 		. += 1024;	/* no GPIOF present */
 		. += 1024;	/* no GPIOG present */
@@ -106,15 +107,15 @@ SECTIONS
 	.sfr_apb1 :
 	{
 		. = ALIGN(1024);
-		*(.tim2)
+		KEEP(*(.tim2))
 		. = ALIGN(1024);
-		*(.tim3)
+		KEEP(*(.tim3))
 		. = ALIGN(1024);
 		. += 2048;			/* Reserved (Errata in datasheet page 55, says 1K when should be 2K, see case #00183734) */
 		. = ALIGN(1024);
-		*(.tim6)
+		KEEP(*(.tim6))
 		. = ALIGN(1024);
-		*(.tim7)
+		KEEP(*(.tim7))
 		. = ALIGN(1024);
 		. += 4096;			/* Reserved (Errata in datasheet page 55, says 3K when should be 4K, see case #00183734)  */
 		. = ALIGN(1024);
@@ -130,15 +131,15 @@ SECTIONS
 		. = ALIGN(1024);
 		. += 2048;			/* Reserved */
 		. = ALIGN(1024);
-		*(.usart2)
+		KEEP(*(.usart2))
 		. = ALIGN(1024);
 		. += 1024;			/* LPUART1 not yet implemented */
 		. = ALIGN(1024);
-		*(.usart4)
+		KEEP(*(.usart4))
 		. = ALIGN(1024);
-		*(.usart5)
+		KEEP(*(.usart5))
 		. = ALIGN(1024);
-		*(.i2c1)
+		KEEP(*(.i2c1))
 		. += 1024;			/* I2C2 not yet implemented */
 		. += 5120;			/* 0x4000_5c00 reserved (datasheet errata, page 54 says 1k) */
 		. = ALIGN(1024);
@@ -148,15 +149,15 @@ SECTIONS
 	.sfr_apb2 :
 	{
 		. = ALIGN(1024);
-		*(.syscfg)
+		KEEP(*(.syscfg))
 		. = ALIGN(1024);
-		*(.exti)
+		KEEP(*(.exti))
 		. = ALIGN(1024);
-		*(.tim21)
+		KEEP(*(.tim21))
 		. = ALIGN(1024);
 		. += 2048;			/* Reserved */
 		. = ALIGN(1024);
-		*(.tim22)
+		KEEP(*(.tim22))
 		. = ALIGN(1024);
 		. += 1024;			/* Reserved */
 		. = ALIGN(1024);
@@ -164,11 +165,11 @@ SECTIONS
 		. = ALIGN(1024);
 		. += 1024;			/* Reserved */
 		. = ALIGN(1024);
-		*(.adc1)
+		KEEP(*(.adc1))
 		. = ALIGN(1024);
 		. += 2048;			/* Reserved */
 		. = ALIGN(1024);
-		*(.spi1)
+		KEEP(*(.spi1))
 		. = ALIGN(1024);
 		. += 1024;			/* Reserved */
 		. = ALIGN(1024);
@@ -176,17 +177,24 @@ SECTIONS
 		. = ALIGN(1024);
 		. += 7168;			/* Reserved */
 		. = ALIGN(1024);
-		*(.dbgmcu)
+		KEEP(*(.dbgmcu))
 	} > APB2
 
 	.sfr_sig :
 	{
 		. += 0x50;
-		*(.uid)
+		KEEP(*(.uid))
 		. += 0x1c;
-		*(.vrefint)
-		*(.tcal1)
-		*(.fid)
-		*(.tcal2)
+		KEEP(*(.vrefint))
+		KEEP(*(.tcal1))
+		KEEP(*(.fid))
+		KEEP(*(.tcal2))
 	} > SIG
+
+	.sfr_mcu  (NOLOAD):
+	{
+		. += 0xed00;
+		KEEP (*(.scb))
+		. = ALIGN(1024);
+	} > MCU
 }

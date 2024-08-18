@@ -77,6 +77,11 @@ enum rcc_io
 	RCC_IO_GPIOH	= 0x80,
 };
 
+enum rcc_ahb
+{
+	RCC_AHB_CRC		= 0x00001000
+};
+
 enum rcc_apb2
 {
 	RCC_APB2_SPI1	= 0x00001000,
@@ -219,6 +224,14 @@ extern volatile flash_t FLASH;
 #define ADC_T_VERSION 1
 #include "stm32-adc.h"
 extern volatile adc_t ADC1;
+
+#define CRC_T_VERSION 1
+#include "stm32-crc.h"
+extern volatile crc_t _CRC;
+
+//#define SCB_T_VERSION 2
+#include "stm32-scb.h"
+extern volatile scb_t SCB;
 
 extern volatile uint16_t VREFINT_CAL;
 extern volatile uint16_t TSENSE_CAL1;
