@@ -18,9 +18,15 @@ SECTIONS
 	/* Code comes right after the vector tables */
 	.text :
 	{
-		*(.vector)
+		KEEP (*(.vector))
+		. = ALIGN(32);
+		KEEP (*(.fwver))
+		. = ALIGN(32);
+		KEEP (*(.fwid))
+		. = ALIGN(32);
 		*(.text.*)
 		*(.rodata)
+		*(.rodata.*)
 		*(.ctors)
 
 		. = ALIGN(4);

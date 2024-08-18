@@ -221,7 +221,7 @@ extern volatile crc_t _CRC;
 #include "stm32-scb.h"
 extern volatile scb_t SCB;
 
-#define EXTI_T_VERSION 1
+#define EXTI_T_VERSION 2
 #include "stm32-exti.h"
 extern volatile exti_t _EXTI;
 
