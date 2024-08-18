@@ -51,6 +51,19 @@ typedef struct
 	uint32_t	PR2;
 } exti_t;
 
+//STM32L031
+#elif EXTI_T_VERSION == 2
+
+typedef struct
+{
+	uint32_t	IMR;
+	uint32_t	EMR;
+	uint32_t	RTSR;
+	uint32_t	FTSR;
+	uint32_t	SWIER;
+	uint32_t	PR;
+} exti_t;
+
 #else
 
 #error Undefined or unspecified EXTI_T_VERSION

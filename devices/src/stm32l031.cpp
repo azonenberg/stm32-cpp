@@ -46,6 +46,8 @@ volatile pwr_t PWR __attribute__((section(".pwr")));
 
 volatile crc_t _CRC __attribute__((section(".crc")));
 
+volatile exti_t _EXTI __attribute__((section(".exti")));
+
 volatile scb_t SCB __attribute__((section(".scb")));
 
 volatile spi_t SPI1 __attribute__((section(".spi1")));
@@ -53,7 +55,6 @@ volatile spi_t SPI1 __attribute__((section(".spi1")));
 volatile adc_t ADC1 __attribute__((section(".adc1")));
 
 volatile syscfg_t SYSCFG __attribute__((section(".syscfg")));
-volatile exti_t EXTI __attribute__((section(".exti")));
 
 volatile usart_t USART2 __attribute__((section(".usart2")));
 volatile usart_t USART4 __attribute__((section(".usart4")));

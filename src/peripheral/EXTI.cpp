@@ -37,7 +37,6 @@
  */
 void EXTI::SetExtInterruptMux(int channel, ExtiPort sel)
 {
-	//STM32L431 specific possibly?
 	if(channel < 4)
 	{
 		int shift = channel * 4;

@@ -164,18 +164,6 @@ typedef struct
 
 extern volatile syscfg_t SYSCFG;
 
-typedef struct
-{
-	uint32_t	IMR;
-	uint32_t	EMR;
-	uint32_t	RTSR;
-	uint32_t	FTSR;
-	uint32_t	SWIER;
-	uint32_t	PR;
-} exti_t;
-
-extern volatile exti_t EXTI;
-
 #define SPI_T_VERSION 3
 #include "stm32-spi.h"
 
@@ -229,9 +217,13 @@ extern volatile adc_t ADC1;
 #include "stm32-crc.h"
 extern volatile crc_t _CRC;
 
-//#define SCB_T_VERSION 2
+#define SCB_T_VERSION 1
 #include "stm32-scb.h"
 extern volatile scb_t SCB;
+
+#define EXTI_T_VERSION 1
+#include "stm32-exti.h"
+extern volatile exti_t _EXTI;
 
 extern volatile uint16_t VREFINT_CAL;
 extern volatile uint16_t TSENSE_CAL1;

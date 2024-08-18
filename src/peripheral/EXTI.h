@@ -58,37 +58,61 @@ public:
 	///@brief Clear a pending interrupt
 	static void ClearPending(int channel)
 	{
-		if(channel < 32)
-			_EXTI.PR1 = (1 << channel);
-		else
-			_EXTI.PR2 = (1 << (channel - 32));
+		#if EXTI_T_VERSION == 1
+			if(channel < 32)
+				_EXTI.PR1 = (1 << channel);
+			else
+				_EXTI.PR2 = (1 << (channel - 32));
+		#elif EXTI_T_VERSION == 2
+			_EXTI.PR = (1 << channel);
+		#else
+			#error Unrecognized EXTI_T_VERSION
+		#endif
 	}
 
 	///@brief Enables an interrupt lane
 	static void EnableChannel(int channel)
 	{
-		if(channel < 32)
-			_EXTI.IMR1 = (1 << channel);
-		else
-			_EXTI.IMR2 = (1 << (channel - 32));
+		#if EXTI_T_VERSION == 1
+			if(channel < 32)
+				_EXTI.IMR1 = (1 << channel);
+			else
+				_EXTI.IMR2 = (1 << (channel - 32));
+		#elif EXTI_T_VERSION == 2
+			_EXTI.IMR = (1 << channel);
+		#else
+			#error Unrecognized EXTI_T_VERSION
+		#endif
 	}
 
 	///@brief Enable rising edge trigger
 	static void EnableRisingEdgeTrigger(int channel)
 	{
-		if(channel < 32)
-			_EXTI.RTSR1 = (1 << channel);
-		else
-			_EXTI.RTSR2 = (1 << (channel - 32));
+		#if EXTI_T_VERSION == 1
+			if(channel < 32)
+				_EXTI.RTSR1 = (1 << channel);
+			else
+				_EXTI.RTSR2 = (1 << (channel - 32));
+		#elif EXTI_T_VERSION == 2
+			_EXTI.RTSR = (1 << channel);
+		#else
+			#error Unrecognized EXTI_T_VERSION
+		#endif
 	}
 
 	///@brief Enable falling edge trigger
 	static void EnableFallingEdgeTrigger(int channel)
 	{
-		if(channel < 32)
-			_EXTI.FTSR1 = (1 << channel);
-		else
-			_EXTI.FTSR2 = (1 << (channel - 32));
+		#if EXTI_T_VERSION == 1
+			if(channel < 32)
+				_EXTI.FTSR1 = (1 << channel);
+			else
+				_EXTI.FTSR2 = (1 << (channel - 32));
+		#elif EXTI_T_VERSION == 2
+			_EXTI.FTSR = (1 << channel);
+		#else
+			#error Unrecognized EXTI_T_VERSION
+		#endif
 	}
 };
 
