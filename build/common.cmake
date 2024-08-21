@@ -25,4 +25,4 @@ set(NOMALLOCFLAGS "${NOMALLOCFLAGS} -Wl,--wrap=sbrk_aligned -Wl,--wrap=free")
 
 # Final compiler flag setup
 set(CMAKE_ASM_FLAGS "${ARCHFLAGS}")
-set(CMAKE_CXX_FLAGS "${WARNINGS} ${ARCHFLAGS} ${NOMALLOCFLAGS} -ffunction-sections")
+set(CMAKE_CXX_FLAGS "${WARNINGS} ${ARCHFLAGS} ${NOMALLOCFLAGS} -ffunction-sections -Wl,--build-id")
