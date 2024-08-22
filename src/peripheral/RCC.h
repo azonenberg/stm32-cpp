@@ -187,6 +187,7 @@ public:
 		uint8_t divR,
 		ClockSource source
 		);
+	static void SelectSystemClockFromHSI();
 	static void SelectSystemClockFromPLL1();
 	static void InitializeSystemClocks(
 		uint16_t sysckdiv,

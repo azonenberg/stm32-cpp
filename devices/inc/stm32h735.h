@@ -172,7 +172,8 @@ enum rcc_cr
 enum rcc_cfgr
 {
 	RCC_CFGR_SW_MASK	= 0xfffffff8,
-	RCC_CFGR_SW_PLL1	= 0x3
+	RCC_CFGR_SW_PLL1	= 0x3,
+	RCC_CFGR_SW_HSI		= 0x0
 };
 
 enum rcc_pllckselr

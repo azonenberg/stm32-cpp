@@ -1358,6 +1358,22 @@ void RCCHelper::InitializePLL(
 {
 	//TODO: fractional N support: multiplier = DIVN + (FRACN / 2^13)
 
+	//Turn off the PLL before reconfiguring it (in case it was already on)
+	switch(npll)
+	{
+		case 1:
+			RCC.CR &= ~RCC_CR_PLL1ON;
+			break;
+
+		case 2:
+			RCC.CR &= ~RCC_CR_PLL2ON;
+			break;
+
+		case 3:
+			RCC.CR &= ~RCC_CR_PLL3ON;
+			break;
+	}
+
 	//Select PLL source
 	if(source == CLOCK_SOURCE_HSE)
 		RCC.PLLCKSELR = (RCC.PLLCKSELR & RCC_PLLCKSELR_SRC_MASK) | RCC_PLLCKSELR_SRC_HSE;
@@ -1465,6 +1481,17 @@ void RCCHelper::InitializePLL(
 		default:
 			break;
 	}
+}
+
+/**
+	@brief Selects the HSI clock as the system clock source
+ */
+void RCCHelper::SelectSystemClockFromHSI()
+{
+	RCC.CFGR = (RCC.CFGR & RCC_CFGR_SW_MASK) | RCC_CFGR_SW_HSI;
+
+	while( ((RCC.CFGR >> 3) & 0x7) != RCC_CFGR_SW_HSI)
+	{}
 }
 
 /**
