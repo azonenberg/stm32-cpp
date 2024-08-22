@@ -81,7 +81,10 @@ volatile tim_t TIM16 __attribute__((section(".tim16")));
 volatile exti_t _EXTI __attribute__((section(".exti")));
 
 volatile dbgmcu_t DBGMCU __attribute__((section(".dbgmcu")));
+volatile itm_t _ITM __attribute__((section(".itm")));
+volatile dwt_t _DWT __attribute__((section(".dwt")));
 volatile scb_t SCB __attribute__((section(".scb")));
+volatile uint32_t DEMCR __attribute__((section(".demcr")));
 
 volatile uint32_t U_ID[3] __attribute__((section(".uid")));
 volatile uint16_t FLASH_SIZE __attribute__((section(".fid")));

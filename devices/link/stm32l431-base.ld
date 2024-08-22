@@ -186,9 +186,15 @@ SECTIONS
 
 	.sfr_mcu  (NOLOAD):
 	{
-		. += 0xed00;
+		KEEP (*(.itm))
+		. = ALIGN(4096);
+		KEEP (*(.dwt))
+		. = ALIGN(4096);
+		. += 0xcd00;
 		KEEP (*(.scb))
-		. = ALIGN(1024);
+		. += 0x70;
+		KEEP (*(.demcr))
+		. = ALIGN(4096);
 	} > MCU
 
 	.sfr_mcu2 (NOLOAD):

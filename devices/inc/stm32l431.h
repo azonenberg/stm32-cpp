@@ -244,6 +244,11 @@ typedef struct
 	uint32_t	APB2FZR;
 } dbgmcu_t;
 
+enum dbgmcu_cr_t
+{
+	DBGMCU_CR_TRACE_IOEN	= 0x20
+};
+
 extern volatile dbgmcu_t DBGMCU;
 
 #define CRC_T_VERSION 1
@@ -302,6 +307,14 @@ extern volatile exti_t _EXTI;
 #define SCB_T_VERSION 2
 #include "stm32-scb.h"
 extern volatile scb_t SCB;
+
+#include "stm32-itm.h"
+extern volatile itm_t _ITM;
+
+#include "stm32-dwt.h"
+extern volatile dwt_t _DWT;
+
+extern volatile uint32_t DEMCR;
 
 #define QUADSPI_T_VERSION 1
 #include "stm32-quadspi.h"

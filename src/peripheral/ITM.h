@@ -53,6 +53,13 @@ public:
 		//Enable tracing system wide (turns on DWT and ITM)
 		DEMCR |= DEMCR_TRCENA;
 
+		#ifdef STM32L431
+		DBGMCU.CR |= DBGMCU_CR_TRACE_IOEN;
+
+		//Turn off TPIU formatting (TODO make this nicer)
+		*reinterpret_cast<volatile uint32_t*>(0xe0040304) = 0x100;
+		#endif
+
 		//Enable the ITM itself
 		_ITM.TCR |= ITM_TCR_ITMENA;
 	}
