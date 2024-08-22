@@ -49,6 +49,8 @@ SECTIONS
 
 		. = ALIGN(4);
 		KEEP(*(.init))
+		KEEP(*(.init.*))
+		KEEP(*(.ARM.exidx))
 
 		. = ALIGN(4);
 		__preinit_array_start = .;
