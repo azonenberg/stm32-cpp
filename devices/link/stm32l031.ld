@@ -20,7 +20,7 @@ SECTIONS
 	{
 		KEEP (*(.vector))
 		. = ALIGN(32);
-		KEEP (*(.fwver))
+		KEEP (*(.note.gnu.build-id))
 		. = ALIGN(32);
 		KEEP (*(.fwid))
 		. = ALIGN(32);

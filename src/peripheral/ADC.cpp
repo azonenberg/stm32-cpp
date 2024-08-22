@@ -371,10 +371,20 @@ uint16_t ADC::GetTemperature()
 	//STM32L031
 	#if (ADC_T_VERSION == 1)
 
+		//TS_CAL1 and TS_CAL2 were taken with VDDA=3.0V
+		//so we need to rescale given our higher Vdd
+		//TODO: rewrite this as fixed point so we don't have to pull in ~4 kB of softfloat lib
+		const float vdd = GetSupplyVoltage();
+		const float vddscale = vdd / 3000;
+		const float cal2 = TSENSE_CAL2 / vddscale;
+		const float cal1 = TSENSE_CAL1 / vddscale;
+
+		//Then we can calculate the calibration equation from RM0394 16.4.32
 		const uint32_t tref1 = 30;
 		const uint32_t tref2 = 130;
-		const uint32_t dtemp = tref2 - tref1;
-		uint32_t dcal = TSENSE_CAL2 - TSENSE_CAL1;
+		const float dtemp = tref2 - tref1;
+		const float dcal = cal2 - cal1;
+		const float calscale = dtemp / dcal;
 
 		//For reasons unknown, the first measurement always delivers garbage
 		//Until we find a root cause, just throw it away
@@ -382,9 +392,12 @@ uint16_t ADC::GetTemperature()
 
 		//Now do the actual measurement
 		auto adcval = ReadChannel(18);
-		uint32_t tempnum = (adcval - TSENSE_CAL1) * 256 * dtemp;
 
-		return (tempnum / dcal) + 256*tref1;
+		//Convert ADC codes to degrees C
+		float temp = (calscale * (adcval - cal1)) + 30;
+
+		//Convert back to 8.8 fixed point
+		return temp * 256;
 
 	//STM32L431
 	#elif (ADC_T_VERSION == 2)
