@@ -37,7 +37,9 @@ class ITMStream : public CharacterDevice
 public:
 	ITMStream(uint8_t stream)
 		: m_stream(stream)
-	{}
+	{
+		ITM::EnableChannel(stream);
+	}
 
 	///@brief Sends data to the ITM
 	void PrintBinary(char ch)
