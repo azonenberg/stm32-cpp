@@ -574,21 +574,54 @@ uint16_t ADC::GetSupplyVoltage()
 
 /**
 	@brief Reads a channel several times, average the result, and return a reading in millivolts
+
+	@param channel	Channel index
+	@param navg		Number of averages to take
+	@param vdd		Supply voltage in mV
  */
-float ADC::ReadChannelScaledAveraged(uint8_t channel, uint32_t navg)
+float ADC::ReadChannelScaledAveraged(uint8_t channel, uint32_t navg, float vdd)
 {
 	//read and throw out a value to wake up the ADC
 	ReadChannel(channel);
 
 	//Integrate a few samples to denoise
 	float vtemp = 0;
-	float vdd = GetSupplyVoltage();
 	for(uint32_t i=0; i<navg; i++)
 		vtemp += ReadChannel(channel);
 
 	//Convert sum of raw adc codes to average millivolts
 	//TODO: this assumes a 12-bit ADC, do any stm32s have more/less?
 	return (vtemp * vdd) / (navg * 4096);
+}
+
+/**
+	@brief Reads a channel several times, take the median of the result, and return a reading in millivolts
+
+	@param channel	Channel index
+	@param navg		Number of averages to take
+	@param vdd		Supply voltage in mV
+ */
+float ADC::ReadChannelScaledMedian(uint8_t channel, uint32_t navg, float vdd)
+{
+	//read and throw out a value to wake up the ADC
+	ReadChannel(channel);
+
+	//allow up to this many samples to be integrated
+	const uint32_t nmax = 64;
+	if(navg > nmax)
+		navg = nmax;
+	float samples[nmax];
+
+	//Integrate a few samples to denoise
+	for(uint32_t i=0; i<navg; i++)
+		samples[i] = ReadChannel(channel);
+
+	//Sort them
+	std::sort(std::begin(samples), std::begin(samples) + navg);
+
+	//Convert raw adc codes to millivolts
+	//TODO: this assumes a 12-bit ADC, do any stm32s have more/less?
+	return (samples[navg/2] * vdd) / 4096;
 }
 #endif //HAVE_FPU
 

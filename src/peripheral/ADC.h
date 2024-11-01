@@ -64,7 +64,11 @@ public:
 			return (code / 4095) * GetSupplyVoltage();
 		}
 
-		float ReadChannelScaledAveraged(uint8_t channel, uint32_t navg);
+		float ReadChannelScaledAveraged(uint8_t channel, uint32_t navg)
+		{ return ReadChannelScaledAveraged(channel, navg, GetSupplyVoltage()); }
+
+		float ReadChannelScaledAveraged(uint8_t channel, uint32_t navg, float vdd);
+		float ReadChannelScaledMedian(uint8_t channel, uint32_t navg, float vdd);
 	#endif
 
 	#ifdef STM32L431
