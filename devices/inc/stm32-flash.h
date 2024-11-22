@@ -181,6 +181,7 @@ enum flash_pecr
 enum flash_sr
 {
 	FLASH_SR_ERR_MASK		= 0x10600,
+	FLASH_SR_EOP			= 0x2,
 	FLASH_SR_BUSY			= 0x1
 };
 

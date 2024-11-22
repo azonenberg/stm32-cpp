@@ -1,9 +1,10 @@
 ########################################################################################################################
 # Definitions for this target come first
 
+# use really small object IDs to save our limited flash space
 add_compile_definitions(STM32L031)
-add_compile_definitions(MICROKVS_WRITE_BLOCK_SIZE=8)
-add_compile_definitions(KVS_NAMELEN=32)
+add_compile_definitions(MICROKVS_WRITE_BLOCK_SIZE=4)
+add_compile_definitions(KVS_NAMELEN=4)
 
 # Platform flags
 set(ARCHFLAGS "-mcpu=cortex-m0plus")
