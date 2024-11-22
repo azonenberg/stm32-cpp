@@ -113,13 +113,14 @@ protected:
 			FLASH.PKEYR = 0x89abcdef;
 			FLASH.PKEYR = 0x02030405;
 
-			//eanble actual flash programming
+			//enable actual flash programming
 			FLASH.PRGKEYR = 0x8c9daebf;
 			FLASH.PRGKEYR = 0x13141516;
 		#else
 			FLASH.KEYR = 0x45670123;
 			FLASH.KEYR = 0xCDEF89AB;
 		#endif
+			asm("dmb st");
 	}
 
 	static void Lock()

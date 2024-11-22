@@ -543,7 +543,7 @@ bool Flash::Write(uint8_t* address, const uint8_t* data, uint32_t len)
 	#elif defined(STM32L031)
 
 		//Clear program error
-		//FLASH.SR |= FLASH_SR_ERR_MASK;
+		FLASH.SR |= FLASH_SR_ERR_MASK;
 
 		//Write the data in blocks of 4 bytes, force write after last one
 		uint32_t tmp;
