@@ -99,28 +99,22 @@ void I2C::Start()
  */
 bool I2C::BlockingPing(uint8_t addr)
 {
-	m_lane->CR2 = I2C_AUTO_END | (1 << 16) | addr;
+	m_lane->CR2 = I2C_AUTO_END | (0 << 16) | addr | I2C_READ;
 	Start();
 
-	m_lane->TXDR = addr;
-
-	//Wait until transmit complete
 	bool ret = true;
-	while((m_lane->ISR & I2C_TX_EMPTY) == 0)
-	{
-		//If we get a NAK, flush the TX buffer and bail
-		if(m_lane->ISR & I2C_NACK)
-		{
-			m_lane->ICR = I2C_NACK;
-			m_lane->ISR = I2C_TX_EMPTY;
-			ret = false;
-			break;
-		}
-	}
 
 	//Wait until not busy
 	while(m_lane->ISR & I2C_BUSY)
 	{}
+
+	//If we get a NAK, flush the TX buffer and bail
+	if(m_lane->ISR & I2C_NACK)
+	{
+		m_lane->ICR = I2C_NACK;
+		m_lane->ISR = I2C_TX_EMPTY;
+		ret = false;
+	}
 
 	//Clear stop flag if set
 	if(m_lane->ISR & I2C_STOP_RECEIVED)
