@@ -107,6 +107,8 @@ public:
 	void BlockingDeviceWrite8(uint8_t data)
 	{ BlockingDeviceWrite(&data, 1); }
 
+	bool BlockingPing(uint8_t addr);
+
 	/**
 		@brief Sends a 16-bit value to a device in host mode
 	 */

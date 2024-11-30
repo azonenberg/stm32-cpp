@@ -93,6 +93,42 @@ void I2C::Start()
 }
 
 /**
+	@brief Pings a device (send address with no data) and see if it responds
+
+	@return	True if ACK, false if NACK
+ */
+bool I2C::BlockingPing(uint8_t addr)
+{
+	m_lane->CR2 = I2C_AUTO_END | (1 << 16) | addr;
+	Start();
+
+	m_lane->TXDR = addr;
+
+	//Wait until transmit complete
+	bool ret = true;
+	while((m_lane->ISR & I2C_TX_EMPTY) == 0)
+	{
+		//If we get a NAK, flush the TX buffer and bail
+		if(m_lane->ISR & I2C_NACK)
+		{
+			m_lane->ICR = I2C_NACK;
+			m_lane->ISR = I2C_TX_EMPTY;
+			ret = false;
+			break;
+		}
+	}
+
+	//Wait until not busy
+	while(m_lane->ISR & I2C_BUSY)
+	{}
+
+	//Clear stop flag if set
+	if(m_lane->ISR & I2C_STOP_RECEIVED)
+		m_lane->ISR = I2C_STOP_RECEIVED;
+	return true;
+}
+
+/**
 	@brief Sends a write command in host mode
 
 	@param addr		8-bit device address (LSB ignored)
@@ -115,6 +151,7 @@ bool I2C::BlockingWrite(uint8_t addr, const uint8_t* data, uint8_t len)
 			if(m_lane->ISR & I2C_NACK)
 			{
 				m_lane->ICR = I2C_NACK;
+				m_lane->ISR = I2C_TX_EMPTY;
 				return false;
 			}
 		}
@@ -130,9 +167,16 @@ bool I2C::BlockingWrite(uint8_t addr, const uint8_t* data, uint8_t len)
 		if(m_lane->ISR & I2C_NACK)
 		{
 			m_lane->ICR = I2C_NACK;
+			m_lane->ISR = I2C_TX_EMPTY;
 			return false;
 		}
 	}
+
+	//Wait for STOP to be generated, then clear the interupt flag
+	while(m_lane->ISR & I2C_BUSY)
+	{}
+	if(m_lane->ISR & I2C_STOP_RECEIVED)
+		m_lane->ISR = I2C_STOP_RECEIVED;
 
 	return true;
 }
@@ -180,6 +224,7 @@ bool I2C::BlockingRead(uint8_t addr, uint8_t* data, uint8_t len)
 			if(m_lane->ISR & I2C_NACK)
 			{
 				m_lane->ICR = I2C_NACK;
+				m_lane->ISR = I2C_TX_EMPTY;
 				return false;
 			}
 		}
@@ -187,6 +232,12 @@ bool I2C::BlockingRead(uint8_t addr, uint8_t* data, uint8_t len)
 		//Read it
 		data[i] = m_lane->RXDR;
 	}
+
+	//Wait for STOP to be generated, then clear the interupt flag
+	while(m_lane->ISR & I2C_BUSY)
+	{}
+	if(m_lane->ISR & I2C_STOP_RECEIVED)
+		m_lane->ISR = I2C_STOP_RECEIVED;
 
 	return true;
 }
