@@ -125,7 +125,7 @@ bool I2C::BlockingPing(uint8_t addr)
 	//Clear stop flag if set
 	if(m_lane->ISR & I2C_STOP_RECEIVED)
 		m_lane->ISR = I2C_STOP_RECEIVED;
-	return true;
+	return ret;
 }
 
 /**
