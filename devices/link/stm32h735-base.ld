@@ -198,6 +198,16 @@ SECTIONS
 		KEEP (*(.spi5))
 	} > APB2
 
+	.sfr_ahb1  (NOLOAD):
+	{
+		. = ALIGN(1024);
+		KEEP (*(.dma1))
+		. = ALIGN(1024);
+		KEEP (*(.dma2))
+		. = ALIGN(1024);
+		KEEP (*(.dmamux1))
+	} > AHB1
+
 	.sfr_ahb2  (NOLOAD):
 	{
 		. += 1024;			/* DCMI not implemented */

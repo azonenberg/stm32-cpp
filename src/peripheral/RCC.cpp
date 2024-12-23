@@ -31,6 +31,20 @@
 #include <peripheral/RCC.h>
 #include <peripheral/Power.h>
 
+#ifdef HAVE_DMA
+void RCCHelper::Enable(volatile dma_t* dma)
+{
+	#if defined(STM32H735)
+		if(dma == &DMA1)
+			RCC.AHB1ENR |= RCC_AHB1_DMA1;
+		else if(dma == &DMA2)
+			RCC.AHB1ENR |= RCC_AHB1_DMA2;
+	#else
+		#error Dont know what to do with MDMA on this part
+	#endif
+}
+#endif
+
 #ifdef HAVE_MDMA
 void RCCHelper::Enable([[maybe_unused]] volatile mdma_t* mdma)
 {

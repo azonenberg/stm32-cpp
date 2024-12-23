@@ -44,6 +44,10 @@ class RCCHelper
 public:
 	static void Enable(volatile gpio_t* gpio);
 
+	#ifdef HAVE_DMA
+	static void Enable(volatile dma_t* dma);
+	#endif
+
 	#ifdef HAVE_MDMA
 	static void Enable(volatile mdma_t* mdma);
 	#endif

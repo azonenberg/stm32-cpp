@@ -110,6 +110,12 @@ enum rcc_ahb2
 	RCC_AHB2_CRYP		= 0x00000010
 };
 
+enum rcc_ahb1
+{
+	RCC_AHB1_DMA2		= 0x00000002,
+	RCC_AHB1_DMA1		= 0x00000001
+};
+
 enum rcc_apb4
 {
 	RCC_APB4_SYSCFG		= 0x00000002,
@@ -514,68 +520,8 @@ extern volatile uint16_t F_ID;
 extern volatile uint32_t L_ID;
 extern volatile uint16_t PKG_ID;
 
-typedef struct
-{
-	uint32_t	CR;
-	uint32_t	SR;
-	uint32_t	DIN;
-	uint32_t	DOUT;
-	uint32_t	DMACR;
-	uint32_t	IMSCR;
-	uint32_t	RISR;
-	uint32_t	MISR;
-	uint32_t	K0LR;
-	uint32_t	K0RR;
-	uint32_t	K1LR;
-	uint32_t	K1RR;
-	uint32_t	K2LR;
-	uint32_t	K2RR;
-	uint32_t	K3LR;
-	uint32_t	K3RR;
-	uint32_t	IV0LR;
-	uint32_t	IV0RR;
-	uint32_t	IV1LR;
-	uint32_t	IV1RR;
-	uint32_t	CSGCMCCM0R;
-	uint32_t	CSGCMCCM1R;
-	uint32_t	CSGCMCCM2R;
-	uint32_t	CSGCMCCM3R;
-	uint32_t	CSGCMCCM4R;
-	uint32_t	CSGCMCCM5R;
-	uint32_t	CSGCMCCM6R;
-	uint32_t	CSGCMCCM7R;
-	uint32_t	CSGCM0R;
-	uint32_t	CSGCM1R;
-	uint32_t	CSGCM2R;
-	uint32_t	CSGCM3R;
-	uint32_t	CSGCM4R;
-	uint32_t	CSGCM5R;
-	uint32_t	CSGCM6R;
-	uint32_t	CSGCM7R;
-} cryp_t;
-
-enum cryp_cr
-{
-	CRYP_ALG_AES_GCM	= 0x80000,
-	CRYP_EN				= 0x8000,
-	CRYP_GCM_PHASE_INIT	= 0x0,
-	CRYP_GCM_PHASE_AAD	= 0x10000,
-	CRYP_GCM_PHASE_DATA	= 0x20000,
-	CRYP_GCM_PHASE_TAG	= 0x30000,
-	CRYP_GCM_PHASE_MASK	= 0x30000,
-	CRYP_BSWAP_BYTE		= 0x80,
-	CRYP_DECRYPT		= 0x0004,
-	CRYP_KEY_128		= 0x0,
-
-	CRYP_FFLUSH			= 0x4000
-};
-
-enum cryp_sr
-{
-	CRYP_BUSY = 0x10,
-	CRYP_OFNE = 0x4
-};
-
+#define CRYPT_T_VERSION 1
+#include "stm32-crypt.h"
 extern volatile cryp_t CRYP;
 
 typedef struct
@@ -831,11 +777,16 @@ extern volatile tpiu_t _TPIU;
 #include "stm32-rng.h"
 extern volatile rng_t RNG;
 
+#define DMA_T_VERSION 1
+#include "stm32-dma.h"
+extern volatile dma_t DMA1;
+extern volatile dma_t DMA2;
+extern volatile dmamux_t DMAMUX1;
+
 //Defines for what peripherals are present / implemented
 #define HAVE_DTS
 #define HAVE_TIM
 //#define HAVE_EMAC
-#define HAVE_CRYP
 #define HAVE_HASH
 #define HAVE_PWR
 #define HAVE_OCTOSPI
