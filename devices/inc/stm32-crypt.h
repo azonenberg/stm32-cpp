@@ -93,8 +93,9 @@ enum cryp_cr
 
 enum cryp_sr
 {
-	CRYP_BUSY = 0x10,
-	CRYP_OFNE = 0x4
+	CRYP_BUSY 	= 0x10,
+	CRYP_OFNE 	= 0x4,
+	CRYP_IFEM	= 0x1
 };
 
 enum crypt_dmacr
