@@ -95,6 +95,7 @@ enum cryp_sr
 {
 	CRYP_BUSY 	= 0x10,
 	CRYP_OFNE 	= 0x4,
+	CRYP_IFNF	= 0x2,
 	CRYP_IFEM	= 0x1
 };
 

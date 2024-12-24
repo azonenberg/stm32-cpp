@@ -101,14 +101,27 @@ public:
 	enum mdma_sburst_t
 	{
 		SOURCE_BURST_1		= 0,
-		SOURCE_BURST_2		= (1 << 15),
-		SOURCE_BURST_4		= (2 << 15),
-		SOURCE_BURST_8		= (3 << 15),
-		SOURCE_BURST_16		= (4 << 15),
-		SOURCE_BURST_32		= (5 << 15),
-		SOURCE_BURST_64		= (6 << 15),
-		SOURCE_BURST_128	= (7 << 15),
-		SOURCE_BURST_MASK	= (7 << 15)
+		SOURCE_BURST_2		= (1 << 12),
+		SOURCE_BURST_4		= (2 << 12),
+		SOURCE_BURST_8		= (3 << 12),
+		SOURCE_BURST_16		= (4 << 12),
+		SOURCE_BURST_32		= (5 << 12),
+		SOURCE_BURST_64		= (6 << 12),
+		SOURCE_BURST_128	= (7 << 12),
+		SOURCE_BURST_MASK	= (7 << 12)
+	};
+
+	enum mdma_dburst_t
+	{
+		DEST_BURST_1		= 0,
+		DEST_BURST_2		= (1 << 15),
+		DEST_BURST_4		= (2 << 15),
+		DEST_BURST_8		= (3 << 15),
+		DEST_BURST_16		= (4 << 15),
+		DEST_BURST_32		= (5 << 15),
+		DEST_BURST_64		= (6 << 15),
+		DEST_BURST_128		= (7 << 15),
+		DEST_BURST_MASK		= (7 << 15)
 	};
 
 	enum mdma_dinc_t
@@ -207,6 +220,10 @@ public:
 	///@brief Set source AHB/AXI burst length, in beats
 	void SetSourceBurstLength(mdma_sburst_t burst) volatile
 	{ TCR = (TCR & ~(uint32_t)SOURCE_BURST_MASK ) | burst; }
+
+	///@brief Set dest AHB/AXI burst length, in beats
+	void SetDestBurstLength(mdma_dburst_t burst) volatile
+	{ TCR = (TCR & ~(uint32_t)DEST_BURST_MASK ) | burst; }
 
 	///@brief Sets number of bytes to transfer per burst
 	void SetTransferBytes(uint32_t len) volatile
