@@ -81,5 +81,11 @@ extern "C" uint32_t DisableFaults();
 ///@brief Enable faults via FAULTMASK
 extern "C" uint32_t EnableFaults(uint32_t faultmask);
 
+///@brief Invalidate the instruction cache
+extern "C" void InvalidateInstructionCache();
+
+///@brief Enable the instruction cache
+extern "C" void EnableInstructionCache();
+
 #endif
 

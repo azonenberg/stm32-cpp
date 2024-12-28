@@ -733,6 +733,7 @@ extern volatile gpio_t GPIOJ;
 extern volatile gpio_t GPIOK;
 
 #define I2C_T_VERSION 1
+#define STM32H7
 #include "stm32-i2c.h"
 extern volatile i2c_t I2C5;
 extern volatile i2c_t I2C4;
@@ -792,5 +793,6 @@ extern volatile dmamux_t DMAMUX1;
 #define HAVE_OCTOSPI
 #define HAVE_ITCM
 #define HAVE_FPU
+#define HAVE_L1
 
 #endif
