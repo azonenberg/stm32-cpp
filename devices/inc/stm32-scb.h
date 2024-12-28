@@ -30,6 +30,8 @@
 #ifndef stm32_scb_h
 #define stm32_scb_h
 
+#include "stm32-mpu.h"
+
 typedef struct
 {
 	uint32_t	CPUID;
@@ -58,7 +60,11 @@ typedef struct
 	uint32_t	CCSIDR;
 	uint32_t	CCSELR;
 	uint32_t	CPACR;
-	uint32_t	field_e000ed8c[93];
+	uint32_t	field_e000ed8c;
+	mpu_t		_MPU;
+	uint32_t	field_e000eda4[22];
+	uint32_t	DEMCR;
+	uint32_t	field_e000ee00[64];
 	uint32_t	STIR;
 	uint32_t	field_e000ef04[19];
 	uint32_t	ICIALLU;

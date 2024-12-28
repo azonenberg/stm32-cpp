@@ -348,12 +348,6 @@ SECTIONS
 		. = ALIGN(4096);
 		. += 0xcd00;
 		KEEP (*(.scb))
-		. += 0x4;
-		KEEP (*(.cpuid))
-		. += 0x18;
-		KEEP (*(.mpu))
-		. += 48;
-		KEEP (*(.demcr))
 		. = ALIGN(4096);
 	} > MCU
 

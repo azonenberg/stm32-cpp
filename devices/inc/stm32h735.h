@@ -547,17 +547,6 @@ extern volatile hash_t HASH;
 
 typedef struct
 {
-	uint32_t	CLIDR;
-	uint32_t	CTR;
-	uint32_t	CCSIDR;
-	uint32_t	CCSELR;
-} cpuid_t;
-
-extern volatile cpuid_t CPUID;
-extern volatile uint32_t DEMCR;
-
-typedef struct
-{
 	uint32_t		CR;
 	uint32_t		field_4;
 	uint32_t		DCR1;
@@ -753,9 +742,6 @@ extern volatile spi_t SPI6;
 #define RTC_T_VERSION 1
 #include "stm32-rtc.h"
 extern volatile rtc_t _RTC;
-
-#include "stm32-mpu.h"
-extern volatile mpu_t _MPU;
 
 #define FMC_T_VERSION 1
 #include "stm32-fmc.h"

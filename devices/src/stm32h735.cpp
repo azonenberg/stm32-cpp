@@ -88,11 +88,9 @@ volatile syscfg_t SYSCFG __attribute__((section(".syscfg")));
 
 volatile dbgmcu_t DBGMCU __attribute__((section(".dbgmcu")));
 volatile scb_t SCB __attribute__((section(".scb")));
-volatile cpuid_t CPUID __attribute__((section(".cpuid")));
 volatile itm_t _ITM __attribute__((section(".itm")));
 volatile dwt_t _DWT __attribute__((section(".dwt")));
 volatile tpiu_t _TPIU __attribute__((section(".tpiu")));
-volatile uint32_t DEMCR __attribute__((section(".demcr")));
 
 //volatile tim_t TIM1 __attribute__((section(".tim1")));
 volatile tim_t TIM2 __attribute__((section(".tim2")));
@@ -125,5 +123,3 @@ volatile hash_t HASH __attribute__((section(".chash")));
 volatile dts_t DTS __attribute__((section(".dts")));
 
 volatile fmc_t _FMC __attribute__((section(".fmc")));
-
-volatile mpu_t _MPU __attribute__((section(".mpu")));

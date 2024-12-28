@@ -46,7 +46,7 @@ public:
 	};
 
 	static void Configure(defaultMapMode mapMode, faultMode fmode)
-	{ _MPU.ctrl = 1 | mapMode | fmode; }
+	{ SCB._MPU.ctrl = 1 | mapMode | fmode; }
 
 	enum sizeCode
 	{
@@ -81,9 +81,9 @@ public:
 
 	static void ConfigureRegion(uint8_t region, uint32_t baseAddress, texscb t, aperm ap, nxmode nx, sizeCode sizecode)
 	{
-		_MPU.rnr = region;
-		_MPU.rbar = (baseAddress & 0xFFFFFFE0);
-		_MPU.rasr = (nx << 28) | (ap << 24) | (t << 16) | (sizecode << 1) | 1;
+		SCB._MPU.rnr = region;
+		SCB._MPU.rbar = (baseAddress & 0xFFFFFFE0);
+		SCB._MPU.rasr = (nx << 28) | (ap << 24) | (t << 16) | (sizecode << 1) | 1;
 	}
 };
 

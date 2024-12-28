@@ -51,7 +51,7 @@ public:
 		Unlock();
 
 		//Enable tracing system wide (turns on DWT and ITM)
-		DEMCR |= DEMCR_TRCENA;
+		SCB.DEMCR |= DEMCR_TRCENA;
 
 		#ifdef STM32L431
 		DBGMCU.CR |= DBGMCU_CR_TRACE_IOEN;
