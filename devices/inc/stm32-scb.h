@@ -58,6 +58,33 @@ typedef struct
 	uint32_t	CCSIDR;
 	uint32_t	CSSELR;
 	uint32_t	CPACR;
+	uint32_t	field_e000ed8c;
+	uint32_t	STIR;
+	uint32_t	field_e000ef04[19];
+	uint32_t	ICIALLU;
+	uint32_t	field_e000ef54;
+	uint32_t	ICIMVAU;
+	uint32_t	DCIMVAC;
+	uint32_t	DCISW;
+	uint32_t	DCCMVAU;
+	uint32_t	DCCMVAC;
+	uint32_t	DCCSW;
+	uint32_t	DCCIMVAC;
+	uint32_t	DCCISW;
+	uint32_t	BPIALL;
+	uint32_t	field_e000ef7c;
+	uint32_t	field_e000ef80;
+	uint32_t	field_e000ef84;
+	uint32_t	field_e000ef88;
+	uint32_t	field_e000ef8c;
+	uint32_t	CM7_ITCMCR;
+	uint32_t	CM7_DTCMCR;
+	uint32_t	CM7_AHBPCR;
+	uint32_t	CM7_CACR;
+	uint32_t	CM7_AHBSCR;
+	uint32_t	field_e000efa4;
+	uint32_t	CM7_ABFSR;
+
 	//more after this
 #endif
 } scb_t;
