@@ -31,17 +31,23 @@
 
 void CleanDataCache(void* baseAddr, size_t size)
 {
+	asm("dmb st");
+
 	//Select L1 data cache
 	SCB.CCSELR = 0;
 
+	//Figure out cache line size
+	//For now, hard code as 32 bytes for Cortex-M7
+	const uint32_t cacheLineSize = 32;
+
 	//Figure out how big the region being invalidated is
 	uint32_t addr = reinterpret_cast<uint32_t>(baseAddr);
-	uint32_t sizeWords = (size | 3) / 4;
+	uint32_t addrEnd = addr + size;
 
 	//Clean to point of coherence
 	//TODO: is this correct
-	for(size_t i=0; i<sizeWords; i++)
-		SCB.DCCMVAC = (addr + i*4);
+	for(; addr <= addrEnd; addr += cacheLineSize)
+		SCB.DCCMVAC = addr;
 
 	asm("dsb");
 	asm("isb");

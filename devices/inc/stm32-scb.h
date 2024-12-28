@@ -58,7 +58,7 @@ typedef struct
 	uint32_t	CCSIDR;
 	uint32_t	CCSELR;
 	uint32_t	CPACR;
-	uint32_t	field_e000ed8c;
+	uint32_t	field_e000ed8c[93];
 	uint32_t	STIR;
 	uint32_t	field_e000ef04[19];
 	uint32_t	ICIALLU;
