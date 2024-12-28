@@ -27,66 +27,22 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef stm32_scb_h
-#define stm32_scb_h
+#include "stm32.h"
 
-typedef struct
+void CleanDataCache(void* baseAddr, size_t size)
 {
-	uint32_t	CPUID;
-	uint32_t	ICSR;
-	uint32_t	VTOR;
-	uint32_t	AIRCR;
-	uint32_t	SCR;
-	uint32_t	CCR;
-	uint8_t		SHP[12];
-	uint32_t	SHCR;
-	uint32_t	CFSR;
-	uint32_t	HFSR;
-	uint32_t	DFSR;
-	uint32_t	MMFAR;
-	uint32_t	BFAR;
-	uint32_t	AFSR;
-	uint32_t	PFR[2];
-	uint32_t	DFR;
-	uint32_t	ADR;
-	uint32_t	MMFR[4];
-	uint32_t	ISAR[5];
-	uint32_t	field_e000ed74;
-#if SCB_T_VERSION == 2
-	uint32_t	CLIDR;
-	uint32_t	CTR;
-	uint32_t	CCSIDR;
-	uint32_t	CCSELR;
-	uint32_t	CPACR;
-	uint32_t	field_e000ed8c;
-	uint32_t	STIR;
-	uint32_t	field_e000ef04[19];
-	uint32_t	ICIALLU;
-	uint32_t	field_e000ef54;
-	uint32_t	ICIMVAU;
-	uint32_t	DCIMVAC;
-	uint32_t	DCISW;
-	uint32_t	DCCMVAU;
-	uint32_t	DCCMVAC;
-	uint32_t	DCCSW;
-	uint32_t	DCCIMVAC;
-	uint32_t	DCCISW;
-	uint32_t	BPIALL;
-	uint32_t	field_e000ef7c;
-	uint32_t	field_e000ef80;
-	uint32_t	field_e000ef84;
-	uint32_t	field_e000ef88;
-	uint32_t	field_e000ef8c;
-	uint32_t	CM7_ITCMCR;
-	uint32_t	CM7_DTCMCR;
-	uint32_t	CM7_AHBPCR;
-	uint32_t	CM7_CACR;
-	uint32_t	CM7_AHBSCR;
-	uint32_t	field_e000efa4;
-	uint32_t	CM7_ABFSR;
+	//Select L1 data cache
+	SCB.CCSELR = 0;
 
-	//more after this
-#endif
-} scb_t;
+	//Figure out how big the region being invalidated is
+	uint32_t addr = reinterpret_cast<uint32_t>(baseAddr);
+	uint32_t sizeWords = (size | 3) / 4;
 
-#endif	//include guard
+	//Clean to point of coherence
+	//TODO: is this correct
+	for(size_t i=0; i<sizeWords; i++)
+		SCB.DCCMVAC = (addr + i*4);
+
+	asm("dsb");
+	asm("isb");
+}

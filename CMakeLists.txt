@@ -4,6 +4,7 @@
 add_library(stm32-cpp STATIC
 	src/cpu/cpu.S
 	src/cpu/cache.S
+	src/cpu/CacheMaintenance.cpp
 	src/cpu/Faults.cpp
 	src/cpu/NVIC.cpp
 

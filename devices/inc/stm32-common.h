@@ -31,6 +31,7 @@
 #define stm32_common_h
 
 #include <stdint.h>
+#include <cstddef>
 
 /**
 	@brief Disables interrupts without saving the previous enable state
@@ -86,6 +87,15 @@ extern "C" void InvalidateInstructionCache();
 
 ///@brief Enable the instruction cache
 extern "C" void EnableInstructionCache();
+
+///@brief Invalidate the data cache
+extern "C" void InvalidateDataCache();
+
+///@brief Enable the data cache
+extern "C" void EnableDataCache();
+
+///@brief Invalidate one section of the cache
+void CleanDataCache(void* baseAddr, size_t size);
 
 #endif
 
