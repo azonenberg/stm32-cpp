@@ -24,6 +24,20 @@ InvalidateInstructionCache:
 
 	bx		lr
 
+.globl DisableInstructionCache
+.type DisableInstructionCache, %function
+DisableInstructionCache:
+	ldr		r11, =CCR
+	ldr		r0, [r11]
+	ldr		r1, =CCR_IC
+	mvns	r1, r1
+	and		r0, r0, r1
+	str		r0, [r11]
+
+	dsb
+	isb
+	bx		lr
+
 .globl EnableInstructionCache
 .type EnableInstructionCache, %function
 EnableInstructionCache:
@@ -31,6 +45,20 @@ EnableInstructionCache:
 	ldr		r0, [r11]
 	ldr		r1, =CCR_IC
 	orr		r0, r0, r1
+	str		r0, [r11]
+
+	dsb
+	isb
+	bx		lr
+
+.globl DisableDataCache
+.type DisableDataCache, %function
+DisableDataCache:
+	ldr		r11, =CCR
+	ldr		r0, [r11]
+	ldr		r1, =CCR_DC
+	mvns	r1, r1
+	and		r0, r0, r1
 	str		r0, [r11]
 
 	dsb
