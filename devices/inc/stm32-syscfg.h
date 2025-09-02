@@ -27,68 +27,64 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef rtc_h
-#define rtc_h
+#ifndef stm32_syscfg_h
+#define stm32_syscfg_h
 
-#ifdef HAVE_RTC
+#define HAVE_SYSCFG
 
-#include <peripheral/RCC.h>
-#include <time.h>
+//STM32H735, STM32H750
+#if SYSCFG_T_VERSION == 1
 
-/**
-	@brief The realtime clock (and backup SRAM)
+#define HAVE_PKG
 
-	RTC has pclk for APB and ker_clk, where does ker_clk come from? have to check RCC
-	can clock from LSE, divided HSE, LSI
- */
-class RTC
+typedef struct
 {
-public:
+	uint32_t field_0;
+	uint32_t PMCR;
+	uint32_t EXTICR1;
+	uint32_t EXTICR2;
+	uint32_t EXTICR3;
+	uint32_t EXTICR4;
+	uint32_t CFGR;
+	uint32_t field_1c;
+	uint32_t CCCSR;
+	uint32_t CCVR;
+	uint32_t CCCR;
+	uint32_t field_2c;
+	uint32_t ADC2ALT;			//reserved / not present in H750
+	uint32_t field_34[60];
+	uint32_t PKGR;
+	uint32_t field_128[118];
+	uint32_t UR0;
+	uint32_t field_304;
+	uint32_t UR2;
+	uint32_t UR3;
+	uint32_t UR4;
+	uint32_t UR5;
+	uint32_t UR6;
+	uint32_t UR7;
+	uint32_t UR8;				//reserved / not present in H735
+	uint32_t UR9;				//reserved / not present in H735
+	uint32_t UR10;				//reserved / not present in H735
+	uint32_t UR11;
+	uint32_t UR12;
+	uint32_t UR13;
+	uint32_t UR14;
+	uint32_t UR15;
+	uint32_t UR16;
+	uint32_t UR17;
+} syscfg_t;
 
-	#if (RTC_T_VERSION == 1) || (RTC_T_VERSION == 2)
-
-	#if defined(STM32H735)
-		/**
-			@brief Set up kernel clock in the RCC to use divided HSE
-
-			@param prediv	Pre-divider value for kernel clock. Must be between 2 and 63, and Fhse / prediv must be <1 MHz
-		 */
-		static void SetClockFromHSE(uint8_t prediv)
-		{
-			//Set RTCPRE in RCC_CFGR to configure the divider
-			RCC.CFGR = (RCC.CFGR & ~0x3f00) | (prediv << 8);
-
-			//Set DBP in PWR_CR1 to 1 to enable change
-			PWR.CR1 |= 0x100;
-
-			//Dummy read of CR1 (per RM0468 page 284) to confirm write has taken effect
-			[[maybe_unused]]
-			volatile int unused = PWR.CR1;
-
-			//Set RTCSEL in RCC_BDCR to configure the RTC clock to come from the HSE, then enable rtc_ck
-			RCC.BDCR = (RCC.BDCR & ~0x300) | 0x8300;
-		}
-	#endif
-
-	static void SetPrescaleAndTime(uint16_t predivA, uint16_t predivS, const tm& now, uint16_t frac);
-
-	static void GetTime(tm& now, uint16_t& frac);
-
-	static void Unlock()
-	{
-		_RTC.WPR = 0xca;
-		_RTC.WPR = 0x53;
-	}
-
-	static void Lock()
-	{ _RTC.WPR = 0x00; }
-
-	#endif
-
-	volatile uint8_t* GetBackupMemory()
-	{ return reinterpret_cast<volatile uint8_t*>(&_RTC.BKP[0]); }
+enum syscfg_pmcr
+{
+	ETH_MODE_RMII	= 0x00800000
 };
 
-#endif
 
-#endif
+#else
+
+#error Undefined or unspecified SYSCFG_T_VERSION
+
+#endif	//version check
+
+#endif	//include guard

@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2020-2024 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2025 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -31,7 +31,7 @@
 #include "Flash.h"
 #include <string.h>
 
-#ifdef STM32H735
+#if defined(STM32H735) || defined(STM32H750)
 uint32_t Flash::m_maxPsize = FLASH_CR_PSIZE_X8;
 #endif
 
@@ -120,65 +120,188 @@ void Flash::SetConfiguration(int hclkFreqMHz, VoltageRange range)
 #ifdef STM32H7
 
 /**
-	@brief Configures the flash cache, latency, and  prefetching for the specified operating frequency/voltage range
+	@brief Configures the flash cache, latency, and prefetching for the specified operating frequency/voltage range
  */
 void Flash::SetConfiguration(int axiClockFreqMHz, VoltageRange range)
 {
-	//Calculate the number of wait states to use
-	//Based on table 16 of RM0468, section 4.3.8
-	unsigned int waitStates = 0;
-	switch(range)
-	{
-		case RANGE_VOS0:
-			if(axiClockFreqMHz <= 70)
-				waitStates = 0;
-			else if(axiClockFreqMHz <= 140)
-				waitStates = 1;
-			else if(axiClockFreqMHz <= 210)
-				waitStates = 2;
-			else //if(axiClockFreqMHz <= 275)
-				waitStates = 3;
-			break;
+	#ifdef STM32H735
+		//Calculate the number of wait states to use
+		//Based on table 16 of RM0468, section 4.3.8
+		unsigned int waitStates = 0;
+		switch(range)
+		{
+			case RANGE_VOS0:
+				if(axiClockFreqMHz <= 70)
+					waitStates = 0;
+				else if(axiClockFreqMHz <= 140)
+					waitStates = 1;
+				else if(axiClockFreqMHz <= 210)
+					waitStates = 2;
+				else //if(axiClockFreqMHz <= 275)
+					waitStates = 3;
+				break;
 
-		case RANGE_VOS1:
-			if(axiClockFreqMHz <= 67)
-				waitStates = 0;
-			else if(axiClockFreqMHz <= 133)
-				waitStates = 1;
-			else// if(axiClockFreqMHz <= 200)
-				waitStates = 2;
-			break;
+			case RANGE_VOS1:
+				if(axiClockFreqMHz <= 67)
+					waitStates = 0;
+				else if(axiClockFreqMHz <= 133)
+					waitStates = 1;
+				else// if(axiClockFreqMHz <= 200)
+					waitStates = 2;
+				break;
 
-		case RANGE_VOS2:
-			if(axiClockFreqMHz <= 50)
-				waitStates = 0;
-			else if(axiClockFreqMHz <= 100)
-				waitStates = 1;
-			else// if(axiClockFreqMHz <= 150)
-				waitStates = 2;
-			break;
+			case RANGE_VOS2:
+				if(axiClockFreqMHz <= 50)
+					waitStates = 0;
+				else if(axiClockFreqMHz <= 100)
+					waitStates = 1;
+				else// if(axiClockFreqMHz <= 150)
+					waitStates = 2;
+				break;
 
-		case RANGE_VOS3:
-		default:
-			if(axiClockFreqMHz <= 35)
-				waitStates = 0;
-			else if(axiClockFreqMHz <= 70)
-				waitStates = 1;
-			else// if(axiClockFreqMHz <= 85)
-				waitStates = 2;
-			break;
-	}
+			case RANGE_VOS3:
+			default:
+				if(axiClockFreqMHz <= 35)
+					waitStates = 0;
+				else if(axiClockFreqMHz <= 70)
+					waitStates = 1;
+				else// if(axiClockFreqMHz <= 85)
+					waitStates = 2;
+				break;
+		}
 
-	//Configure the access control register
-	//Wait states and programming delay are the same
-	FLASH.ACR = waitStates | (waitStates << 4);
+		//Configure the access control register
+		//Wait states and programming delay are the same
+		FLASH.ACR = waitStates | (waitStates << 4);
 
-	//Read back to verify write took effect
-	while( (FLASH.ACR & 0xf) != waitStates)
-	{}
+		//Read back to verify write took effect
+		while( (FLASH.ACR & 0xf) != waitStates)
+		{}
 
-	//No hardware limits on PSIZE in STM32H7
-	m_maxPsize = FLASH_CR_PSIZE_X64;
+		//No hardware limits on PSIZE in STM32H7
+		m_maxPsize = FLASH_CR_PSIZE_X64;
+
+	#elif defined(STM32H750)
+
+		//Calculate the number of wait states to use
+		//Based on table 17 of RM0433, section 4.3.8
+		//page 160
+		unsigned int waitStates = 0;
+		unsigned int wrHighFreq = 0;
+		switch(range)
+		{
+			case RANGE_VOS0:
+				if(axiClockFreqMHz <= 70)
+					waitStates = 0;
+				else if(axiClockFreqMHz <= 140)
+				{
+					waitStates = 1;
+					wrHighFreq = 1;
+				}
+				else if(axiClockFreqMHz <= 210)
+				{
+					waitStates = 2;
+					wrHighFreq = 2;
+				}
+				else if(axiClockFreqMHz < 225)
+				{
+					waitStates = 3;
+					wrHighFreq = 2;
+				}
+				else //if(axiClockFreqMHz <= 240)
+				{
+					waitStates = 4;
+					wrHighFreq = 2;
+				}
+				break;
+
+			case RANGE_VOS1:
+				if(axiClockFreqMHz <= 70)
+					waitStates = 0;
+				else if(axiClockFreqMHz <= 140)
+				{
+					waitStates = 1;
+					wrHighFreq = 1;
+				}
+				else if(axiClockFreqMHz <= 210)
+				{
+					waitStates = 2;
+					wrHighFreq = 2;
+				}
+				else// if(axiClockFreqMHz <= 225)
+				{
+					waitStates = 3;
+					wrHighFreq = 2;
+				}
+				break;
+
+			case RANGE_VOS2:
+				if(axiClockFreqMHz <= 55)
+					waitStates = 0;
+				else if(axiClockFreqMHz <= 110)
+				{
+					waitStates = 1;
+					wrHighFreq = 1;
+				}
+				else if(axiClockFreqMHz <= 165)
+				{
+					waitStates = 2;
+					wrHighFreq = 1;
+				}
+				else if(axiClockFreqMHz < 225)
+				{
+					waitStates = 3;
+					wrHighFreq = 2;
+				}
+				else// if(axiClockFreqMHz == 225)
+				{
+					waitStates = 4;
+					wrHighFreq = 2;
+				}
+				break;
+
+			case RANGE_VOS3:
+			default:
+				if(axiClockFreqMHz <= 45)
+					waitStates = 0;
+				else if(axiClockFreqMHz <= 90)
+				{
+					waitStates = 1;
+					wrHighFreq = 1;
+				}
+				else if(axiClockFreqMHz <= 135)
+				{
+					waitStates = 2;
+					wrHighFreq = 1;
+				}
+				else if(axiClockFreqMHz <= 180)
+				{
+					waitStates = 3;
+					wrHighFreq = 2;
+				}
+				else// if(axiClockFreqMHz <= 225)
+				{
+					waitStates = 4;
+					wrHighFreq = 2;
+				}
+				break;
+		}
+
+		//Configure the access control register
+		FLASH.ACR = waitStates | (wrHighFreq << 4);
+
+		//Read back to verify write took effect
+		while( (FLASH.ACR & 0xf) != waitStates)
+		{}
+
+		//No hardware limits on PSIZE in STM32H7
+		m_maxPsize = FLASH_CR_PSIZE_X64;
+
+	#else
+
+		#error unimplemented
+
+	#endif
 }
 
 #endif
@@ -408,9 +531,18 @@ bool Flash::BlockErase(uint8_t* address)
 		{}
 	#endif
 
-	//Block until flash is free
-	while(FLASH.SR & FLASH_SR_BUSY)
-	{}
+	//H7 dual bank flash?
+	#if FLASH_T_VERSION == 4
+
+		//TODO: support second flash bank
+		while(FLASH.SR1 & FLASH_SR_BUSY)
+		{}
+
+	#else
+		//Block until flash is free
+		while(FLASH.SR & FLASH_SR_BUSY)
+		{}
+	#endif
 
 	//Clear any errors we had going in
 	#if defined(STM32L431) || defined(STM32L031)
@@ -460,6 +592,18 @@ bool Flash::BlockErase(uint8_t* address)
 		if(FLASH.SR & FLASH_SR_EOP)
 			FLASH.SR = FLASH_SR_EOP;
 
+	#elif FLASH_T_VERSION == 4
+
+		//TODO: support second flash bank
+
+		//Do the erase
+		FLASH.CR1 |= FLASH_CR_STRT;
+
+		//Block until flash is free
+		asm("dmb st");
+		while(FLASH.SR1 & FLASH_SR_BUSY)
+		{}
+
 	#else
 		//Do the erase
 		FLASH.CR |= FLASH_CR_STRT;
@@ -483,8 +627,14 @@ bool Flash::BlockErase(uint8_t* address)
 	Lock();
 
 	//Check for errors
-	if(FLASH.SR & FLASH_SR_ERR_MASK)
-		return false;
+	#if FLASH_T_VERSION == 4
+		//TODO: support second flash bank
+		if(FLASH.SR1 & FLASH_SR_ERR_MASK)
+			return false;
+	#else
+		if(FLASH.SR & FLASH_SR_ERR_MASK)
+			return false;
+	#endif
 
 	return true;
 }
@@ -492,8 +642,14 @@ bool Flash::BlockErase(uint8_t* address)
 bool Flash::Write(uint8_t* address, const uint8_t* data, uint32_t len)
 {
 	//Block until flash is free
-	while(FLASH.SR & FLASH_SR_BUSY)
-	{}
+	#if FLASH_T_VERSION == 4
+		//TODO: support second flash bank
+		while(FLASH.SR1 & FLASH_SR_BUSY)
+		{}
+	#else
+		while(FLASH.SR & FLASH_SR_BUSY)
+		{}
+	#endif
 
 	//Enable writing
 	Unlock();
@@ -629,6 +785,12 @@ bool Flash::Write(uint8_t* address, const uint8_t* data, uint32_t len)
 			}
 		}
 
+	#elif defined(STM32H750)
+
+		//unimplemented
+		while(1)
+		{}
+
 	#else
 
 		//Set PSIZE to byte regardless of our maximum
@@ -664,6 +826,9 @@ bool Flash::Write(uint8_t* address, const uint8_t* data, uint32_t len)
 	//Re-lock the control register and exit program mode
 	#ifdef STM32L031
 		//no special bit to clear
+	#elif FLASH_T_VERSION == 4
+		//TODO: second flash bank support
+		FLASH.CR1 &= ~FLASH_CR_PG;
 	#else
 		FLASH.CR &= ~FLASH_CR_PG;
 	#endif

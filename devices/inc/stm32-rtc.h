@@ -60,6 +60,7 @@ typedef struct
 	uint32_t BKP[32];
 } rtc_t;
 
+//STM32L431, STM32H750
 #elif RTC_T_VERSION == 2
 
 typedef struct

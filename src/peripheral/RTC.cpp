@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2020-2024 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2025 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -30,7 +30,7 @@
 #include <stm32.h>
 #include "RTC.h"
 
-#ifdef STM32H735
+#if (RTC_T_VERSION == 1) || (RTC_T_VERSION == 2)
 
 /**
 	@brief Sets additional prescalers

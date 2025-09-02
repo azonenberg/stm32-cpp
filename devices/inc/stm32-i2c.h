@@ -32,7 +32,7 @@
 
 #define HAVE_I2C
 
-//STM32L431
+//STM32L431, H735, H750
 #if I2C_T_VERSION == 1
 
 enum i2c_cr2_bits

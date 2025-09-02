@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2020-2024 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2025 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -227,7 +227,7 @@ void SPIBase::BlockingWriteDevice(const uint8_t* data, uint32_t len)
  */
 void SPIBase::NonblockingWriteDevice(uint8_t data)
 {
-	#ifdef STM32H735
+	#if SPI_T_VERSION == 2
 		m_lane->TXDR = data;
 	#else
 		m_lane->DR = data;
@@ -238,7 +238,7 @@ void SPIBase::BlockingWrite(uint8_t data)
 {
 	m_lastWasWrite = true;
 
-	#ifdef STM32H735
+	#if SPI_T_VERSION == 2
 
 		//TODO: half duplex support
 
@@ -290,7 +290,7 @@ uint8_t SPIBase::BlockingRead()
 
 	m_lastWasWrite = false;
 
-	#ifdef STM32H735
+	#if SPI_T_VERSION == 2
 
 		//TODO: half duplex support
 
@@ -325,7 +325,7 @@ uint8_t SPIBase::BlockingRead()
 
 uint8_t SPIBase::BlockingReadDevice()
 {
-	#ifdef STM32H735
+	#if SPI_T_VERSION == 2
 
 		//Wait for lane to be ready
 		while( (m_lane->SR & SPI_RX_NOT_EMPTY) == 0)
@@ -350,7 +350,7 @@ uint8_t SPIBase::BlockingReadDevice()
  */
 void SPIBase::WaitForWrites()
 {
-	#ifdef STM32H735
+	#if SPI_T_VERSION == 2
 
 		//Wait for busy flag to clear
 		while( (m_lane->SR & SPI_TX_EMPTY) == 0)
@@ -379,7 +379,7 @@ void SPIBase::DiscardRxData()
 
 	volatile int unused;
 
-	#ifdef STM32H735
+	#if SPI_T_VERSION == 2
 
 		//Wait for busy flag to clear
 		while(m_lane->SR & SPI_RX_NOT_EMPTY)
@@ -398,7 +398,7 @@ void SPIBase::DiscardRxData()
  */
 void SPIBase::SetClockInvert(bool invert)
 {
-	#ifdef STM32H735
+	#if SPI_T_VERSION == 2
 
 		//Disable the peripheral
 		m_lane->CR1 &= ~SPI_ENABLE;

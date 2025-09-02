@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2020-2024 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2025 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -184,6 +184,92 @@ enum flash_sr
 	FLASH_SR_EOP			= 0x2,
 	FLASH_SR_BUSY			= 0x1
 };
+
+//STM32H750
+#elif FLASH_T_VERSION == 4
+
+typedef struct
+{
+	uint32_t ACR;
+	uint32_t KEYR1;
+	uint32_t OPTKEYR;
+	uint32_t CR1;
+	uint32_t SR1;
+	uint32_t CCR1;
+	uint32_t OPTCR;
+	uint32_t OPTSR_CUR;
+	uint32_t OPTSR_PRG;
+	uint32_t OPTCCR;
+	uint32_t PRAR_CUR1;
+	uint32_t PRAR_PRG1;
+	uint32_t SCAR_CUR1;
+	uint32_t SCAR_PRG1;
+	uint32_t WPSN_CUR1R;
+	uint32_t WPSN_PRG1R;
+	uint32_t BOOT_CURR;
+	uint32_t BOOT_PRGR;
+	uint32_t padding1[2];
+	uint32_t CRCCR1;
+	uint32_t CRCSADD1R;
+	uint32_t CRCEADD1R;
+	uint32_t CRCDATAR;
+	uint32_t ECC_FA1R;
+	uint32_t field_64[39];
+
+	uint32_t ACR2;		//todo: same but remapped? or different
+	uint32_t KEYR2;
+	uint32_t OPTKEYR2;	//todo: same but remapped? or different
+	uint32_t CR2;
+	uint32_t SR2;
+	uint32_t CCR2;
+	uint32_t OPTCR2;	//todo: same but remapped? or different
+	uint32_t OPTSR_CUR2;//todo: same but remapped? or different
+	uint32_t OPTSR_PRG2;//todo: same but remapped? or different
+	uint32_t OPTCCR2;	//todo: same but remapped? or different
+	uint32_t PRAR_CUR2;
+	uint32_t PRAR_PRG2;
+	uint32_t SCAR_CUR2;
+	uint32_t SCAR_PRG2;
+	uint32_t WPSN_CUR2R;
+	uint32_t WPSN_PRG2R;
+	uint32_t BOOT_CURR2;//todo: same but remapped? or different
+	uint32_t BOOT_PRGR2;//todo: same but remapped? or different
+	uint32_t padding2[2];
+	uint32_t CRCCR2;
+	uint32_t CRCSADD2R;
+	uint32_t CRCEADD2R;
+	uint32_t CRCDATAR2;	//todo: same but remapped? or different
+	uint32_t ECC_FA2R;
+} flash_t;
+
+enum flash_cr
+{
+	FLASH_CR_LOCK			= 0x1,
+	FLASH_CR_STRT			= 0x80,
+
+	FLASH_CR_PSIZE_MASK		= 0x30,
+	FLASH_CR_PSIZE_X8		= 0x00,
+	FLASH_CR_PSIZE_X16		= 0x10,
+	FLASH_CR_PSIZE_X32		= 0x20,
+	FLASH_CR_PSIZE_X64		= 0x30,
+
+	FLASH_CR_SECTOR_MASK	= 0x700,
+
+	FLASH_CR_FW				= 0x40,
+	FLASH_CR_SER			= 0x4,
+	FLASH_CR_PG				= 0x2
+};
+
+enum flash_sr
+{
+	FLASH_SR_BUSY			= 0x1,
+
+	FLASH_SR_DBECCERR1		= 0x04000000,
+
+	FLASH_SR_ERR_MASK		= 0x7EE0400
+};
+
+#define HAVE_FLASH_ECC
 
 #else
 

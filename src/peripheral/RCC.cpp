@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2020-2024 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2025 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -48,7 +48,7 @@ void RCCHelper::Enable(volatile dma_t* dma)
 #ifdef HAVE_MDMA
 void RCCHelper::Enable([[maybe_unused]] volatile mdma_t* mdma)
 {
-	#if defined(STM32H735)
+	#if defined(STM32H735) || defined(STM32H750)
 		RCC.AHB3ENR |= RCC_AHB3_MDMA;
 	#else
 		#error Dont know what to do with MDMA on this part
@@ -85,7 +85,7 @@ void RCCHelper::Enable([[maybe_unused]] volatile crc_t* crc)
 		RCC.AHB1ENR |= RCC_AHB1_CRC;
 	#elif defined(STM32L031)
 		RCC.AHBENR |= RCC_AHB_CRC;
-	#elif defined(STM32H735)
+	#elif defined(STM32H735) || defined(STM32H750)
 		RCC.AHB4ENR |= RCC_AHB4_CRC;
 	#else
 		#error Dont know what to do with CRC on this part
@@ -96,7 +96,7 @@ void RCCHelper::Enable([[maybe_unused]] volatile crc_t* crc)
 #ifdef HAVE_RTC
 void RCCHelper::Enable([[maybe_unused]] volatile rtc_t* rtc)
 {
-	#if defined(STM32H735)
+	#if defined(STM32H735) || defined(STM32H750)
 		RCC.APB4ENR |= RCC_APB4_RTC;
 	#elif defined(STM32L431)
 		RCC.APB1ENR1 |= RCC_APB1_1_RTC;
@@ -181,6 +181,13 @@ void RCCHelper::Enable(volatile gpio_t* gpio)
 			RCC.AHB4ENR |= RCC_AHB4_GPIOG;
 		else if(gpio == &GPIOH)
 			RCC.AHB4ENR |= RCC_AHB4_GPIOH;
+
+		//bank I is not present on H735 and some other parts
+		#if defined(STM32H750)
+		else if(gpio == &GPIOI)
+			RCC.AHB4ENR |= RCC_AHB4_GPIOI;
+		#endif
+
 		else if(gpio == &GPIOJ)
 			RCC.AHB4ENR |= RCC_AHB4_GPIOJ;
 		else if(gpio == &GPIOK)
@@ -259,6 +266,17 @@ void RCCHelper::Enable(volatile usart_t* uart)
 		else if(uart == &UART5)
 			RCC.APB1LENR |= RCC_APB1L_UART5;
 
+	#elif defined(STM32H750)
+
+		if(uart == &USART2)
+			RCC.APB1LENR |= RCC_APB1L_USART2;
+		else if(uart == &USART3)
+			RCC.APB1LENR |= RCC_APB1L_USART3;
+		else if(uart == &UART4)
+			RCC.APB1LENR |= RCC_APB1L_UART4;
+		else if(uart == &UART5)
+			RCC.APB1LENR |= RCC_APB1L_UART5;
+
 	#elif defined(STM32F777)
 
 		if(uart == &USART1)
@@ -310,7 +328,7 @@ void RCCHelper::Enable(volatile spi_t* spi)
 		else if(spi == &SPI3)
 			RCC.APB1ENR1 |= RCC_APB1_1_SPI3;
 
-	#elif defined(STM32H735)
+	#elif defined(STM32H735) || defined(STM32H750)
 
 		if(spi == &SPI1)
 			RCC.APB2ENR |= RCC_APB2_SPI1;
@@ -407,7 +425,7 @@ void RCCHelper::Enable(volatile rng_t* /*ignored*/)
 {
 	#if defined(STM32F777)
 		RCC.AHB2ENR |= RCC_AHB2_RNG;
-	#elif defined(STM32H735)
+	#elif defined(STM32H735) || defined(STM32H750)
 		RCC.AHB2ENR |= RCC_AHB2_RNG;
 	#elif defined(STM32L431)
 		RCC.AHB2ENR |= RCC_AHB2_RNG;
@@ -425,7 +443,7 @@ void RCCHelper::Enable(volatile hash_t* /*ignored*/)
 {
 	#if defined(STM32F777)
 		RCC.AHB2ENR |= RCC_AHB2_HASH;
-	#elif defined(STM32H735)
+	#elif defined(STM32H735) || defined(STM32H750)
 		RCC.AHB2ENR |= RCC_AHB2_HASH;
 	#else
 	#error Unknown hash configuration (unsupported part)
@@ -441,7 +459,7 @@ void RCCHelper::Enable(volatile cryp_t* /*ignored*/)
 {
 	#if defined(STM32F777)
 		RCC.AHB2ENR |= RCC_AHB2_CRYP;
-	#elif defined(STM32H735)
+	#elif defined(STM32H735) || defined(STM32H750)
 		RCC.AHB2ENR |= RCC_AHB2_CRYP;
 	#else
 	#error Unknown crypto configuration (unsupported part)
@@ -474,7 +492,7 @@ void RCCHelper::Enable(volatile i2c_t* i2c)
 		else if(i2c == &I2C3)
 			RCC.APB1ENR1 |= RCC_APB1_1_I2C3;
 
-	#elif defined(STM32H735)
+	#elif defined(STM32H735) || defined(STM32H750)
 
 		if(i2c == &I2C1)
 			RCC.APB1LENR |= RCC_APB1L_I2C1;
@@ -484,8 +502,12 @@ void RCCHelper::Enable(volatile i2c_t* i2c)
 			RCC.APB1LENR |= RCC_APB1L_I2C3;
 		else if(i2c == &I2C4)
 			RCC.APB4ENR |= RCC_APB4_I2C4;
+
+		//not in H750
+		#ifdef STM32H735
 		else if(i2c == &I2C5)
 			RCC.APB1LENR |= RCC_APB1L_I2C5;
+		#endif
 
 	#else
 		#error Unknown I2C configuration (unsupported part)
@@ -565,7 +587,7 @@ void RCCHelper::Enable(volatile tim_t* tim)
 		else if(tim == &TIM16)
 			RCC.APB2ENR |= RCC_APB2_TIM16;
 
-	#elif defined(STM32H735)
+	#elif defined(STM32H735) || defined(STM32H750)
 
 		if(tim == &TIM2)
 			RCC.APB1LENR |= RCC_APB1L_TIM2;
@@ -1633,7 +1655,7 @@ uint8_t RCCHelper::GetDivider16Code(uint8_t div)
 #if defined(STM32L0) || defined(STM32L4) || defined(STM32H7)
 void RCCHelper::EnableSyscfg()
 {
-	#if defined(STM32H735)
+	#if defined(STM32H735) || defined(STM32H750)
 		RCC.APB4ENR |= RCC_APB4_SYSCFG;
 	#elif defined(STM32L431)
 		RCC.APB2ENR |= RCC_APB2_SYSCFG;
@@ -1646,6 +1668,14 @@ void RCCHelper::EnableSyscfg()
 #endif
 
 #ifdef STM32H7
+
+#ifdef STM32H750
+void RCCHelper::EnableSram3()
+{
+	RCC.AHB2ENR |= RCC_AHB2_SRAM3;
+}
+#endif
+
 void RCCHelper::EnableSram2()
 {
 	RCC.AHB2ENR |= RCC_AHB2_SRAM2;

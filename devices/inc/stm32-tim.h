@@ -27,68 +27,49 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef rtc_h
-#define rtc_h
+#ifndef stm32_tim_h
+#define stm32_tim_h
 
-#ifdef HAVE_RTC
+#define HAVE_TIM
 
-#include <peripheral/RCC.h>
-#include <time.h>
+//STM32H735
+#if TIM_T_VERSION == 1
 
-/**
-	@brief The realtime clock (and backup SRAM)
-
-	RTC has pclk for APB and ker_clk, where does ker_clk come from? have to check RCC
-	can clock from LSE, divided HSE, LSI
- */
-class RTC
+typedef struct
 {
-public:
+	uint32_t	CR1;
+	uint32_t	CR2;
+	uint32_t	SMCR;
+	uint32_t	DIER;
+	uint32_t	SR;
+	uint32_t	EGR;
+	uint32_t	CCMR1;
+	uint32_t	CCMR2;
+	uint32_t	CCER;
+	uint32_t	CNT;
+	uint32_t	PSC;
+	uint32_t	ARR;
+	uint32_t	RCR;
+	uint32_t	CCR1;
+	uint32_t	CCR2;
+	uint32_t	CCR3;
+	uint32_t	CCR4;
+	uint32_t	BDTR;
+	uint32_t	DCR;
+	uint32_t	DMAR;
+	uint32_t	field_50;
+	uint32_t	CCMR3;
+	uint32_t	CCR5;
+	uint32_t	CCR6;
+	uint32_t	AF1;
+	uint32_t	AF2;
+	uint32_t	TISEL;
+} tim_t;
 
-	#if (RTC_T_VERSION == 1) || (RTC_T_VERSION == 2)
+#else
 
-	#if defined(STM32H735)
-		/**
-			@brief Set up kernel clock in the RCC to use divided HSE
+#error Undefined or unspecified TIM_T_VERSION
 
-			@param prediv	Pre-divider value for kernel clock. Must be between 2 and 63, and Fhse / prediv must be <1 MHz
-		 */
-		static void SetClockFromHSE(uint8_t prediv)
-		{
-			//Set RTCPRE in RCC_CFGR to configure the divider
-			RCC.CFGR = (RCC.CFGR & ~0x3f00) | (prediv << 8);
+#endif	//version check
 
-			//Set DBP in PWR_CR1 to 1 to enable change
-			PWR.CR1 |= 0x100;
-
-			//Dummy read of CR1 (per RM0468 page 284) to confirm write has taken effect
-			[[maybe_unused]]
-			volatile int unused = PWR.CR1;
-
-			//Set RTCSEL in RCC_BDCR to configure the RTC clock to come from the HSE, then enable rtc_ck
-			RCC.BDCR = (RCC.BDCR & ~0x300) | 0x8300;
-		}
-	#endif
-
-	static void SetPrescaleAndTime(uint16_t predivA, uint16_t predivS, const tm& now, uint16_t frac);
-
-	static void GetTime(tm& now, uint16_t& frac);
-
-	static void Unlock()
-	{
-		_RTC.WPR = 0xca;
-		_RTC.WPR = 0x53;
-	}
-
-	static void Lock()
-	{ _RTC.WPR = 0x00; }
-
-	#endif
-
-	volatile uint8_t* GetBackupMemory()
-	{ return reinterpret_cast<volatile uint8_t*>(&_RTC.BKP[0]); }
-};
-
-#endif
-
-#endif
+#endif	//include guard

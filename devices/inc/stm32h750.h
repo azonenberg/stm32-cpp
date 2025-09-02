@@ -27,11 +27,12 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef stm32h735_h
-#define stm32h735_h
+#ifndef stm32h750_h
+#define stm32h750_h
 
 #include <stdint.h>
 
+/*
 typedef struct
 {
 	uint32_t CR1;
@@ -46,15 +47,15 @@ typedef struct
 	uint32_t WKUPEPR;
 } pwr_t;
 extern volatile pwr_t PWR;
-
+*/
 enum VoltageRange
 {
-	RANGE_VOS3 = 1,	//0.95 - 1.05V
-	RANGE_VOS2 = 2,	//1.05 - 1.15V
+	RANGE_VOS3 = 1,	//0.95 - 1.26V
+	RANGE_VOS2 = 2,	//1.05 - 1.26V
 	RANGE_VOS1 = 3,	//1.15 - 1.26V
-	RANGE_VOS0 = 0	//1.26 - 1.4V
+	RANGE_VOS0 = 0	//1.26 - 1.4V (PWR_D3CR suggests reserved and unavailable?? but seems rev V parts have it)
 };
-
+/*
 enum pwr_csr1
 {
 	PWR_CSR1_ACTVOSRDY = 0x2000
@@ -66,7 +67,7 @@ enum pwr_d3cr
 
 	PWR_D3CR_VOSMASK = 0xc000
 };
-
+*/
 enum rcc_ahb4
 {
 	RCC_AHB4_GPIOA		= 0x00000001,
@@ -77,7 +78,7 @@ enum rcc_ahb4
 	RCC_AHB4_GPIOF		= 0x00000020,
 	RCC_AHB4_GPIOG		= 0x00000040,
 	RCC_AHB4_GPIOH		= 0x00000080,
-	//0x100 reserved
+	RCC_AHB4_GPIOI		= 0x00000100,
 	RCC_AHB4_GPIOJ		= 0x00000200,
 	RCC_AHB4_GPIOK		= 0x00000400,
 	//0x0000_0800 to 0x0004_0000 reserved
@@ -94,15 +95,13 @@ enum rcc_ahb4
 
 enum rcc_ahb3
 {
-	RCC_AHB3_OCTOSPIM	= 0x00200000,
-	RCC_AHB3_OCTOSPI2	= 0x00080000,
-	RCC_AHB3_OCTOSPI1	= 0x00004000,
 	RCC_AHB3_FMC		= 0x00001000,
 	RCC_AHB3_MDMA		= 0x00000001
 };
 
 enum rcc_ahb2
 {
+	RCC_AHB2_SRAM3		= 0x80000000,
 	RCC_AHB2_SRAM2		= 0x40000000,
 	RCC_AHB2_SRAM1		= 0x20000000,
 	RCC_AHB2_RNG		= 0x00000040,
@@ -118,17 +117,23 @@ enum rcc_ahb1
 
 enum rcc_apb4
 {
-	RCC_APB4_SYSCFG		= 0x00000002,
-	RCC_APB4_SPI6		= 0x00000020,
-	RCC_APB4_I2C4		= 0x00000080,
 	RCC_APB4_RTC		= 0x00010000,
-	RCC_APB4_DTS		= 0x04000000
+	RCC_APB4_I2C4		= 0x00000080,
+	RCC_APB4_SPI6		= 0x00000020,
+	RCC_APB4_SYSCFG		= 0x00000002,
 };
 
 enum rcc_apb2
 {
+	RCC_APB2_TIM1		= 0x00000001,
+	RCC_APB2_TIM8		= 0x00000002,
+	RCC_APB2_USART1		= 0x00000010,
+	RCC_APB2_USART6		= 0x00000020,
 	RCC_APB2_SPI1		= 0x00001000,
 	RCC_APB2_SPI4		= 0x00002000,
+	RCC_APB2_TIM15		= 0x00010000,
+	RCC_APB2_TIM16		= 0x00020000,
+	RCC_APB2_TIM17		= 0x00040000,
 	RCC_APB2_SPI5		= 0x00100000
 };
 
@@ -143,8 +148,10 @@ enum rcc_apb1l
 	RCC_APB1L_TIM12		= 0x00000040,
 	RCC_APB1L_TIM13		= 0x00000080,
 	RCC_APB1L_TIM14		= 0x00000100,
+	RCC_APB1L_LPTIM1	= 0x00000200,
 	RCC_APB1L_SPI2		= 0x00004000,
 	RCC_APB1L_SPI3		= 0x00008000,
+	RCC_APB1L_SPDIFRX	= 0x00010000,
 	RCC_APB1L_USART2	= 0x00020000,
 	RCC_APB1L_USART3	= 0x00040000,
 	RCC_APB1L_UART4		= 0x00080000,
@@ -152,9 +159,8 @@ enum rcc_apb1l
 	RCC_APB1L_I2C1		= 0x00200000,
 	RCC_APB1L_I2C2		= 0x00400000,
 	RCC_APB1L_I2C3		= 0x00800000,
-	//I2C 4 is on APB4, not here
-	//(corresponding bit is reserved)
-	RCC_APB1L_I2C5		= 0x02000000
+	RCC_APB1L_UART7		= 0x40000000,
+	RCC_APB1L_UART8		= 0x80000000
 };
 
 enum rcc_cr
@@ -208,6 +214,7 @@ enum rcc_pllcfgr
 
 #define RCC_T_VERSION 1
 #include "stm32-rcc.h"
+
 extern volatile rcc_t RCC;
 
 /*
@@ -219,7 +226,9 @@ typedef struct
 } nvic_t;
 
 extern volatile nvic_t NVIC;
+*/
 
+/*
 typedef struct
 {
 	uint32_t	MACCR;
@@ -337,8 +346,6 @@ typedef struct
 {
 	uint32_t	IDCODE;
 	uint32_t	CR;
-	uint32_t	APB1_FZ;
-	uint32_t	APB2_FZ;
 } dbgmcu_t;
 
 extern volatile dbgmcu_t DBGMCU;
@@ -363,6 +370,7 @@ extern volatile tim_t TIM14;
 
 extern volatile uint32_t U_ID[3];
 extern volatile uint16_t F_ID;
+extern volatile uint32_t L_ID;
 extern volatile uint16_t PKG_ID;
 
 #define CRYPT_T_VERSION 1
@@ -373,154 +381,14 @@ extern volatile cryp_t CRYP;
 #include "stm32-hash.h"
 extern volatile hash_t HASH;
 
-typedef struct
-{
-	uint32_t		CR;
-	uint32_t		field_4;
-	uint32_t		DCR1;
-	uint32_t		DCR2;
-	uint32_t		DCR3;
-	uint32_t		DCR4;
-	uint32_t		field_18[2];
-	uint32_t		SR;
-	uint32_t		FCR;
-	uint32_t		field_28[6];
-	uint32_t		DLR;
-	uint32_t		field_44;
-	uint32_t		AR;
-	uint32_t		field_4c;
-	uint32_t		DR;
-	uint32_t		field_54[11];
-	uint32_t		PSMKR;
-	uint32_t		field_84;
-	uint32_t		PSMAR;
-	uint32_t		field_8c;
-	uint32_t		PIR;
-	uint32_t		field_94[27];
-	uint32_t		CCR;
-	uint32_t		field_104;
-	uint32_t		TCR;
-	uint32_t		field_10c;
-	uint32_t		IR;
-	uint32_t		field_114[3];
-	uint32_t		ABR;
-	uint32_t		field_124[3];
-	uint32_t		LPTR;
-	uint32_t		field_134[3];
-	uint32_t		WPCCR;
-	uint32_t		field_144;
-	uint32_t		WPTCR;
-	uint32_t		field_14c;
-	uint32_t		WPIR;
-	uint32_t		field_154[3];
-	uint32_t		WPABR;
-	uint32_t		field_164[7];
-	uint32_t		WCCR;
-	uint32_t		field_184;
-	uint32_t		WTCR;
-	uint32_t		field_18c;
-	uint32_t		WIR;
-	uint32_t		field_194[3];
-	uint32_t		WABR;
-	uint32_t		field_1a4[23];
-	uint32_t		HLCR;
-} octospi_t;
-
-extern volatile octospi_t OCTOSPI1;
-extern volatile octospi_t OCTOSPI2;
-
-enum octospi_cr
-{
-	OCTOSPI_FMODE_MASK				= 0x30000000,
-	OCTOSPI_FMODE_INDIRECT_WRITE	= 0x00000000,
-	OCTOSPI_FMODE_INDIRECT_READ		= 0x10000000,
-	OCTOSPI_FMODE_AUTO_POLL			= 0x20000000,
-	OCTOSPI_FMODE_MMAP				= 0x30000000,
-
-	OCTOSPI_FTHRES_MASK				= 0x00001f00,
-
-	OCTOSPI_TCEN					= 0x00000008,
-	OCTOSPI_DMAEN					= 0x00000004,
-	OCTOSPI_ABORT					= 0x00000002,
-	OCTOSPI_EN						= 0x00000001
-};
-
-enum octospi_dcr1
-{
-	OCTOSPI_MEM_TYPE_STANDARD		= 0x02000000,
-
-	OCTOSPI_CSHT_MASK				= 0x00003f00
-};
-
-enum octospi_sr
-{
-	OCTOSPI_BUSY					= 0x00000020,
-	OCTOSPI_TOF						= 0x00000010,
-	OCTOSPI_SMF						= 0x00000008,
-	OCTOSPI_FTF						= 0x00000004,
-	OCTOSPI_TCF						= 0x00000002,
-	OCTOSPI_TEF						= 0x00000001
-};
-
-enum octospi_ccr
-{
-	OCTOSPI_SIOO					= 0x80000000,
-	OCTOSPI_DQSE					= 0x20000000,
-	OCTOSPI_DDTR					= 0x08000000,
-	OCTOSPI_DMODE_MASK				= 0x07000000,
-	OCTOSPI_ABSIZE_MASK				= 0x00300000,
-	OCTOSPI_ABDTR					= 0x00080000,
-	OCTOSPI_ABMODE_MASK				= 0x00070000,
-	OCTOSPI_ADSIZE_MASK				= 0x00003000,
-	OCTOSPI_ADDTR					= 0x00000800,
-	OCTOSPI_ADMODE_MASK				= 0x00000700,
-	OCTOSPI_ISIZE_MASK				= 0x00000030,
-	OCTOSPI_IDTR					= 0x00000008,
-	OCTOSPI_IMODE_MASK				= 0x00000007
-};
-
-enum octospi_tcr
-{
-	OCTOSPI_SSHIFT					= 0x40000000,
-	OCTOSPI_DHQC					= 0x10000000,
-	OCTOSPI_DCYC_MASK				= 0x0000001f
-};
-
-typedef struct
-{
-	uint32_t		CR;
-	uint32_t		P1CR;
-	uint32_t		P2CR;
-} octospim_t;
-
-extern volatile octospim_t OCTOSPIM;
-
-typedef struct
-{
-	uint32_t CFGR1;
-	uint32_t field_4;
-	uint32_t T0VALR1;
-	uint32_t field_c;
-	uint32_t RAMPVALR;
-	uint32_t ITR1;
-	uint32_t field_18;
-	uint32_t DR;
-	uint32_t SR;
-	uint32_t ITENR;
-	uint32_t ICIFR;
-	uint32_t OR;
-} dts_t;
-
-extern volatile dts_t DTS;
-
 #define USART_T_VERSION 2
 #include "stm32-usart.h"
-//extern volatile usart_t USART1;
+extern volatile usart_t USART1;
 extern volatile usart_t USART2;
 extern volatile usart_t USART3;
 extern volatile usart_t UART4;
 extern volatile usart_t UART5;
-//extern volatile usart_t USART6;
+extern volatile usart_t USART6;
 //extern volatile usart_t UART7;
 //extern volatile usart_t UART8;
 
@@ -532,7 +400,7 @@ extern volatile crc_t _CRC;
 #include "stm32-mdma.h"
 extern volatile mdma_t _MDMA;
 
-#define FLASH_T_VERSION 1
+#define FLASH_T_VERSION 4
 #include "stm32-flash.h"
 extern volatile flash_t FLASH;
 
@@ -546,6 +414,7 @@ extern volatile gpio_t GPIOE;
 extern volatile gpio_t GPIOF;
 extern volatile gpio_t GPIOG;
 extern volatile gpio_t GPIOH;
+extern volatile gpio_t GPIOI;
 extern volatile gpio_t GPIOJ;
 extern volatile gpio_t GPIOK;
 
@@ -567,14 +436,14 @@ extern volatile spi_t SPI4;
 extern volatile spi_t SPI5;
 extern volatile spi_t SPI6;
 
-#define RTC_T_VERSION 1
+#define RTC_T_VERSION 2
 #include "stm32-rtc.h"
 extern volatile rtc_t _RTC;
-
+/*
 #define FMC_T_VERSION 1
 #include "stm32-fmc.h"
 extern volatile fmc_t _FMC;
-
+*/
 #define SCB_T_VERSION 2
 #include "stm32-scb.h"
 extern volatile scb_t SCB;
@@ -591,7 +460,7 @@ extern volatile tpiu_t _TPIU;
 #define RNG_T_VERSION 1
 #include "stm32-rng.h"
 extern volatile rng_t RNG;
-
+/*
 #define DMA_T_VERSION 1
 #include "stm32-dma.h"
 extern volatile dma_t DMA1;
@@ -599,10 +468,10 @@ extern volatile dma_t DMA2;
 extern volatile dmamux_t DMAMUX1;
 
 //Defines for what peripherals are present / implemented
-#define HAVE_DTS
 //#define HAVE_EMAC
+#define HAVE_HASH
 #define HAVE_PWR
-#define HAVE_OCTOSPI
+*/
 #define HAVE_ITCM
 #define HAVE_FPU
 #define HAVE_L1

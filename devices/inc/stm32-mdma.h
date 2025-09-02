@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2020-2024 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2025 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -32,7 +32,7 @@
 
 #define HAVE_MDMA
 
-//STM32H735
+//STM32H735, H750
 #if MDMA_T_VERSION == 1
 
 #define NUM_MDMA_CHANNELS 16

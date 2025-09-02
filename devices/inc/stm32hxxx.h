@@ -1,8 +1,8 @@
 /***********************************************************************************************************************
 *                                                                                                                      *
-* STM32-CPP v0.1                                                                                                       *
+* STM32-CPP                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2020-2022 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2025 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -45,6 +45,11 @@
 #ifdef STM32H735
 #define STM32H7
 #include <stm32h735.h>
+#endif
+
+#ifdef STM32H750
+#define STM32H7
+#include <stm32h750.h>
 #endif
 
 #include "stm32-common.h"

@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2020-2024 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2025 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -60,6 +60,9 @@ public:
 			return (FLASH.SR & FLASH_SR_DBECCERR) != 0;
 		#elif FLASH_T_VERSION == 2
 			return (FLASH.ECCR & FLASH_ECCR_ECCD) != 0;
+		#elif FLASH_T_VERSION == 4
+			//TODO: second flash bank support
+			return (FLASH.SR1 & FLASH_SR_DBECCERR1) != 0;
 		#else
 			#error not implemented
 		#endif
@@ -71,6 +74,9 @@ public:
 			FLASH.CCR |= FLASH_SR_DBECCERR;
 		#elif FLASH_T_VERSION == 2
 			FLASH.ECCR |= FLASH_ECCR_ECCD;
+		#elif FLASH_T_VERSION == 4
+			//TODO: second flash bank support
+			FLASH.CCR1 |= FLASH_SR_DBECCERR1;
 		#else
 			#error not implemented
 		#endif
@@ -82,6 +88,9 @@ public:
 			return 0x08000000 + FLASH.ECC_FAR*32;
 		#elif FLASH_T_VERSION == 2
 			return 0x08000000 + (FLASH.ECCR & 0x7ffff);
+		#elif FLASH_T_VERSION == 4
+			//TODO: second flash bank support
+			return 0x08000000 + FLASH.ECC_FA1R*32;
 		#else
 			#error not implemented
 		#endif
@@ -116,6 +125,10 @@ protected:
 			//enable actual flash programming
 			FLASH.PRGKEYR = 0x8c9daebf;
 			FLASH.PRGKEYR = 0x13141516;
+		#elif FLASH_T_VERSION == 4
+			//TODO: second flash bank support
+			FLASH.KEYR1 = 0x45670123;
+			FLASH.KEYR1 = 0xCDEF89AB;
 		#else
 			FLASH.KEYR = 0x45670123;
 			FLASH.KEYR = 0xCDEF89AB;
@@ -128,12 +141,15 @@ protected:
 		#if FLASH_T_VERSION == 3
 			FLASH.PECR |= FLASH_PECR_PRGLOCK;
 			FLASH.PECR |= FLASH_PECR_PELOCK;
+		#elif FLASH_T_VERSION == 4
+			//TODO: second flash bank support
+			FLASH.CR1 |= FLASH_CR_LOCK;
 		#else
 			FLASH.CR |= FLASH_CR_LOCK;
 		#endif
 	}
 
-	#ifdef STM32H735
+	#if defined(STM32H735) || defined(STM32H750)
 	static uint32_t m_maxPsize;
 	#endif
 };
