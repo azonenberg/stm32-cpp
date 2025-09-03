@@ -154,7 +154,7 @@ public:
 		);
 	#endif
 
-	#ifdef STM32H735
+	#if defined(STM32H735) || defined(STM32H750)
 	enum FMCClockSource
 	{
 		FMC_CLOCK_HCLK3		= 0,

@@ -59,7 +59,7 @@ void RCCHelper::Enable([[maybe_unused]] volatile mdma_t* mdma)
 #ifdef HAVE_FMC
 void RCCHelper::Enable([[maybe_unused]] volatile fmc_t* fmc)
 {
-	#if defined(STM32H735)
+	#if defined(STM32H735) || defined(STM32H750)
 		RCC.AHB3ENR |= RCC_AHB3_FMC;
 	#else
 		#error Dont know what to do with FMC on this part

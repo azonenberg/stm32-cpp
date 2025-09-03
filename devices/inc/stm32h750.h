@@ -406,11 +406,11 @@ extern volatile spi_t SPI6;
 #define RTC_T_VERSION 2
 #include "stm32-rtc.h"
 extern volatile rtc_t _RTC;
-/*
+
 #define FMC_T_VERSION 1
 #include "stm32-fmc.h"
 extern volatile fmc_t _FMC;
-*/
+
 #define SCB_T_VERSION 2
 #include "stm32-scb.h"
 extern volatile scb_t SCB;

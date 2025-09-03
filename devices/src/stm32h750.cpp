@@ -116,4 +116,4 @@ volatile cryp_t CRYP __attribute__((section(".cryp")));
 volatile rng_t RNG __attribute__((section(".rng")));
 volatile hash_t HASH __attribute__((section(".chash")));
 
-//volatile fmc_t _FMC __attribute__((section(".fmc")));
+volatile fmc_t _FMC __attribute__((section(".fmc")));
