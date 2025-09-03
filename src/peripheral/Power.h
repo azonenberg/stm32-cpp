@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2020-2024 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2025 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -59,6 +59,10 @@ public:
 	};
 
 	static void ConfigureSMPSToLDOCascade(SmpsVoltage vsmps, VoltageRange vcore);
+	#endif
+
+	#ifdef STM32H750
+	static void ConfigureLDO(VoltageRange vcore);
 	#endif
 };
 

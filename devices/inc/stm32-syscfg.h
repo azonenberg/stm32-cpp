@@ -50,7 +50,7 @@ typedef struct
 	uint32_t CCCSR;
 	uint32_t CCVR;
 	uint32_t CCCR;
-	uint32_t field_2c;
+	uint32_t PWRCR;				//reserved / not present in H735
 	uint32_t ADC2ALT;			//reserved / not present in H750
 	uint32_t field_34[60];
 	uint32_t PKGR;

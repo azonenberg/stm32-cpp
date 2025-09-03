@@ -268,7 +268,9 @@ void RCCHelper::Enable(volatile usart_t* uart)
 
 	#elif defined(STM32H750)
 
-		if(uart == &USART2)
+		if(uart == &USART1)
+			RCC.APB2ENR |= RCC_APB2_USART1;
+		else if(uart == &USART2)
 			RCC.APB1LENR |= RCC_APB1L_USART2;
 		else if(uart == &USART3)
 			RCC.APB1LENR |= RCC_APB1L_USART3;

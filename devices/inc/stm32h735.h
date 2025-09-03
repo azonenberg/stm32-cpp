@@ -32,41 +32,6 @@
 
 #include <stdint.h>
 
-typedef struct
-{
-	uint32_t CR1;
-	uint32_t CSR1;
-	uint32_t CR2;
-	uint32_t CR3;
-	uint32_t CPUCR;
-	uint32_t field_14;
-	uint32_t D3CR;
-	uint32_t WKUPCR;
-	uint32_t WKUPFR;
-	uint32_t WKUPEPR;
-} pwr_t;
-extern volatile pwr_t PWR;
-
-enum VoltageRange
-{
-	RANGE_VOS3 = 1,	//0.95 - 1.05V
-	RANGE_VOS2 = 2,	//1.05 - 1.15V
-	RANGE_VOS1 = 3,	//1.15 - 1.26V
-	RANGE_VOS0 = 0	//1.26 - 1.4V
-};
-
-enum pwr_csr1
-{
-	PWR_CSR1_ACTVOSRDY = 0x2000
-};
-
-enum pwr_d3cr
-{
-	PWR_D3CR_VOSRDY = 0x2000,
-
-	PWR_D3CR_VOSMASK = 0xc000
-};
-
 enum rcc_ahb4
 {
 	RCC_AHB4_GPIOA		= 0x00000001,
@@ -209,6 +174,10 @@ enum rcc_pllcfgr
 #define RCC_T_VERSION 1
 #include "stm32-rcc.h"
 extern volatile rcc_t RCC;
+
+#define PWR_T_VERSION 1
+#include "stm32-pwr.h"
+extern volatile pwr_t _PWR;
 
 /*
 typedef struct
@@ -601,7 +570,6 @@ extern volatile dmamux_t DMAMUX1;
 //Defines for what peripherals are present / implemented
 #define HAVE_DTS
 //#define HAVE_EMAC
-#define HAVE_PWR
 #define HAVE_OCTOSPI
 #define HAVE_ITCM
 #define HAVE_FPU
