@@ -117,3 +117,4 @@ volatile rng_t RNG __attribute__((section(".rng")));
 volatile hash_t HASH __attribute__((section(".chash")));
 
 volatile fmc_t _FMC __attribute__((section(".fmc")));
+volatile quadspi_t _QUADSPI __attribute__((section(".quadspi")));

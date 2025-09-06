@@ -32,7 +32,7 @@
 
 #define HAVE_QUADSPI
 
-//STM32L431
+//STM32L431, STM32H750
 #if QUADSPI_T_VERSION == 1
 
 typedef struct

@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2020-2024 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2025 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -32,6 +32,8 @@
 
 #ifdef HAVE_QUADSPI
 
+#include <embedded-utils/SpiFlashInterfaceBase.h>
+
 class QuadSPI
 {
 public:
@@ -45,6 +47,12 @@ public:
 	};
 
 	QuadSPI(volatile quadspi_t* lane, uint32_t sizeBytes, uint8_t prescale);
+
+	void Disable()
+	{ m_lane->CR &= ~QUADSPI_ENABLE; };
+
+	void Enable()
+	{ m_lane->CR |= QUADSPI_ENABLE; }
 
 	void SetDoubleRateMode(bool ddr);
 	void SetInstructionMode(mode_t mode = MODE_SINGLE);
@@ -64,6 +72,8 @@ public:
 	void BlockingWrite16(uint32_t insn, uint32_t addr, const uint16_t data)
 	{ BlockingWrite(insn, addr, reinterpret_cast<const uint8_t*>(&data), 2); }
 
+	void SendSingleByteCommand(uint8_t cmd);
+
 	void BlockingRead(uint32_t insn, uint32_t addr, uint8_t* data, uint32_t len);
 	uint16_t BlockingRead16(uint32_t insn, uint32_t addr)
 	{
@@ -82,6 +92,10 @@ public:
 	}
 
 protected:
+
+	//Base CCR without any changes
+	uint32_t m_ccrBase;
+
 	volatile quadspi_t*	m_lane;
 };
 

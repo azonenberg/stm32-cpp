@@ -72,6 +72,8 @@ void RCCHelper::Enable([[maybe_unused]] volatile quadspi_t* quadspi)
 {
 	#if defined(STM32L431)
 		RCC.AHB3ENR |= RCC_AHB3_QSPI;
+	#elif defined(STM32H750)
+		RCC.AHB3ENR |= RCC_AHB3_QSPI;
 	#else
 		#error Dont know what to do with quadspi on this part
 	#endif

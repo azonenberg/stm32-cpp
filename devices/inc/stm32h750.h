@@ -59,6 +59,7 @@ enum rcc_ahb4
 
 enum rcc_ahb3
 {
+	RCC_AHB3_QSPI		= 0x00004000,
 	RCC_AHB3_FMC		= 0x00001000,
 	RCC_AHB3_MDMA		= 0x00000001
 };
@@ -407,6 +408,10 @@ extern volatile spi_t SPI6;
 #include "stm32-rtc.h"
 extern volatile rtc_t _RTC;
 
+#define QUADSPI_T_VERSION 1
+#include "stm32-quadspi.h"
+extern volatile quadspi_t _QUADSPI;
+
 #define FMC_T_VERSION 1
 #include "stm32-fmc.h"
 extern volatile fmc_t _FMC;
@@ -436,7 +441,6 @@ extern volatile dmamux_t DMAMUX1;
 
 //Defines for what peripherals are present / implemented
 //#define HAVE_EMAC
-#define HAVE_HASH
 */
 #define HAVE_ITCM
 #define HAVE_FPU

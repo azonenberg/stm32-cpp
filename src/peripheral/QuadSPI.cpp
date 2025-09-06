@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2020-2024 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2025 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -68,7 +68,6 @@ QuadSPI::QuadSPI(volatile quadspi_t* lane, uint32_t sizeBytes, uint8_t prescale)
 	lane->DCR = (nbits << 16);
 	lane->CCR = 0;
 	lane->FCR = QUADSPI_TOF | QUADSPI_SMF | QUADSPI_TCF | QUADSPI_TEF;
-	lane->CR |= QUADSPI_ENABLE;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -91,9 +90,9 @@ void QuadSPI::SetDeselectTime(uint8_t ncycles)
 void QuadSPI::SetDoubleRateMode(bool ddr)
 {
 	if(ddr)
-		m_lane->CCR |= QUADSPI_DDRM;
+		m_ccrBase |= QUADSPI_DDRM;
 	else
-		m_lane->CCR &= ~QUADSPI_DDRM;
+		m_ccrBase &= ~QUADSPI_DDRM;
 }
 
 /**
@@ -101,7 +100,7 @@ void QuadSPI::SetDoubleRateMode(bool ddr)
  */
 void QuadSPI::SetInstructionMode(mode_t mode)
 {
-	m_lane->CCR = (m_lane->CCR & ~QUADSPI_IMODE_MASK) | (mode << 8);
+	m_ccrBase = (m_ccrBase & ~QUADSPI_IMODE_MASK) | (mode << 8);
 }
 
 /**
@@ -112,8 +111,8 @@ void QuadSPI::SetAddressMode(mode_t mode, uint8_t nbytes)
 	nbytes --;
 	nbytes = min(nbytes, (uint8_t)3);
 
-	m_lane->CCR &= ~(QUADSPI_ADSIZE_MASK | QUADSPI_ADMODE_MASK);
-	m_lane->CCR |= (nbytes << 12) | (mode << 10);
+	m_ccrBase &= ~(QUADSPI_ADSIZE_MASK | QUADSPI_ADMODE_MASK);
+	m_ccrBase |= (nbytes << 12) | (mode << 10);
 }
 
 /**
@@ -124,8 +123,8 @@ void QuadSPI::SetAltBytesMode(mode_t mode, uint8_t nbytes)
 	nbytes --;
 	nbytes = min(nbytes, (uint8_t)3);
 
-	m_lane->CCR &= ~(QUADSPI_ABSIZE_MASK | QUADSPI_ABMODE_MASK);
-	m_lane->CCR |= (nbytes << 16) | (mode << 14);
+	m_ccrBase &= ~(QUADSPI_ABSIZE_MASK | QUADSPI_ABMODE_MASK);
+	m_ccrBase |= (nbytes << 16) | (mode << 14);
 }
 
 /**
@@ -133,8 +132,8 @@ void QuadSPI::SetAltBytesMode(mode_t mode, uint8_t nbytes)
  */
 void QuadSPI::SetDataMode(mode_t mode)
 {
-	m_lane->CCR &= ~QUADSPI_DMODE_MASK;
-	m_lane->CCR |= (mode << 24);
+	m_ccrBase &= ~QUADSPI_DMODE_MASK;
+	m_ccrBase |= (mode << 24);
 }
 
 /**
@@ -143,7 +142,7 @@ void QuadSPI::SetDataMode(mode_t mode)
 void QuadSPI::SetDummyCycleCount(uint8_t ncycles)
 {
 	ncycles &= 0x1f;
-	m_lane->CCR = (m_lane->CCR & ~QUADSPI_DCYC_MASK) | (ncycles << 18);
+	m_ccrBase = (m_ccrBase & ~QUADSPI_DCYC_MASK) | (ncycles << 18);
 }
 
 /**
@@ -156,6 +155,20 @@ void QuadSPI::SetFifoThreshold(uint8_t threshold)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Indirect bus access
+
+/**
+	@brief Send a single byte command then restore config
+ */
+void QuadSPI::SendSingleByteCommand(uint8_t cmd)
+{
+	WaitIdle();
+
+	//Send the command
+	m_lane->CCR =
+		QUADSPI_FMODE_INDIRECT_WRITE |
+		(MODE_SINGLE << 8) |
+		cmd;
+}
 
 /**
 	@brief Simple blocking write operation
@@ -172,8 +185,7 @@ void QuadSPI::BlockingWrite(uint32_t insn, uint32_t addr, const uint8_t* data, u
 	WaitIdle();
 
 	m_lane->DLR = len - 1;
-	m_lane->CCR = (m_lane->CCR & ~QUADSPI_FMODE_MASK) | QUADSPI_FMODE_INDIRECT_WRITE;
-	m_lane->CCR = (m_lane->CR & ~QUADSPI_INSN_MASK) | insn;
+	m_lane->CCR = m_ccrBase | QUADSPI_FMODE_INDIRECT_WRITE | insn;
 	m_lane->AR = addr;
 
 	//for now, simple dumb bytewise copy
@@ -196,8 +208,7 @@ void QuadSPI::BlockingRead(uint32_t insn, uint32_t addr, uint8_t* data, uint32_t
 	WaitIdle();
 
 	m_lane->DLR = len - 1;
-	m_lane->CCR = (m_lane->CCR & ~QUADSPI_FMODE_MASK) | QUADSPI_FMODE_INDIRECT_READ;
-	m_lane->CCR = (m_lane->CR & ~QUADSPI_INSN_MASK) | insn;
+	m_lane->CCR = m_ccrBase | QUADSPI_FMODE_INDIRECT_READ | insn;
 	m_lane->AR = addr;
 
 	//for now, simple dumb bytewise copy
@@ -213,8 +224,7 @@ void QuadSPI::SetMemoryMapMode(uint32_t insn)
 {
 	WaitIdle();
 
-	m_lane->CCR = (m_lane->CR & ~QUADSPI_INSN_MASK) | insn;
-	m_lane->CCR = (m_lane->CCR & ~QUADSPI_FMODE_MASK) | QUADSPI_FMODE_MEMORY_MAP;
+	m_lane->CCR = m_ccrBase | QUADSPI_FMODE_MEMORY_MAP | insn;
 }
 
 #endif
