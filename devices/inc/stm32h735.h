@@ -333,6 +333,7 @@ extern volatile tim_t TIM14;
 extern volatile uint32_t U_ID[3];
 extern volatile uint16_t F_ID;
 extern volatile uint16_t PKG_ID;
+extern volatile uint32_t L_ID;
 
 #define CRYPT_T_VERSION 1
 #include "stm32-crypt.h"
