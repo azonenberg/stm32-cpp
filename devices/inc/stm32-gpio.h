@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2020-2024 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2025 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -64,6 +64,44 @@ typedef struct
 	uint32_t AFRH;
 	uint32_t BRR;
 } gpio_t;
+
+//STM32MP257
+#elif GPIO_T_VERSION == 3
+
+typedef struct
+{
+	uint32_t CIDCFGR;
+	uint32_t SEMCR;
+} gpio_ext_t;
+
+typedef struct
+{
+	uint32_t MODER;
+	uint32_t OTYPER;
+	uint32_t OSPEEDR;
+	uint32_t PUPDR;
+	uint32_t IDR;
+	uint32_t ODR;
+	uint32_t BSRR;
+	uint32_t LCKR;
+	uint32_t AFRL;
+	uint32_t AFRH;
+	uint32_t BRR;
+	uint32_t field_2c;
+	uint32_t SECCFGR;
+	uint32_t PRIVCFGR;
+	uint32_t RCFGLOCKR;
+	uint32_t field_3c;
+	uint32_t DELAYRL;
+	uint32_t DELAYRH;
+	uint32_t ADVCFGRL;
+	uint32_t ADVCFGRH;
+
+	gpio_ext_t EXT[16];
+
+	//TODO: HWCFGR, VERR, IPIDR, SIDR
+} gpio_t;
+
 
 #else
 

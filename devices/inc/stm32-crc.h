@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2020-2024 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2025 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -43,6 +43,23 @@ typedef struct
 	uint32_t field_c;
 	uint32_t INIT;
 	uint32_t POL;
+} crc_t;
+
+//STM32MP257
+#elif CRC_T_VERSION == 2
+
+typedef struct
+{
+	uint32_t DR;
+	uint32_t IDR;
+	uint32_t CR;
+	uint32_t field_c;
+	uint32_t INIT;
+	uint32_t POL;
+	uint32_t field_18[246];
+	uint32_t HWCFGR;
+	uint32_t VERR;
+	uint32_t IPIDR;
 } crc_t;
 
 #else

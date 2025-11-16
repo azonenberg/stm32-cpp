@@ -1,0 +1,85 @@
+INCLUDE "stm32mp257-base.ld"
+
+MEMORY
+{
+	/* Cortex-M private peripheral bus */
+	MCU(RW):				ORIGIN = 0xe0000000, LENGTH = 1024K
+}
+
+SECTIONS
+{
+	/* Code comes right after the vector tables */
+	.text :
+	{
+		KEEP (*(.vector))
+		. = ALIGN(32);
+		KEEP (*(.note.gnu.build-id))
+		. = ALIGN(32);
+		KEEP (*(.fwid))
+		. = ALIGN(32);
+		*(.text.*)
+		*(.rodata)
+		*(.rodata.*)
+		*(.ctors)
+
+		. = ALIGN(4);
+		KEEP(*(.init))
+		KEEP(*(.init.*))
+		KEEP(*(.ARM.exidx))
+
+		. = ALIGN(4);
+		__preinit_array_start = .;
+		KEEP(*(.preinit_array))
+		__preinit_array_end = .;
+
+		. = ALIGN(4);
+		__init_array_start = .;
+		KEEP(*(SORT(.init_array.*)))
+		KEEP(*(.init_array))
+		__init_array_end = .;
+
+		/* TODO: consider not emitting global destructors since they're never called */
+		__dtor_start = .;
+		*(.fini_array)
+		__dtor_end = .;
+	} > RETRAM
+
+	/* Initialized data for the RAM load configuration just goes in RETRAM like everything else */
+	.data : ALIGN(32)
+	{
+		__data_romstart = LOADADDR(.data);
+		__data_start = .;
+		*(.data)
+		__data_end = .;
+	} > RETRAM
+
+	/* BSS is pretty straightforward */
+	.bss  (NOLOAD):
+	{
+		__bss_start__ = .;
+		*(.bss)
+		*(.tcmbss)
+		__bss_end__ = .;
+	} > RETRAM
+
+	/* Stack goes in RETRAM too, surprising nobody */
+	.stack (NOLOAD):
+	{
+		__end = .;
+		. = ORIGIN(RETRAM) + LENGTH(RETRAM) - 4;
+		__stack = .;
+	} > RETRAM
+
+	.sfr_mcu  (NOLOAD):
+	{
+		/*
+		KEEP (*(.itm))
+		. = ALIGN(4096);
+		KEEP (*(.dwt))
+		. = ALIGN(4096);
+		*/
+		. += 0xed00;
+		KEEP (*(.scb))
+		. = ALIGN(4096);
+	} > MCU
+}

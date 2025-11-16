@@ -30,6 +30,8 @@
 #ifndef Flash_h
 #define Flash_h
 
+#ifndef NO_INTERNAL_FLASH
+
 #include <stm32.h>
 
 /**
@@ -154,4 +156,5 @@ protected:
 	#endif
 };
 
+#endif
 #endif

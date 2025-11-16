@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2020-2024 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2025 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -27,102 +27,96 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef stm32_scb_h
-#define stm32_scb_h
+#ifndef stm32mp257_h
+#define stm32mp257_h
 
-#include "stm32-mpu.h"
+#include <stdint.h>
 
-//ARMv8-M (currently Cortex-M33)
-#if SCB_T_VERSION == 3
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// RCC
 
-//so far we don't implement the nonsecure alias
-typedef struct
-{
-	uint32_t	CPUID;
-	uint32_t	ICSR;
-	uint32_t	VTOR;
-	uint32_t	AIRCR;
-	uint32_t	SCR;
-	uint32_t	CCR;
-	uint8_t		SHP[12];
-	uint32_t	SHCSR;
-	uint32_t	CFSR;	//contains MMFSR / BFSR / UFSR
-	uint32_t	HFSR;
-	uint32_t	field_30;
-	uint32_t	MMFAR;
-	uint32_t	BFAR;
-	uint32_t	AFSR;
-	uint32_t	field_40[18];
-	uint32_t	CPACR;
-	uint32_t	NSACR;
-} scb_t;
+#define RCC_T_VERSION 2
+#include "stm32-rcc.h"
+extern volatile rcc_t RCC;
 
-#else
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Generic peripherals
 
-//ARMv7-M
-typedef struct
-{
-	uint32_t	CPUID;
-	uint32_t	ICSR;
-	uint32_t	VTOR;
-	uint32_t	AIRCR;
-	uint32_t	SCR;
-	uint32_t	CCR;
-	uint8_t		SHP[12];
-	uint32_t	SHCR;
-	uint32_t	CFSR;
-	uint32_t	HFSR;
-	uint32_t	DFSR;
-	uint32_t	MMFAR;
-	uint32_t	BFAR;
-	uint32_t	AFSR;
-	uint32_t	PFR[2];
-	uint32_t	DFR;
-	uint32_t	ADR;
-	uint32_t	MMFR[4];
-	uint32_t	ISAR[5];
-	uint32_t	field_e000ed74;
-#if SCB_T_VERSION == 2
-	uint32_t	CLIDR;
-	uint32_t	CTR;
-	uint32_t	CCSIDR;
-	uint32_t	CCSELR;
-	uint32_t	CPACR;
-	uint32_t	field_e000ed8c;
-	mpu_t		_MPU;
-	uint32_t	field_e000eda4[22];
-	uint32_t	DEMCR;
-	uint32_t	field_e000ee00[64];
-	uint32_t	STIR;
-	uint32_t	field_e000ef04[19];
-	uint32_t	ICIALLU;
-	uint32_t	field_e000ef54;
-	uint32_t	ICIMVAU;
-	uint32_t	DCIMVAC;
-	uint32_t	DCISW;
-	uint32_t	DCCMVAU;
-	uint32_t	DCCMVAC;
-	uint32_t	DCCSW;
-	uint32_t	DCCIMVAC;
-	uint32_t	DCCISW;
-	uint32_t	BPIALL;
-	uint32_t	field_e000ef7c;
-	uint32_t	field_e000ef80;
-	uint32_t	field_e000ef84;
-	uint32_t	field_e000ef88;
-	uint32_t	field_e000ef8c;
-	uint32_t	CM7_ITCMCR;
-	uint32_t	CM7_DTCMCR;
-	uint32_t	CM7_AHBPCR;
-	uint32_t	CM7_CACR;
-	uint32_t	CM7_AHBSCR;
-	uint32_t	field_e000efa4;
-	uint32_t	CM7_ABFSR;
+#define GPIO_T_VERSION 3
+#include "stm32-gpio.h"
+extern volatile gpio_t GPIOA;
+extern volatile gpio_t GPIOB;
+extern volatile gpio_t GPIOC;
+extern volatile gpio_t GPIOD;
+extern volatile gpio_t GPIOE;
+extern volatile gpio_t GPIOF;
+extern volatile gpio_t GPIOG;
+extern volatile gpio_t GPIOH;
+extern volatile gpio_t GPIOI;
+extern volatile gpio_t GPIOJ;
+extern volatile gpio_t GPIOK;
+extern volatile gpio_t GPIOZ;
 
-	//more after this
-#endif
-} scb_t;
+#define TIM_T_VERSION 2
+#include "stm32-tim.h"
+extern volatile tim_t TIM1;
+extern volatile tim_t TIM2;
+extern volatile tim_t TIM3;
+extern volatile tim_t TIM4;
+extern volatile tim_t TIM5;
+extern volatile tim_t TIM6;
+extern volatile tim_t TIM7;
+extern volatile tim_t TIM8;
+//no TIM9??
+extern volatile tim_t TIM10;
+extern volatile tim_t TIM11;
+extern volatile tim_t TIM12;
+extern volatile tim_t TIM13;
+extern volatile tim_t TIM14;
+extern volatile tim_t TIM15;
+extern volatile tim_t TIM16;
+extern volatile tim_t TIM17;
+//no TIM18
+//no TIM19
+extern volatile tim_t TIM20;
+
+#define CRC_T_VERSION 2
+#include "stm32-crc.h"
+extern volatile crc_t _CRC;
+
+#define I2C_T_VERSION 2
+#include "stm32-i2c.h"
+extern volatile i2c_t I2C1;
+extern volatile i2c_t I2C2;
+extern volatile i2c_t I2C3;
+extern volatile i2c_t I2C4;
+extern volatile i2c_t I2C5;
+extern volatile i2c_t I2C6;
+extern volatile i2c_t I2C7;
+extern volatile i2c_t I2C8;
+
+#define PWR_T_VERSION 2
+#include "stm32-pwr.h"
+extern volatile pwr_t PWR;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Peripherals only for CPU2 (Cortex-M33)
+
+#ifdef STM32MP257_CPU2
+
+#define SCB_T_VERSION 3
+#include "stm32-scb.h"
+extern volatile scb_t SCB;
+
+//TODO: The M33 does in fact have an L1
+//#define HAVE_L1
 
 #endif
 
-#endif	//include guard
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Feature flags common to the entire platform
+
+//don't try to use internal flash
+#define NO_INTERNAL_FLASH
+
+#endif

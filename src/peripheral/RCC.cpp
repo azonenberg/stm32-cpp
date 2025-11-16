@@ -89,6 +89,8 @@ void RCCHelper::Enable([[maybe_unused]] volatile crc_t* crc)
 		RCC.AHBENR |= RCC_AHB_CRC;
 	#elif defined(STM32H735) || defined(STM32H750)
 		RCC.AHB4ENR |= RCC_AHB4_CRC;
+	#elif defined(STM32MP257)
+		RCC.CRCCFGR |= RCC_GENERIC_CFGR_EN;
 	#else
 		#error Dont know what to do with CRC on this part
 	#endif
@@ -219,6 +221,33 @@ void RCCHelper::Enable(volatile gpio_t* gpio)
 			RCC.AHB1ENR |= RCC_AHB1_GPIOJ;
 		else if(gpio == &GPIOK)
 			RCC.AHB1ENR |= RCC_AHB1_GPIOK;
+
+	#elif defined(STM32MP257)
+
+		if(gpio == &GPIOA)
+			RCC.GPIOACFGR |= RCC_GENERIC_CFGR_EN;
+		else if(gpio == &GPIOB)
+			RCC.GPIOBCFGR |= RCC_GENERIC_CFGR_EN;
+		else if(gpio == &GPIOC)
+			RCC.GPIOCCFGR |= RCC_GENERIC_CFGR_EN;
+		else if(gpio == &GPIOD)
+			RCC.GPIODCFGR |= RCC_GENERIC_CFGR_EN;
+		else if(gpio == &GPIOE)
+			RCC.GPIOECFGR |= RCC_GENERIC_CFGR_EN;
+		else if(gpio == &GPIOF)
+			RCC.GPIOFCFGR |= RCC_GENERIC_CFGR_EN;
+		else if(gpio == &GPIOG)
+			RCC.GPIOGCFGR |= RCC_GENERIC_CFGR_EN;
+		else if(gpio == &GPIOH)
+			RCC.GPIOHCFGR |= RCC_GENERIC_CFGR_EN;
+		else if(gpio == &GPIOI)
+			RCC.GPIOICFGR |= RCC_GENERIC_CFGR_EN;
+		else if(gpio == &GPIOJ)
+			RCC.GPIOJCFGR |= RCC_GENERIC_CFGR_EN;
+		else if(gpio == &GPIOK)
+			RCC.GPIOKCFGR |= RCC_GENERIC_CFGR_EN;
+		else if(gpio == &GPIOZ)
+			RCC.GPIOZCFGR |= RCC_GENERIC_CFGR_EN;
 
 	#else
 		#error Unknown STM32 family
@@ -513,6 +542,25 @@ void RCCHelper::Enable(volatile i2c_t* i2c)
 			RCC.APB1LENR |= RCC_APB1L_I2C5;
 		#endif
 
+	#elif defined(STM32MP257)
+
+		if(i2c == &I2C1)
+			RCC.I2C1CFGR |= RCC_GENERIC_CFGR_EN;
+		else if(i2c == &I2C2)
+			RCC.I2C2CFGR |= RCC_GENERIC_CFGR_EN;
+		else if(i2c == &I2C3)
+			RCC.I2C3CFGR |= RCC_GENERIC_CFGR_EN;
+		else if(i2c == &I2C4)
+			RCC.I2C4CFGR |= RCC_GENERIC_CFGR_EN;
+		else if(i2c == &I2C5)
+			RCC.I2C5CFGR |= RCC_GENERIC_CFGR_EN;
+		else if(i2c == &I2C6)
+			RCC.I2C6CFGR |= RCC_GENERIC_CFGR_EN;
+		else if(i2c == &I2C7)
+			RCC.I2C7CFGR |= RCC_GENERIC_CFGR_EN;
+		else if(i2c == &I2C8)
+			RCC.I2C8CFGR |= RCC_GENERIC_CFGR_EN;
+
 	#else
 		#error Unknown I2C configuration (unsupported part)
 	#endif
@@ -641,6 +689,46 @@ void RCCHelper::Enable(volatile tim_t* tim)
 			RCC.APB1ENR |= RCC_APB1_TIM13;
 		else if(tim == &TIM14)
 			RCC.APB1ENR |= RCC_APB1_TIM14;
+
+	#elif defined(STM32MP257)
+
+		if(tim == &TIM1)
+			RCC.TIM1CFGR |= RCC_GENERIC_CFGR_EN;
+		else if(tim == &TIM2)
+			RCC.TIM2CFGR |= RCC_GENERIC_CFGR_EN;
+		else if(tim == &TIM3)
+			RCC.TIM3CFGR |= RCC_GENERIC_CFGR_EN;
+		else if(tim == &TIM4)
+			RCC.TIM4CFGR |= RCC_GENERIC_CFGR_EN;
+		else if(tim == &TIM5)
+			RCC.TIM5CFGR |= RCC_GENERIC_CFGR_EN;
+		else if(tim == &TIM6)
+			RCC.TIM6CFGR |= RCC_GENERIC_CFGR_EN;
+		else if(tim == &TIM7)
+			RCC.TIM7CFGR |= RCC_GENERIC_CFGR_EN;
+		else if(tim == &TIM8)
+			RCC.TIM8CFGR |= RCC_GENERIC_CFGR_EN;
+		//no TIM9
+		else if(tim == &TIM10)
+			RCC.TIM10CFGR |= RCC_GENERIC_CFGR_EN;
+		else if(tim == &TIM11)
+			RCC.TIM11CFGR |= RCC_GENERIC_CFGR_EN;
+		else if(tim == &TIM12)
+			RCC.TIM12CFGR |= RCC_GENERIC_CFGR_EN;
+		else if(tim == &TIM13)
+			RCC.TIM13CFGR |= RCC_GENERIC_CFGR_EN;
+		else if(tim == &TIM14)
+			RCC.TIM14CFGR |= RCC_GENERIC_CFGR_EN;
+		else if(tim == &TIM15)
+			RCC.TIM15CFGR |= RCC_GENERIC_CFGR_EN;
+		else if(tim == &TIM16)
+			RCC.TIM16CFGR |= RCC_GENERIC_CFGR_EN;
+		else if(tim == &TIM17)
+			RCC.TIM17CFGR |= RCC_GENERIC_CFGR_EN;
+		//no TIM18
+		//no TIM19
+		else if(tim == &TIM20)
+			RCC.TIM20CFGR |= RCC_GENERIC_CFGR_EN;
 
 	#else
 

@@ -64,9 +64,70 @@ public:
 	#ifdef STM32H750
 	static void ConfigureLDO(VoltageRange vcore);
 	#endif
+
+	#ifdef STM32MP257
+		static void EnableBackupSramWrites()
+		{ PWR.BDCR1 |= PWR_BDCR1_DBD3P; }
+
+		static void EnableVDDIO1Monitor()
+		{ PWR.CR8 |= PWR_CR8_VDDIO1VMEN; }
+
+		static void EnableVDDIO2Monitor()
+		{ PWR.CR7 |= PWR_CR7_VDDIO2VMEN; }
+
+		static void EnableVDDIO3Monitor()
+		{ PWR.CR1 |= PWR_CR1_VDDIO3VMEN; }
+
+		static void EnableVDDIO4Monitor()
+		{ PWR.CR1 |= PWR_CR1_VDDIO4VMEN; }
+
+		static bool IsVDDIO1Ready()
+		{ return (PWR.CR8 & PWR_CR8_VDDIO1RDY) == PWR_CR8_VDDIO1RDY; }
+
+		static bool IsVDDIO2Ready()
+		{ return (PWR.CR7 & PWR_CR7_VDDIO2RDY) == PWR_CR7_VDDIO2RDY; }
+
+		static bool IsVDDIO3Ready()
+		{ return (PWR.CR1 & PWR_CR1_VDDIO3RDY) == PWR_CR1_VDDIO3RDY; }
+
+		static bool IsVDDIO4Ready()
+		{ return (PWR.CR1 & PWR_CR1_VDDIO4RDY) == PWR_CR1_VDDIO4RDY; }
+
+		static void SetVDDIO1Valid(bool valid = true)
+		{
+			if(valid)
+				PWR.CR8 |= PWR_CR8_VDDIO1SV;
+			else
+				PWR.CR8 &= ~PWR_CR8_VDDIO1SV;
+		}
+
+		static void SetVDDIO2Valid(bool valid = true)
+		{
+			if(valid)
+				PWR.CR7 |= PWR_CR7_VDDIO2SV;
+			else
+				PWR.CR7 &= ~PWR_CR7_VDDIO2SV;
+		}
+
+		static void SetVDDIO3Valid(bool valid = true)
+		{
+			if(valid)
+				PWR.CR1 |= PWR_CR1_VDDIO3SV;
+			else
+				PWR.CR1 &= ~PWR_CR1_VDDIO3SV;
+		}
+
+		static void SetVDDIO4Valid(bool valid = true)
+		{
+			if(valid)
+				PWR.CR1 |= PWR_CR1_VDDIO4SV;
+			else
+				PWR.CR1 &= ~PWR_CR1_VDDIO4SV;
+		}
+
+	#endif
 };
 
 #endif
 
 #endif
-

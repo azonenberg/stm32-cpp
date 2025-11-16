@@ -31,6 +31,8 @@
 #include "Flash.h"
 #include <string.h>
 
+#ifndef NO_INTERNAL_FLASH
+
 #if defined(STM32H735) || defined(STM32H750)
 uint32_t Flash::m_maxPsize = FLASH_CR_PSIZE_X8;
 #endif
@@ -836,3 +838,5 @@ bool Flash::Write(uint8_t* address, const uint8_t* data, uint32_t len)
 
 	return true;
 }
+
+#endif

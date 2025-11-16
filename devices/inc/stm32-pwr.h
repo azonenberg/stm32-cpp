@@ -82,6 +82,108 @@ enum pwr_d3cr
 	PWR_D3CR_VOSMASK = 0xc000
 };
 
+//STM32MP257
+#elif PWR_T_VERSION == 2
+
+enum pwr_cr1
+{
+	PWR_CR1_VDDIO4RDY	= 0x0002'0000,
+	PWR_CR1_VDDIO3RDY	= 0x0001'0000,
+
+	PWR_CR1_VDDIO4SV 	= 0x0000'0200,
+	PWR_CR1_VDDIO3SV 	= 0x0000'0100,
+
+	PWR_CR1_VDDIO4VMEN	= 0x0000'0002,
+	PWR_CR1_VDDIO3VMEN	= 0x0000'0001
+};
+
+enum pwr_cr7
+{
+	PWR_CR7_VDDIO2RDY	= 0x0001'0000,
+	PWR_CR7_VDDIO2SV	= 0x0000'0100,
+	PWR_CR7_VDDIO2VMEN	= 0x0000'0001
+};
+
+enum pwr_cr8
+{
+	PWR_CR8_VDDIO1RDY	= 0x0001'0000,
+	PWR_CR8_VDDIO1SV	= 0x0000'0100,
+	PWR_CR8_VDDIO1VMEN	= 0x0000'0001
+};
+
+enum pwr_bdcr1
+{
+	PWR_BDCR1_DBD3P		= 0x0000'0001
+};
+
+struct pwr_t
+{
+	uint32_t CR1;
+	uint32_t CR2;
+	uint32_t CR3;
+	uint32_t field_0c;
+	uint32_t CR5;
+	uint32_t CR6;
+	uint32_t CR7;
+	uint32_t CR8;
+	uint32_t CR9;
+	uint32_t CR10;
+	uint32_t CR11;
+	uint32_t CR12;
+	uint32_t field_30[2];
+	uint32_t BDCR1;
+	uint32_t BDCR2;
+	uint32_t CPU1CR;
+	uint32_t CPU2CR;
+	uint32_t CPU3CR;
+	uint32_t D1CR;
+	uint32_t D2CR;
+	uint32_t D3CR;
+	uint32_t field_58;
+	uint32_t field_5c;
+	uint32_t WKUPCR1;
+	uint32_t WKUPCR2;
+	uint32_t WKUPCR3;
+	uint32_t WKUPCR4;
+	uint32_t WKUPCR5;
+	uint32_t WKUPCR6;
+	uint32_t field_78[8];
+	uint32_t D3WKUPEN;
+	uint32_t field_9c[25];
+	uint32_t RSECCFGR;
+	uint32_t RPRIVCFGR;
+	uint32_t R0CIDCFGR;
+	uint32_t R1CIDCFGR;
+	uint32_t R2CIDCFGR;
+	uint32_t R3CIDCFGR;
+	uint32_t R4CIDCFGR;
+	uint32_t R5CIDCFGR;
+	uint32_t R6CIDCFGR;
+	uint32_t field_124[23];
+	uint32_t WIOSECCFGR;
+	uint32_t WIOPRIVCFGR;
+	uint32_t WIO1CIDCFGR;
+	uint32_t WIO2CIDCFGR;
+	uint32_t WIO3CIDCFGR;
+	uint32_t WIO4CIDCFGR;
+	uint32_t WIO5CIDCFGR;
+	uint32_t WIO6CIDCFGR;
+	uint32_t WIO1SEMCR;
+	uint32_t WIO2SEMCR;
+	uint32_t WIO3SEMCR;
+	uint32_t WIO4SEMCR;
+	uint32_t WIO5SEMCR;
+	uint32_t WIO6SEMCR;
+	uint32_t field_1b8[18];
+	uint32_t CPU1D1SR;
+	uint32_t CPU2D2SR;
+	uint32_t CPU3D3SR;
+	uint32_t field_20c[122];
+	uint32_t VERR;
+	uint32_t IPIDR;
+	uint32_t SIDR;
+};
+
 #else
 
 #error Undefined or unspecified PWR_T_VERSION

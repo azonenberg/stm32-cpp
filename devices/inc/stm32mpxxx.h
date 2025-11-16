@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2020-2024 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2025 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -27,102 +27,27 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef stm32_scb_h
-#define stm32_scb_h
+#ifndef stm32mpxxx_h
+#define stm32mpxxx_h
 
-#include "stm32-mpu.h"
+/**
+	@file
+	@author Andrew D. Zonenberg
+	@brief	Master include file for all STM32MP family parts
 
-//ARMv8-M (currently Cortex-M33)
-#if SCB_T_VERSION == 3
+	Pulls in the correct part depending on a global define
 
-//so far we don't implement the nonsecure alias
-typedef struct
-{
-	uint32_t	CPUID;
-	uint32_t	ICSR;
-	uint32_t	VTOR;
-	uint32_t	AIRCR;
-	uint32_t	SCR;
-	uint32_t	CCR;
-	uint8_t		SHP[12];
-	uint32_t	SHCSR;
-	uint32_t	CFSR;	//contains MMFSR / BFSR / UFSR
-	uint32_t	HFSR;
-	uint32_t	field_30;
-	uint32_t	MMFAR;
-	uint32_t	BFAR;
-	uint32_t	AFSR;
-	uint32_t	field_40[18];
-	uint32_t	CPACR;
-	uint32_t	NSACR;
-} scb_t;
+	The user is responsible for externally defining the part number, e.g. STM32MP257, as well as the processor
+	subsystem ID for the firmware, e.g STM32MP257_CPU2
 
-#else
+	This header will define a family macro, e.g. STM32MP2, based on that.
+ */
 
-//ARMv7-M
-typedef struct
-{
-	uint32_t	CPUID;
-	uint32_t	ICSR;
-	uint32_t	VTOR;
-	uint32_t	AIRCR;
-	uint32_t	SCR;
-	uint32_t	CCR;
-	uint8_t		SHP[12];
-	uint32_t	SHCR;
-	uint32_t	CFSR;
-	uint32_t	HFSR;
-	uint32_t	DFSR;
-	uint32_t	MMFAR;
-	uint32_t	BFAR;
-	uint32_t	AFSR;
-	uint32_t	PFR[2];
-	uint32_t	DFR;
-	uint32_t	ADR;
-	uint32_t	MMFR[4];
-	uint32_t	ISAR[5];
-	uint32_t	field_e000ed74;
-#if SCB_T_VERSION == 2
-	uint32_t	CLIDR;
-	uint32_t	CTR;
-	uint32_t	CCSIDR;
-	uint32_t	CCSELR;
-	uint32_t	CPACR;
-	uint32_t	field_e000ed8c;
-	mpu_t		_MPU;
-	uint32_t	field_e000eda4[22];
-	uint32_t	DEMCR;
-	uint32_t	field_e000ee00[64];
-	uint32_t	STIR;
-	uint32_t	field_e000ef04[19];
-	uint32_t	ICIALLU;
-	uint32_t	field_e000ef54;
-	uint32_t	ICIMVAU;
-	uint32_t	DCIMVAC;
-	uint32_t	DCISW;
-	uint32_t	DCCMVAU;
-	uint32_t	DCCMVAC;
-	uint32_t	DCCSW;
-	uint32_t	DCCIMVAC;
-	uint32_t	DCCISW;
-	uint32_t	BPIALL;
-	uint32_t	field_e000ef7c;
-	uint32_t	field_e000ef80;
-	uint32_t	field_e000ef84;
-	uint32_t	field_e000ef88;
-	uint32_t	field_e000ef8c;
-	uint32_t	CM7_ITCMCR;
-	uint32_t	CM7_DTCMCR;
-	uint32_t	CM7_AHBPCR;
-	uint32_t	CM7_CACR;
-	uint32_t	CM7_AHBSCR;
-	uint32_t	field_e000efa4;
-	uint32_t	CM7_ABFSR;
-
-	//more after this
-#endif
-} scb_t;
-
+#ifdef STM32MP257
+#define STM32MP2
+#include <stm32mp257.h>
 #endif
 
-#endif	//include guard
+#include "stm32-common.h"
+
+#endif
