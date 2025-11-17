@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2020-2024 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2025 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -82,6 +82,47 @@ typedef struct
 	uint32_t RDR;
 	uint32_t TDR;
 	uint32_t PRESC;
+} usart_t;
+
+enum usart_isr_bits
+{
+	USART_ISR_TXE = 0x80,
+	USART_ISR_RXNE = 0x20
+};
+
+enum usart_cr1_bits
+{
+	USART_CR1_TXEIE 	= 0x80,
+	USART_CR1_RXNEIE	= 0x20,
+	USART_CR1_TE		= 0x08,
+	USART_CR1_RE 		= 0x04,
+	USART_CR1_UE		= 0x01
+};
+
+//STM32MP257
+#elif USART_T_VERSION == 3
+
+typedef struct
+{
+	uint32_t CR1;
+	uint32_t CR2;
+	uint32_t CR3;
+	uint32_t BRR;
+	uint32_t GTPR;
+	uint32_t RTOR;
+	uint32_t RQR;
+	uint32_t ISR;
+	uint32_t ICR;
+	uint32_t RDR;
+	uint32_t TDR;
+	uint32_t PRESC;
+	uint32_t AUTOCR;
+	uint32_t field_34[238];
+	uint32_t HWCFGR2;
+	uint32_t HWCFGR1;
+	uint32_t VERR;
+	uint32_t IPIDR;
+	uint32_t SIDR;
 } usart_t;
 
 enum usart_isr_bits

@@ -155,62 +155,115 @@ public:
 	#endif
 
 	#if defined(STM32H735) || defined(STM32H750)
-	enum FMCClockSource
-	{
-		FMC_CLOCK_HCLK3		= 0,
-		FMC_CLOCK_PLL1_Q	= 1,
-		FMC_CLOCK_PLL2_R	= 2,
-		FMC_CLOCK_CKPER		= 3,
-		FMC_CLOCK_MASK		= 3
-	};
+		enum FMCClockSource
+		{
+			FMC_CLOCK_HCLK3		= 0,
+			FMC_CLOCK_PLL1_Q	= 1,
+			FMC_CLOCK_PLL2_R	= 2,
+			FMC_CLOCK_CKPER		= 3,
+			FMC_CLOCK_MASK		= 3
+		};
 
-	/**
-		@brief Selects the kernel clock for the FMC
-	 */
-	static void SetFMCKernelClock(FMCClockSource src)
-	{ RCC.D1CCIPR = (RCC.D1CCIPR & ~FMC_CLOCK_MASK) | src; }
-
+		/**
+			@brief Selects the kernel clock for the FMC
+		 */
+		static void SetFMCKernelClock(FMCClockSource src)
+		{ RCC.D1CCIPR = (RCC.D1CCIPR & ~FMC_CLOCK_MASK) | src; }
 	#endif
 
 	#ifdef STM32H7
-	enum ClockSource
-	{
-		CLOCK_SOURCE_HSE,
-		CLOCK_SOURCE_HSI
-	};
+		enum ClockSource
+		{
+			CLOCK_SOURCE_HSE,
+			CLOCK_SOURCE_HSI
+		};
 
-	static void EnableHighSpeedExternalClock();
-	static void EnableHighSpeedInternalClock(int mhz);
-	static void InitializePLL(
-		uint8_t npll,
-		float in_mhz,
-		uint8_t prediv,
-		uint16_t mult,
-		uint8_t divP,
-		uint8_t divQ,
-		uint8_t divR,
-		ClockSource source
-		);
-	static void SelectSystemClockFromHSI();
-	static void SelectSystemClockFromPLL1();
-	static void InitializeSystemClocks(
-		uint16_t sysckdiv,
-		uint16_t ahbdiv,
-		uint8_t apb1div,
-		uint8_t apb2div,
-		uint8_t apb3div,
-		uint8_t apb4div
-		);
-	static uint8_t GetDivider512Code(uint16_t div);
-	static uint8_t GetDivider16Code(uint8_t div);
+		static void EnableHighSpeedExternalClock();
+		static void EnableHighSpeedInternalClock(int mhz);
+		static void InitializePLL(
+			uint8_t npll,
+			float in_mhz,
+			uint8_t prediv,
+			uint16_t mult,
+			uint8_t divP,
+			uint8_t divQ,
+			uint8_t divR,
+			ClockSource source
+			);
+		static void SelectSystemClockFromHSI();
+		static void SelectSystemClockFromPLL1();
+		static void InitializeSystemClocks(
+			uint16_t sysckdiv,
+			uint16_t ahbdiv,
+			uint8_t apb1div,
+			uint8_t apb2div,
+			uint8_t apb3div,
+			uint8_t apb4div
+			);
+		static uint8_t GetDivider512Code(uint16_t div);
+		static uint8_t GetDivider16Code(uint8_t div);
 
-	#ifdef STM32H750
-	static void EnableSram3();
+		#ifdef STM32H750
+			static void EnableSram3();
+		#endif
+
+		static void EnableSram2();
+		static void EnableSram1();
+		static void EnableBackupSram();
 	#endif
 
-	static void EnableSram2();
-	static void EnableSram1();
-	static void EnableBackupSram();
+	#ifdef STM32MP2
+
+		///@brief Set the clock divider for ck_icn_ls_mcu (max 200 MHz) from ck_icn_hs_mcu. Must be /1 (powerup default) or /2
+		static void SetLowSpeedMCUClockDivider(bool divideBy2)
+		{ RCC.LSMCUDIVR = divideBy2; }
+
+		///@brief Set the divider from ck_icn_ls_mcu to ck_icn_apb1 (max 200 MHz)
+		static void SetAPB1ClockDivider(rcc_apb_div div)
+		{ RCC.APB1DIVR = div; }
+
+		///@brief Set the divider from ck_icn_ls_mcu to ck_icn_apb2 (max 200 MHz)
+		static void SetAPB2ClockDivider(rcc_apb_div div)
+		{ RCC.APB2DIVR = div; }
+
+		///@brief Set the divider from ck_icn_ls_mcu to ck_icn_apb3 (max 200 MHz)
+		static void SetAPB3ClockDivider(rcc_apb_div div)
+		{ RCC.APB3DIVR = div; }
+
+		///@brief Set the divider from ck_icn_ls_mcu to ck_icn_apb4 (max 200 MHz)
+		static void SetAPB4ClockDivider(rcc_apb_div div)
+		{ RCC.APB4DIVR = div; }
+
+		///@brief Set the divider from ck_icn_ls_mcu to ck_icn_apbdbg (max 200 MHz)
+		static void SetAPBDebugClockDivider(rcc_apb_div div)
+		{ RCC.APBDBGDIVR = div; }
+
+		///@brief Configure mux path from clock source to PLL input
+		static void SetPLLInputMux(rcc_muxsel_lane lane, rcc_muxsel_val val)
+		{ RCC.MUXSELCFGR = (RCC.MUXSELCFGR & ~(3 << lane)) | (val << lane); }
+
+		static void WaitForPreDividerIdle(rcc_xbar_channel lane);
+		static void WaitForPostDividerIdle(rcc_xbar_channel lane);
+
+		static void WaitForCrossbarIdle(rcc_xbar_channel lane)
+		{
+			while( (RCC.XBARCFGR[lane] & RCC_XBAR_STS) == RCC_XBAR_STS)
+			{}
+		}
+
+		static void SetCrossbarDivider(rcc_xbar_channel lane, rcc_prediv prediv, uint32_t findiv);
+
+		static void SetCrossbarMux(rcc_xbar_channel lane, rcc_xbarmux mux);
+
+		static void ConfigureGeneralPLL(
+			uint32_t idx,
+			uint32_t prediv,
+			uint32_t vcomult,
+			uint32_t postdiv1,
+			uint32_t postdiv2
+			);
+
+		static void EnableHighSpeedExternalClock();
 	#endif
 
 	#if defined(STM32L0) || defined(STM32L4) || defined(STM32H7)

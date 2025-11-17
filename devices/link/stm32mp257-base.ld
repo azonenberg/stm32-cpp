@@ -2,11 +2,27 @@ ENTRY(_start)
 
 MEMORY
 {
+	/* Actual RAM */
 	RETRAM(RWX):			ORIGIN = 0x20080000, LENGTH = 128K
 
-	/* SFRs */
-	AHB4(RW):				ORIGIN = 0x54200000, LENGTH = 960K
-	APB2(RW):				ORIGIN = 0x50200000, LENGTH = 1536K
+	/* AXI buses */
+	/* TODO: AXIM */
+
+	/* APB buses */
+	APB1(RW):				ORIGIN = 0x40000000, LENGTH = 2048K
+	APB2(RW):				ORIGIN = 0x40200000, LENGTH = 1536K
+	/* TODO: APB3 */
+	/* TODO: APB4 */
+	/* TODO: SmartRun APB */
+	/* TODO: A35 debug APB */
+
+	/* AHB buses */
+	/* TODO: AHB2 */
+	/* TODO: AHB3 */
+	AHB4(RW):				ORIGIN = 0x44200000, LENGTH = 960K
+	/* TODO: AHB5 */
+	/* TODO: AHB6 */
+	/* TODO: SmartRun AHB */
 }
 
 SECTIONS
@@ -45,6 +61,70 @@ SECTIONS
 		. = ALIGN(65536);
 		KEEP (*(.gpiok))
 	} > AHB4
+
+	.sfr_apb1  (NOLOAD):
+	{
+		. = ALIGN(65536);
+		KEEP (*(.tim2))
+		. = ALIGN(65536);
+		KEEP (*(.tim3))
+		. = ALIGN(65536);
+		KEEP (*(.tim4))
+		. = ALIGN(65536);
+		KEEP (*(.tim5))
+		. = ALIGN(65536);
+		KEEP (*(.tim6))
+		. = ALIGN(65536);
+		KEEP (*(.tim7))
+		. = ALIGN(65536);
+		KEEP (*(.tim12))
+		. = ALIGN(65536);
+		KEEP (*(.tim13))
+		. = ALIGN(65536);
+		KEEP (*(.tim14))
+		. = ALIGN(65536);
+		. += 1024; /* LPTIM1 not implemented */
+		. = ALIGN(65536);
+		. += 1024; /* LPTIM2 not implemented */
+		. = ALIGN(65536);
+		. += 1024; /* SPI2 not implemented */
+		. = ALIGN(65536);
+		. += 1024; /* SPI3 not implemented */
+		. = ALIGN(65536);
+		. += 1024; /* SPDIFRX not implemented */
+		. = ALIGN(65536);
+		KEEP (*(.usart2))
+		. = ALIGN(65536);
+		KEEP (*(.usart3))
+		. = ALIGN(65536);
+		KEEP (*(.uart4))
+		. = ALIGN(65536);
+		KEEP (*(.uart5))
+		. = ALIGN(65536);
+		KEEP (*(.i2c1))
+		. = ALIGN(65536);
+		KEEP (*(.i2c2))
+		. = ALIGN(65536);
+		KEEP (*(.i2c3))
+		. = ALIGN(65536);
+		KEEP (*(.i2c4))
+		. = ALIGN(65536);
+		KEEP (*(.i2c5))
+		. = ALIGN(65536);
+		KEEP (*(.i2c6))
+		. = ALIGN(65536);
+		KEEP (*(.i2c7))
+		. = ALIGN(65536);
+		. += 1024; /* I3C1 not implemented */
+		. = ALIGN(65536);
+		. += 1024; /* I3C2 not implemented */
+		. = ALIGN(65536);
+		. += 1024; /* I3C3 not implemented */
+		. = ALIGN(65536);
+		KEEP (*(.tim10))
+		. = ALIGN(65536);
+		KEEP (*(.tim11))
+	} > APB1
 
 	.sfr_apb2  (NOLOAD):
 	{

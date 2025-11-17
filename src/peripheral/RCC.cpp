@@ -31,6 +31,9 @@
 #include <peripheral/RCC.h>
 #include <peripheral/Power.h>
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Peripheral enabling
+
 #ifdef HAVE_DMA
 void RCCHelper::Enable(volatile dma_t* dma)
 {
@@ -328,6 +331,25 @@ void RCCHelper::Enable(volatile usart_t* uart)
 			RCC.APB1ENR |= RCC_APB1_UART7;
 		else if(uart == &UART8)
 			RCC.APB1ENR |= RCC_APB1_UART8;
+
+	#elif defined(STM32MP257)
+
+		if(uart == &USART1)
+			RCC.USART1CFGR |= RCC_GENERIC_CFGR_EN;
+		else if(uart == &USART2)
+			RCC.USART2CFGR |= RCC_GENERIC_CFGR_EN;
+		else if(uart == &USART3)
+			RCC.USART3CFGR |= RCC_GENERIC_CFGR_EN;
+		else if(uart == &UART4)
+			RCC.UART4CFGR |= RCC_GENERIC_CFGR_EN;
+		else if(uart == &UART5)
+			RCC.UART5CFGR |= RCC_GENERIC_CFGR_EN;
+		else if(uart == &USART6)
+			RCC.USART6CFGR |= RCC_GENERIC_CFGR_EN;
+		else if(uart == &UART7)
+			RCC.UART7CFGR |= RCC_GENERIC_CFGR_EN;
+		else if(uart == &UART8)
+			RCC.UART8CFGR |= RCC_GENERIC_CFGR_EN;
 
 	#else
 		#error Unknown STM32 family
@@ -738,6 +760,49 @@ void RCCHelper::Enable(volatile tim_t* tim)
 }
 #endif
 
+#if defined(STM32L0) || defined(STM32L4) || defined(STM32H7)
+void RCCHelper::EnableSyscfg()
+{
+	#if defined(STM32H735) || defined(STM32H750)
+		RCC.APB4ENR |= RCC_APB4_SYSCFG;
+	#elif defined(STM32L431)
+		RCC.APB2ENR |= RCC_APB2_SYSCFG;
+	#elif defined(STM32L031)
+		RCC.APB2ENR |= RCC_APB2_SYSCFG;
+	#else
+		#error Unknown part, dont know what to do with syscfg!
+	#endif
+}
+#endif
+
+#ifdef STM32H7
+
+#ifdef STM32H750
+void RCCHelper::EnableSram3()
+{
+	RCC.AHB2ENR |= RCC_AHB2_SRAM3;
+}
+#endif
+
+void RCCHelper::EnableSram2()
+{
+	RCC.AHB2ENR |= RCC_AHB2_SRAM2;
+}
+
+void RCCHelper::EnableSram1()
+{
+	RCC.AHB2ENR |= RCC_AHB2_SRAM1;
+}
+
+void RCCHelper::EnableBackupSram()
+{
+	RCC.AHB4ENR |= RCC_AHB4_BKPRAM;
+}
+#endif
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// STM32L0 clocking
+
 #ifdef STM32L0
 /**
 	@brief Configures the PLL to use the internal 16 MHz oscillator, then selects it
@@ -920,6 +985,9 @@ void RCCHelper::InitializePLLFromHSI16(uint8_t mult, uint8_t hclkdiv, uint16_t a
 	{}
 }
 #endif
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// STM32L4 clocking
 
 #ifdef STM32L4
 /**
@@ -1130,6 +1198,9 @@ void RCCHelper::InitializePLLFromHSI16(
 }
 #endif
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// STM32F0 clocking
+
 #ifdef STM32F0
 
 /**
@@ -1229,6 +1300,9 @@ void RCCHelper::InitializePLLFromInternalOscillator(uint8_t prediv, uint8_t mult
 }
 
 #endif
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// STM32F7 clocking
 
 #ifdef STM32F7
 
@@ -1406,6 +1480,9 @@ void RCCHelper::InitializePLLFromInternalOscillator(
 }
 
 #endif
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// STM32H7 clocking
 
 #ifdef STM32H7
 /**
@@ -1742,44 +1819,173 @@ uint8_t RCCHelper::GetDivider16Code(uint8_t div)
 			return 0x7;
 	}
 }
+
 #endif
 
-#if defined(STM32L0) || defined(STM32L4) || defined(STM32H7)
-void RCCHelper::EnableSyscfg()
-{
-	#if defined(STM32H735) || defined(STM32H750)
-		RCC.APB4ENR |= RCC_APB4_SYSCFG;
-	#elif defined(STM32L431)
-		RCC.APB2ENR |= RCC_APB2_SYSCFG;
-	#elif defined(STM32L031)
-		RCC.APB2ENR |= RCC_APB2_SYSCFG;
-	#else
-		#error Unknown part, dont know what to do with syscfg!
-	#endif
-}
-#endif
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// STM32MP2 clocking
 
-#ifdef STM32H7
+#ifdef STM32MP2
 
-#ifdef STM32H750
-void RCCHelper::EnableSram3()
-{
-	RCC.AHB2ENR |= RCC_AHB2_SRAM3;
-}
-#endif
+/**
+	@brief Configures one of the general purpose PLLs (PLL4-8)
 
-void RCCHelper::EnableSram2()
+	Input frequency:
+		* 5-1200 MHz in integer-N
+		* 10-1200 MHz in fractional-N
+
+	PFD frequency:
+		* 5 - 50 MHz in integer-N
+		* 10 - 50 MHz in integer-N
+
+	VCO frequency: 800 - 3200 MHz
+
+	Fout = Fout / (postdiv1 * postdiv2)
+
+	@param idx		PLL index (must be 4-8)
+	@param vcomult	VCO multiplier
+					Must be 16-640 in integer-N mode
+					Must be 20-320 in fractional-N mode
+	@param prediv	Pre-divider from reference clock to PFD. Must be 1-63
+	@param postdiv1	Post-divider from reference clock to intermediate output
+					Must be 1-7
+	@param postdiv2	Post-divider from intermediate output to final output
+					Must be 1-7
+ */
+void RCCHelper::ConfigureGeneralPLL(
+	uint32_t idx,
+	uint32_t prediv,
+	uint32_t vcomult,
+	uint32_t postdiv1,
+	uint32_t postdiv2
+	)
 {
-	RCC.AHB2ENR |= RCC_AHB2_SRAM2;
+	//Find the PLL we're going to use
+	volatile pllcfg_t* pll = nullptr;
+	switch(idx)
+	{
+		case 4:
+			pll = &RCC.PLL4;
+			break;
+
+		case 5:
+			pll = &RCC.PLL5;
+			break;
+
+		case 6:
+			pll = &RCC.PLL6;
+			break;
+
+		case 7:
+			pll = &RCC.PLL7;
+			break;
+
+		case 8:
+			pll = &RCC.PLL8;
+			break;
+
+		//invalid input, hang
+		default:
+			while(1)
+			{}
+	}
+
+	//Enable reference clock, make sure it's active
+	pll->CFGR1 |= RCC_PLLCFGR1_CKREFST;
+	while( (pll->CFGR1 & RCC_PLLCFGR1_CKREFST) != RCC_PLLCFGR1_CKREFST)
+	{}
+
+	//Set VCO multiplier and pre-divider
+	pll->CFGR2 = (vcomult << 16) | prediv;
+
+	//Disable spread spectrum clock generation
+	pll->CFGR3 = RCC_PLL3CFGR_SSCGDIS;
+
+	//Enable and configure post-divider
+	pll->CFGR4 = RCC_PLL4CFGR_FOUTPOSTDIVEN;
+	pll->CFGR6 = postdiv1;
+	pll->CFGR7 = postdiv2;
+
+	//Start the PLL
+	pll->CFGR1 |= RCC_PLLCFGR1_PLLEN;
+
+	//Done, wait for lock
+	while( (pll->CFGR1 & RCC_PLLCFGR1_PLLRDY) != RCC_PLLCFGR1_PLLRDY)
+	{}
 }
 
-void RCCHelper::EnableSram1()
+/**
+	@brief Turn on the HSE oscillator and wait for it to stabilize
+ */
+void RCCHelper::EnableHighSpeedExternalClock()
 {
-	RCC.AHB2ENR |= RCC_AHB2_SRAM1;
+	RCC.OCENSETR = RCC_OCEN_HSEON;
+	while( (RCC.OCRDYR & RCC_OCRDY_HSERDY) != RCC_OCRDY_HSERDY)
+	{}
 }
 
-void RCCHelper::EnableBackupSram()
+///@brief Wait for a pre-divider lane to be idle
+void RCCHelper::WaitForPreDividerIdle(rcc_xbar_channel lane)
 {
-	RCC.AHB4ENR |= RCC_AHB4_BKPRAM;
+	if(lane < 32)
+	{
+		uint32_t mask = (1 << lane);
+		while(RCC.PREDIVSR1 & mask)
+		{}
+	}
+	else
+	{
+		uint32_t mask = (1 << (lane-32));
+		while(RCC.PREDIVSR2 & mask)
+		{}
+	}
 }
+
+///@brief Wait for a post-divider lane to be idle
+void RCCHelper::WaitForPostDividerIdle(rcc_xbar_channel lane)
+{
+	if(lane < 32)
+	{
+		uint32_t mask = (1 << lane);
+		while(RCC.FINDIVSR1 & mask)
+		{}
+	}
+	else
+	{
+		uint32_t mask = (1 << (lane-32));
+		while(RCC.FINDIVSR2 & mask)
+		{}
+	}
+}
+
+/**
+	@brief Configure a crossbar divider
+
+	@param lane		Crossbar lane (0 to 63)
+	@param prediv	Pre-divider value (1, 2, 4, or 1024)
+	@param findiv	Final divider value (1 to 64)
+ */
+void RCCHelper::SetCrossbarDivider(rcc_xbar_channel lane, rcc_prediv prediv, uint32_t findiv)
+{
+	//Configure pre-divider
+	WaitForPreDividerIdle(lane);
+	RCC.PREDIVCFGR[lane] = prediv;
+	WaitForPreDividerIdle(lane);
+
+	//Configure post-divider
+	WaitForPostDividerIdle(lane);
+	RCC.FINDIVCFGR[lane] = RCC_FINDIV_EN | ( (findiv - 1) & 0x3f);
+	WaitForPostDividerIdle(lane);
+}
+
+/**
+	@brief Configure the mux selector on the crossbar output
+ */
+void RCCHelper::SetCrossbarMux(rcc_xbar_channel lane, rcc_xbarmux mux)
+{
+	WaitForCrossbarIdle(lane);
+	RCC.XBARCFGR[lane] = RCC_XBAR_EN | static_cast<int>(mux);
+	WaitForCrossbarIdle(lane);
+}
+
 #endif

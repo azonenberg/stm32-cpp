@@ -29,7 +29,9 @@
 
 #include <stm32mp257.h>
 
-//TODO: Move common peripherals into a header or something we can include to deduplicate
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Generic
+// TODO: Move common peripherals into a header or something we can include to deduplicate
 
 volatile gpio_t GPIOA __attribute__((section(".gpioa")));
 volatile gpio_t GPIOB __attribute__((section(".gpiob")));
@@ -75,6 +77,17 @@ volatile i2c_t I2C6 __attribute__((section(".i2c6")));
 volatile i2c_t I2C7 __attribute__((section(".i2c7")));
 volatile i2c_t I2C8 __attribute__((section(".i2c8")));
 
-volatile scb_t SCB __attribute__((section(".scb")));
+volatile usart_t USART1 __attribute__((section(".usart1")));
+volatile usart_t USART2 __attribute__((section(".usart2")));
+volatile usart_t USART3 __attribute__((section(".usart3")));
+volatile usart_t UART4 __attribute__((section(".uart4")));
+volatile usart_t UART5 __attribute__((section(".uart5")));
+volatile usart_t USART6 __attribute__((section(".usart6")));
+volatile usart_t UART7 __attribute__((section(".uart7")));
+volatile usart_t UART8 __attribute__((section(".uart8")));
 
 volatile pwr_t PWR __attribute__((section(".pwr")));
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// M33 specific
+volatile scb_t SCB __attribute__((section(".scb")));

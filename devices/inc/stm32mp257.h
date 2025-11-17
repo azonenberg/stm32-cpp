@@ -95,6 +95,17 @@ extern volatile i2c_t I2C6;
 extern volatile i2c_t I2C7;
 extern volatile i2c_t I2C8;
 
+#define USART_T_VERSION 3
+#include "stm32-usart.h"
+extern volatile usart_t USART1;
+extern volatile usart_t USART2;
+extern volatile usart_t USART3;
+extern volatile usart_t UART4;
+extern volatile usart_t UART5;
+extern volatile usart_t USART6;
+extern volatile usart_t UART7;
+extern volatile usart_t UART8;
+
 #define PWR_T_VERSION 2
 #include "stm32-pwr.h"
 extern volatile pwr_t PWR;

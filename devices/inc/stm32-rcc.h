@@ -150,6 +150,110 @@ enum rcc_genericcfgr
 	RCC_GENERIC_CFGR_EN = 2
 };
 
+enum rcc_ocen
+{
+	RCC_OCEN_HSEON		= 0x0000'0100,
+	RCC_OCEN_HSION		= 0x0000'0001
+};
+
+enum rcc_ocrdy
+{
+	RCC_OCRDY_HSERDY	= 0x0000'0100,
+	RCC_OCRDY_HSIRDY	= 0x0000'0001
+};
+
+//Bit positions in MUXSELCFGR
+enum rcc_muxsel_lane
+{
+	RCC_MUXSEL_PLL3		= 28,
+	RCC_MUXSEL_PLL2		= 24,
+	RCC_MUXSEL_PLL1		= 20,
+	RCC_MUXSEL_PLL8		= 16,
+	RCC_MUXSEL_PLL7		= 12,
+	RCC_MUXSEL_PLL6		= 8,
+	RCC_MUXSEL_PLL5		= 4,
+	RCC_MUXSEL_PLL4		= 0
+};
+
+//Selectors for MUXSELCFGR
+enum rcc_muxsel_val
+{
+	RCC_MUXSEL_HSI		= 0,
+	RCC_MUXSEL_HSE		= 1,
+	RCC_MUXSEL_MSI		= 2
+};
+
+enum rcc_pll_cfgr1
+{
+	RCC_PLLCFGR1_CKREFST	= 0x1000'0000,
+	RCC_PLLCFGR1_PLLRDY		= 0x0100'0000,
+	RCC_PLLCFGR1_PLLEN		= 0x0000'0100,
+};
+
+enum rcc_pll_cfgr3
+{
+	RCC_PLL3CFGR_SSCGDIS	= 0x0400'0000
+};
+
+enum rcc_pll_cfgr4
+{
+	RCC_PLL4CFGR_FOUTPOSTDIVEN	= 0x0000'0200
+};
+
+enum rcc_prediv
+{
+	RCC_PREDIV_1			= 0,
+	RCC_PREDIV_2			= 1,
+	RCC_PREDIV_4			= 3,
+	RCC_PREDIV_1024			= 0x3ff
+};
+
+enum rcc_findiv
+{
+	RCC_FINDIV_EN			= 0x40
+};
+
+enum rcc_xbarcfg
+{
+	RCC_XBAR_STS			= 0x80,
+	RCC_XBAR_EN				= 0x40
+};
+
+enum rcc_xbarmux
+{
+	RCC_XBAR_PLL4			= 0,
+	RCC_XBAR_PLL5			= 1,
+	RCC_XBAR_PLL6			= 2,
+	RCC_XBAR_PLL7			= 3,
+	RCC_XBAR_PLL8			= 4,
+	RCC_XBAR_HSI			= 5,
+	RCC_XBAR_HSE			= 6,
+	RCC_XBAR_MSI			= 7,
+	RCC_XBAR_HSI_KER		= 8,
+	RCC_XBAR_HSE_KER		= 9,
+	RCC_XBAR_MSI_KER		= 0xa,
+	RCC_XBAR_SPDIF_SYMB		= 0xb,
+	RCC_XBAR_I2C_CK			= 0xc,
+	RCC_XBAR_LSI			= 0xd,
+	RCC_XBAR_LSE			= 0xe
+};
+
+//see table 13
+enum rcc_xbar_channel
+{
+	RCC_ck_icn_hs_mcu		= 0,	//max 400 MHz
+	RCC_ck_ker_usart6		= 20	//max 100 MHz
+};
+
+enum rcc_apb_div
+{
+	RCC_APB_DIV_1		= 0,
+	RCC_APB_DIV_2		= 1,
+	RCC_APB_DIV_4		= 2,
+	RCC_APB_DIV_8		= 3,
+	RCC_APB_DIV_16		= 4
+};
+
 struct rcc_t
 {
 	uint32_t SECCFGR0;
