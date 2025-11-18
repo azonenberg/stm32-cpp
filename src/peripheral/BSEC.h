@@ -27,121 +27,16 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef stm32mp257_h
-#define stm32mp257_h
+#ifndef BSEC_h
+#define BSEC_h
 
-#include <stdint.h>
+#ifdef HAVE_BSEC
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// RCC
-
-#define RCC_T_VERSION 2
-#include "stm32-rcc.h"
-extern volatile rcc_t RCC;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Generic peripherals
-
-#define GPIO_T_VERSION 3
-#include "stm32-gpio.h"
-extern volatile gpio_t GPIOA;
-extern volatile gpio_t GPIOB;
-extern volatile gpio_t GPIOC;
-extern volatile gpio_t GPIOD;
-extern volatile gpio_t GPIOE;
-extern volatile gpio_t GPIOF;
-extern volatile gpio_t GPIOG;
-extern volatile gpio_t GPIOH;
-extern volatile gpio_t GPIOI;
-extern volatile gpio_t GPIOJ;
-extern volatile gpio_t GPIOK;
-extern volatile gpio_t GPIOZ;
-
-#define TIM_T_VERSION 2
-#include "stm32-tim.h"
-extern volatile tim_t TIM1;
-extern volatile tim_t TIM2;
-extern volatile tim_t TIM3;
-extern volatile tim_t TIM4;
-extern volatile tim_t TIM5;
-extern volatile tim_t TIM6;
-extern volatile tim_t TIM7;
-extern volatile tim_t TIM8;
-//no TIM9??
-extern volatile tim_t TIM10;
-extern volatile tim_t TIM11;
-extern volatile tim_t TIM12;
-extern volatile tim_t TIM13;
-extern volatile tim_t TIM14;
-extern volatile tim_t TIM15;
-extern volatile tim_t TIM16;
-extern volatile tim_t TIM17;
-//no TIM18
-//no TIM19
-extern volatile tim_t TIM20;
-
-#define CRC_T_VERSION 2
-#include "stm32-crc.h"
-extern volatile crc_t _CRC;
-
-#define I2C_T_VERSION 2
-#include "stm32-i2c.h"
-extern volatile i2c_t I2C1;
-extern volatile i2c_t I2C2;
-extern volatile i2c_t I2C3;
-extern volatile i2c_t I2C4;
-extern volatile i2c_t I2C5;
-extern volatile i2c_t I2C6;
-extern volatile i2c_t I2C7;
-extern volatile i2c_t I2C8;
-
-#define USART_T_VERSION 3
-#include "stm32-usart.h"
-extern volatile usart_t USART1;
-extern volatile usart_t USART2;
-extern volatile usart_t USART3;
-extern volatile usart_t UART4;
-extern volatile usart_t UART5;
-extern volatile usart_t USART6;
-extern volatile usart_t UART7;
-extern volatile usart_t UART8;
-
-#define OCTOSPI_T_VERSION 2
-#include "stm32-octospi.h"
-extern volatile octospi_t OCTOSPI1;
-extern volatile octospi_t OCTOSPI2;
-extern volatile octospim_t OCTOSPIM;
-
-#define PWR_T_VERSION 2
-#include "stm32-pwr.h"
-extern volatile pwr_t PWR;
-
-#define BSEC_T_VERSION 1
-#include "stm32-bsec.h"
-extern volatile bsec_t _BSEC;
-
-#define SYSCFG_T_VERSION 2
-#include "stm32-syscfg.h"
-extern volatile syscfg_t SYSCFG;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Peripherals only for CPU2 (Cortex-M33)
-
-#ifdef STM32MP2_CPU2
-
-#define SCB_T_VERSION 3
-#include "stm32-scb.h"
-extern volatile scb_t SCB;
-
-//TODO: The M33 does in fact have an L1
-//#define HAVE_L1
+class BSEC
+{
+public:
+};
 
 #endif
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Feature flags common to the entire platform
-
-//don't try to use internal flash
-#define NO_INTERNAL_FLASH
 
 #endif

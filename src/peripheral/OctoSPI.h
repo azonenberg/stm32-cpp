@@ -54,6 +54,7 @@ public:
 	void SetDataMode(mode_t mode = MODE_SINGLE);
 	void SetDummyCycleCount(uint8_t ncycles);
 	void SetDeselectTime(uint8_t ncycles);
+	void SetSizeBytes(uint32_t sizeBytes);
 
 	void SetDQSEnable(bool enable);
 	void SetSampleDelay(bool delay, bool delayHoldQuarterCycle);

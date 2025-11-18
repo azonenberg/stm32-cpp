@@ -343,126 +343,11 @@ extern volatile cryp_t CRYP;
 #include "stm32-hash.h"
 extern volatile hash_t HASH;
 
-typedef struct
-{
-	uint32_t		CR;
-	uint32_t		field_4;
-	uint32_t		DCR1;
-	uint32_t		DCR2;
-	uint32_t		DCR3;
-	uint32_t		DCR4;
-	uint32_t		field_18[2];
-	uint32_t		SR;
-	uint32_t		FCR;
-	uint32_t		field_28[6];
-	uint32_t		DLR;
-	uint32_t		field_44;
-	uint32_t		AR;
-	uint32_t		field_4c;
-	uint32_t		DR;
-	uint32_t		field_54[11];
-	uint32_t		PSMKR;
-	uint32_t		field_84;
-	uint32_t		PSMAR;
-	uint32_t		field_8c;
-	uint32_t		PIR;
-	uint32_t		field_94[27];
-	uint32_t		CCR;
-	uint32_t		field_104;
-	uint32_t		TCR;
-	uint32_t		field_10c;
-	uint32_t		IR;
-	uint32_t		field_114[3];
-	uint32_t		ABR;
-	uint32_t		field_124[3];
-	uint32_t		LPTR;
-	uint32_t		field_134[3];
-	uint32_t		WPCCR;
-	uint32_t		field_144;
-	uint32_t		WPTCR;
-	uint32_t		field_14c;
-	uint32_t		WPIR;
-	uint32_t		field_154[3];
-	uint32_t		WPABR;
-	uint32_t		field_164[7];
-	uint32_t		WCCR;
-	uint32_t		field_184;
-	uint32_t		WTCR;
-	uint32_t		field_18c;
-	uint32_t		WIR;
-	uint32_t		field_194[3];
-	uint32_t		WABR;
-	uint32_t		field_1a4[23];
-	uint32_t		HLCR;
-} octospi_t;
+#define OCTOSPI_T_VERSION 1
+#include "stm32-octospi.h"
 
 extern volatile octospi_t OCTOSPI1;
 extern volatile octospi_t OCTOSPI2;
-
-enum octospi_cr
-{
-	OCTOSPI_FMODE_MASK				= 0x30000000,
-	OCTOSPI_FMODE_INDIRECT_WRITE	= 0x00000000,
-	OCTOSPI_FMODE_INDIRECT_READ		= 0x10000000,
-	OCTOSPI_FMODE_AUTO_POLL			= 0x20000000,
-	OCTOSPI_FMODE_MMAP				= 0x30000000,
-
-	OCTOSPI_FTHRES_MASK				= 0x00001f00,
-
-	OCTOSPI_TCEN					= 0x00000008,
-	OCTOSPI_DMAEN					= 0x00000004,
-	OCTOSPI_ABORT					= 0x00000002,
-	OCTOSPI_EN						= 0x00000001
-};
-
-enum octospi_dcr1
-{
-	OCTOSPI_MEM_TYPE_STANDARD		= 0x02000000,
-
-	OCTOSPI_CSHT_MASK				= 0x00003f00
-};
-
-enum octospi_sr
-{
-	OCTOSPI_BUSY					= 0x00000020,
-	OCTOSPI_TOF						= 0x00000010,
-	OCTOSPI_SMF						= 0x00000008,
-	OCTOSPI_FTF						= 0x00000004,
-	OCTOSPI_TCF						= 0x00000002,
-	OCTOSPI_TEF						= 0x00000001
-};
-
-enum octospi_ccr
-{
-	OCTOSPI_SIOO					= 0x80000000,
-	OCTOSPI_DQSE					= 0x20000000,
-	OCTOSPI_DDTR					= 0x08000000,
-	OCTOSPI_DMODE_MASK				= 0x07000000,
-	OCTOSPI_ABSIZE_MASK				= 0x00300000,
-	OCTOSPI_ABDTR					= 0x00080000,
-	OCTOSPI_ABMODE_MASK				= 0x00070000,
-	OCTOSPI_ADSIZE_MASK				= 0x00003000,
-	OCTOSPI_ADDTR					= 0x00000800,
-	OCTOSPI_ADMODE_MASK				= 0x00000700,
-	OCTOSPI_ISIZE_MASK				= 0x00000030,
-	OCTOSPI_IDTR					= 0x00000008,
-	OCTOSPI_IMODE_MASK				= 0x00000007
-};
-
-enum octospi_tcr
-{
-	OCTOSPI_SSHIFT					= 0x40000000,
-	OCTOSPI_DHQC					= 0x10000000,
-	OCTOSPI_DCYC_MASK				= 0x0000001f
-};
-
-typedef struct
-{
-	uint32_t		CR;
-	uint32_t		P1CR;
-	uint32_t		P2CR;
-} octospim_t;
-
 extern volatile octospim_t OCTOSPIM;
 
 typedef struct
@@ -571,7 +456,6 @@ extern volatile dmamux_t DMAMUX1;
 //Defines for what peripherals are present / implemented
 #define HAVE_DTS
 //#define HAVE_EMAC
-#define HAVE_OCTOSPI
 #define HAVE_ITCM
 #define HAVE_FPU
 #define HAVE_L1

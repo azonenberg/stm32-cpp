@@ -30,7 +30,7 @@
 #ifndef RCC_h
 #define RCC_h
 
-#include <stm32fxxx.h>
+#include <stm32.h>
 
 /**
 	@brief Reset and Clock Control
@@ -43,6 +43,10 @@ class RCCHelper
 {
 public:
 	static void Enable(volatile gpio_t* gpio);
+
+	#ifdef HAVE_BSEC
+	static void Enable(volatile bsec_t* bsec);
+	#endif
 
 	#ifdef HAVE_DMA
 	static void Enable(volatile dma_t* dma);

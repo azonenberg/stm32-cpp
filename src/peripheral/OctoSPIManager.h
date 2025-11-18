@@ -1,8 +1,8 @@
 /***********************************************************************************************************************
 *                                                                                                                      *
-* STM32-CPP v0.1                                                                                                       *
+* STM32-CPP                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2020-2022 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2025 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -33,53 +33,58 @@
 #ifdef HAVE_OCTOSPI
 
 /**
-	@brief STM32H7 OCTOSPI manager
+	@brief OCTOSPI manager
  */
 class OctoSPIManager
 {
 public:
 
-	/**
-		@brief A group of four DQ lines from the internal controllers. May or may not be mapped to output pins.
-	 */
-	enum halfport_t
-	{
-		C1_LOW		= 0,
-		C1_HIGH		= 1,
-		C2_LOW		= 2,
-		C2_HIGH		= 3,
+	//STM32H735
+	#if OCTOSPI_T_VERSION == 1
 
-		//mux mode reuses C1 selector
-		MUX_OUT_LOW		= C1_LOW,
-		MUX_OUT_HIGH	= C1_HIGH
-	};
+		/**
+			@brief A group of four DQ lines from the internal controllers. May or may not be mapped to output pins.
+		 */
+		enum halfport_t
+		{
+			C1_LOW		= 0,
+			C1_HIGH		= 1,
+			C2_LOW		= 2,
+			C2_HIGH		= 3,
 
-	/**
-		@brief Selector for a line that can come from port 1 or 2
-	 */
-	enum channel_t
-	{
-		PORT_1 = 0,
-		PORT_2 = 1
-	};
+			//mux mode reuses C1 selector
+			MUX_OUT_LOW		= C1_LOW,
+			MUX_OUT_HIGH	= C1_HIGH
+		};
 
-	static void ConfigureMux(
-		bool			muxEnable,
-		int				busTurnaround = 1
-		);
+		/**
+			@brief Selector for a line that can come from port 1 or 2
+		 */
+		enum channel_t
+		{
+			PORT_1 = 0,
+			PORT_2 = 1
+		};
 
-	static void ConfigurePort(
-		int				port,
-		bool			dq74Enabled,
-		halfport_t		dq74Source,
-		bool			dq30Enabled,
-		halfport_t		dq30Source,
-		bool			csEnabled,
-		channel_t		csSource,
-		bool			dqsEnabled,
-		channel_t		dqsSource,
-		bool			clkEnabled,
-		channel_t		clkSource);
+		static void ConfigureMux(
+			bool			muxEnable,
+			int				busTurnaround = 1
+			);
+
+		static void ConfigurePort(
+			int				port,
+			bool			dq74Enabled,
+			halfport_t		dq74Source,
+			bool			dq30Enabled,
+			halfport_t		dq30Source,
+			bool			csEnabled,
+			channel_t		csSource,
+			bool			dqsEnabled,
+			channel_t		dqsSource,
+			bool			clkEnabled,
+			channel_t		clkSource);
+
+	#endif
 };
 
 #endif

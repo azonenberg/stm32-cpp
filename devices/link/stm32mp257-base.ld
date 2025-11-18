@@ -11,13 +11,13 @@ MEMORY
 	/* APB buses */
 	APB1(RW):				ORIGIN = 0x40000000, LENGTH = 2048K
 	APB2(RW):				ORIGIN = 0x40200000, LENGTH = 1536K
-	/* TODO: APB3 */
+	APB3(RW):				ORIGIN = 0x44000000, LENGTH = 2048K
 	/* TODO: APB4 */
 	/* TODO: SmartRun APB */
 	/* TODO: A35 debug APB */
 
 	/* AHB buses */
-	/* TODO: AHB2 */
+	AHB2(RW):				ORIGIN = 0x40400000, LENGTH = 1025K
 	/* TODO: AHB3 */
 	AHB4(RW):				ORIGIN = 0x44200000, LENGTH = 960K
 	/* TODO: AHB5 */
@@ -27,41 +27,6 @@ MEMORY
 
 SECTIONS
 {
-	/* SFRs */
-	.sfr_ahb4  (NOLOAD):
-	{
-		. = ALIGN(65536);
-		KEEP (*(.rcc))
-		. = ALIGN(65536);
-		KEEP (*(.pwr))
-		. = ALIGN(65536);
-		. += 1024;			/* EXTI1 not implemented */
-		. = ALIGN(65536);
-		. += 1024;			/* SYSCFG not implemented */
-		. = ALIGN(65536);
-		KEEP (*(.gpioa))
-		. = ALIGN(65536);
-		KEEP (*(.gpiob))
-		. = ALIGN(65536);
-		KEEP (*(.gpioc))
-		. = ALIGN(65536);
-		KEEP (*(.gpiod))
-		. = ALIGN(65536);
-		KEEP (*(.gpioe))
-		. = ALIGN(65536);
-		KEEP (*(.gpiof))
-		. = ALIGN(65536);
-		KEEP (*(.gpiog))
-		. = ALIGN(65536);
-		KEEP (*(.gpioh))
-		. = ALIGN(65536);
-		KEEP (*(.gpioi))
-		. = ALIGN(65536);
-		KEEP (*(.gpioj))
-		. = ALIGN(65536);
-		KEEP (*(.gpiok))
-	} > AHB4
-
 	.sfr_apb1  (NOLOAD):
 	{
 		. = ALIGN(65536);
@@ -179,4 +144,82 @@ SECTIONS
 		. = ALIGN(65536);
 		KEEP (*(.uart8))
 	} > APB2
+
+	.sfr_apb3  (NOLOAD):
+	{
+		. = ALIGN(65536);
+		KEEP (*(.bsec))
+	} > APB3
+
+	.sfr_ahb2  (NOLOAD):
+	{
+		. = ALIGN(65536);
+		. += 1024;	/* HPDMA1 not implemented */
+		. = ALIGN(65536);
+		. += 1024;	/* HPDMA2 not implemented */
+		. = ALIGN(65536);
+		. += 1024;	/* HPDMA3 not implemented */
+		. = ALIGN(65536);
+		KEEP (*(.octospi1))
+		. = ALIGN(65536);
+		KEEP (*(.octospi2))
+		. = ALIGN(65536);
+		. += 1024;	/* OTFDEC1 not implemented */
+		. = ALIGN(65536);
+		. += 1024;	/* OTFDEC2 not implemented */
+		. = ALIGN(65536);
+		. += 1024;	/* ICACHE not implemented */
+		. = ALIGN(65536);
+		. += 1024;	/* DCACHE not implemented */
+		. = ALIGN(65536);
+		. += 1024;	/* IPCC1 not implemented */
+		. = ALIGN(65536);
+		. += 1024;	/* DCMI not implemented */
+		. = ALIGN(65536);
+		. += 1024;	/* PSSI not implemented */
+		. = ALIGN(65536);
+		. += 1024;	/* CRC not implemented */
+		. = ALIGN(65536);
+		. += 1024;	/* MDF1 not implemented */
+		. = ALIGN(65536);
+		. += 1024;	/* ADC1/2 not implemented */
+		. = ALIGN(65536);
+		. += 1024;	/* ADC3 not implemented */
+		. = ALIGN(65536);
+		KEEP (*(.octospim))
+	} > AHB2
+
+	.sfr_ahb4  (NOLOAD):
+	{
+		. = ALIGN(65536);
+		KEEP (*(.rcc))
+		. = ALIGN(65536);
+		KEEP (*(.pwr))
+		. = ALIGN(65536);
+		. += 1024;			/* EXTI1 not implemented */
+		. = ALIGN(65536);
+		KEEP (*(.syscfg))
+		. = ALIGN(65536);
+		KEEP (*(.gpioa))
+		. = ALIGN(65536);
+		KEEP (*(.gpiob))
+		. = ALIGN(65536);
+		KEEP (*(.gpioc))
+		. = ALIGN(65536);
+		KEEP (*(.gpiod))
+		. = ALIGN(65536);
+		KEEP (*(.gpioe))
+		. = ALIGN(65536);
+		KEEP (*(.gpiof))
+		. = ALIGN(65536);
+		KEEP (*(.gpiog))
+		. = ALIGN(65536);
+		KEEP (*(.gpioh))
+		. = ALIGN(65536);
+		KEEP (*(.gpioi))
+		. = ALIGN(65536);
+		KEEP (*(.gpioj))
+		. = ALIGN(65536);
+		KEEP (*(.gpiok))
+	} > AHB4
 }

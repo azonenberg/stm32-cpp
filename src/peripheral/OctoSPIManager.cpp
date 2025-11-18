@@ -1,8 +1,8 @@
 /***********************************************************************************************************************
 *                                                                                                                      *
-* STM32-CPP v0.1                                                                                                       *
+* STM32-CPP                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2020-2023 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2025 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -31,6 +31,9 @@
 #include <peripheral/OctoSPIManager.h>
 
 #ifdef HAVE_OCTOSPI
+
+//STM32H735
+#if OCTOSPI_T_VERSION == 1
 
 /**
 	@brief Enables or disables mux mode
@@ -94,4 +97,5 @@ void OctoSPIManager::ConfigurePort(
 		OCTOSPIM.P2CR = val;
 }
 
+#endif
 #endif

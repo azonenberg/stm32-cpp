@@ -48,16 +48,6 @@ OctoSPI::OctoSPI(volatile octospi_t* lane, uint32_t sizeBytes, uint8_t prescale)
 {
 	RCCHelper::Enable(lane);
 
-	//5 bit device size field, offset by 1
-	//TODO: can this be done in a less ugly fashion?
-	int nbits = 0;
-	for(int i=0; i<32; i++)
-	{
-		if( (sizeBytes >> i) & 1)
-			nbits = i;
-	}
-	nbits --;
-
 	//Wait until not busy, then disable
 	Abort();
 	while(lane->SR & OCTOSPI_BUSY)
@@ -65,9 +55,7 @@ OctoSPI::OctoSPI(volatile octospi_t* lane, uint32_t sizeBytes, uint8_t prescale)
 	lane->CR = 0;
 
 	//Default configuration
-	lane->DCR1 =
-		OCTOSPI_MEM_TYPE_STANDARD |
-		(nbits << 16);
+	SetSizeBytes(sizeBytes);
 	lane->DCR2 = prescale - 1;
 	lane->DCR3 = 0;
 	lane->DCR4 = 0;
@@ -78,6 +66,23 @@ OctoSPI::OctoSPI(volatile octospi_t* lane, uint32_t sizeBytes, uint8_t prescale)
 	lane->WTCR = 0;
 	lane->IR = 0;
 	lane->CR = OCTOSPI_EN;
+}
+
+void OctoSPI::SetSizeBytes(uint32_t sizeBytes)
+{
+	//5 bit device size field, offset by 1
+	//TODO: can this be done in a less ugly fashion?
+	int nbits = 0;
+	for(int i=0; i<32; i++)
+	{
+		if( (sizeBytes >> i) & 1)
+			nbits = i;
+	}
+	nbits --;
+
+	m_lane->DCR1 =
+		OCTOSPI_MEM_TYPE_STANDARD |
+		(nbits << 16);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

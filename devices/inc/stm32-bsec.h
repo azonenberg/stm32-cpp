@@ -27,121 +27,58 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef stm32mp257_h
-#define stm32mp257_h
+#ifndef stm32_bsec_h
+#define stm32_bsec_h
 
-#include <stdint.h>
+#define HAVE_BSEC
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// RCC
+//STM32MP257
+#if BSEC_T_VERSION == 1
 
-#define RCC_T_VERSION 2
-#include "stm32-rcc.h"
-extern volatile rcc_t RCC;
+//Fuse addresses
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Generic peripherals
+struct bsec_t
+{
+	uint32_t FVR[376];
+	uint32_t field_5e0[136];
+	uint32_t SPLOCK[12];
+	uint32_t field_830[4];
+	uint32_t SWLOCK[12];
+	uint32_t field_870[4];
+	uint32_t SRLOCK[12];
+	uint32_t field_8b0[4];
+	uint32_t OTPVLDR[12];
+	uint32_t field_8f0[20];
+	uint32_t SFSR[12];
+	uint32_t field_970[165];
+	uint32_t OTPCR;
+	uint32_t WDR;
+	uint32_t field_c0c[125];
+	uint32_t SCRATCHR[4];
+	uint32_t LOCKR;
+	uint32_t JTAGINR;
+	uint32_t JTAGOUTR;
+	uint32_t field_e1c;
+	uint32_t DENR;
+	uint32_t UNMAPR;
+	uint32_t field_e28[6];
+	uint32_t SR;
+	uint32_t OTPSR;
+	uint32_t field_e48[62];
+	uint32_t WOSCR[8];
+	uint32_t field_f60[34];
+	uint32_t HRCR;
+	uint32_t WRCR;
+	uint32_t field_ff0;
+	uint32_t VERR;
+	uint32_t IPIDR;
+	uint32_t SIDR;
+};
 
-#define GPIO_T_VERSION 3
-#include "stm32-gpio.h"
-extern volatile gpio_t GPIOA;
-extern volatile gpio_t GPIOB;
-extern volatile gpio_t GPIOC;
-extern volatile gpio_t GPIOD;
-extern volatile gpio_t GPIOE;
-extern volatile gpio_t GPIOF;
-extern volatile gpio_t GPIOG;
-extern volatile gpio_t GPIOH;
-extern volatile gpio_t GPIOI;
-extern volatile gpio_t GPIOJ;
-extern volatile gpio_t GPIOK;
-extern volatile gpio_t GPIOZ;
+#else
 
-#define TIM_T_VERSION 2
-#include "stm32-tim.h"
-extern volatile tim_t TIM1;
-extern volatile tim_t TIM2;
-extern volatile tim_t TIM3;
-extern volatile tim_t TIM4;
-extern volatile tim_t TIM5;
-extern volatile tim_t TIM6;
-extern volatile tim_t TIM7;
-extern volatile tim_t TIM8;
-//no TIM9??
-extern volatile tim_t TIM10;
-extern volatile tim_t TIM11;
-extern volatile tim_t TIM12;
-extern volatile tim_t TIM13;
-extern volatile tim_t TIM14;
-extern volatile tim_t TIM15;
-extern volatile tim_t TIM16;
-extern volatile tim_t TIM17;
-//no TIM18
-//no TIM19
-extern volatile tim_t TIM20;
+#error Undefined or unspecified RCC_T_VERSION
 
-#define CRC_T_VERSION 2
-#include "stm32-crc.h"
-extern volatile crc_t _CRC;
+#endif	//version check
 
-#define I2C_T_VERSION 2
-#include "stm32-i2c.h"
-extern volatile i2c_t I2C1;
-extern volatile i2c_t I2C2;
-extern volatile i2c_t I2C3;
-extern volatile i2c_t I2C4;
-extern volatile i2c_t I2C5;
-extern volatile i2c_t I2C6;
-extern volatile i2c_t I2C7;
-extern volatile i2c_t I2C8;
-
-#define USART_T_VERSION 3
-#include "stm32-usart.h"
-extern volatile usart_t USART1;
-extern volatile usart_t USART2;
-extern volatile usart_t USART3;
-extern volatile usart_t UART4;
-extern volatile usart_t UART5;
-extern volatile usart_t USART6;
-extern volatile usart_t UART7;
-extern volatile usart_t UART8;
-
-#define OCTOSPI_T_VERSION 2
-#include "stm32-octospi.h"
-extern volatile octospi_t OCTOSPI1;
-extern volatile octospi_t OCTOSPI2;
-extern volatile octospim_t OCTOSPIM;
-
-#define PWR_T_VERSION 2
-#include "stm32-pwr.h"
-extern volatile pwr_t PWR;
-
-#define BSEC_T_VERSION 1
-#include "stm32-bsec.h"
-extern volatile bsec_t _BSEC;
-
-#define SYSCFG_T_VERSION 2
-#include "stm32-syscfg.h"
-extern volatile syscfg_t SYSCFG;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Peripherals only for CPU2 (Cortex-M33)
-
-#ifdef STM32MP2_CPU2
-
-#define SCB_T_VERSION 3
-#include "stm32-scb.h"
-extern volatile scb_t SCB;
-
-//TODO: The M33 does in fact have an L1
-//#define HAVE_L1
-
-#endif
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Feature flags common to the entire platform
-
-//don't try to use internal flash
-#define NO_INTERNAL_FLASH
-
-#endif
+#endif	//include guard

@@ -86,7 +86,15 @@ volatile usart_t USART6 __attribute__((section(".usart6")));
 volatile usart_t UART7 __attribute__((section(".uart7")));
 volatile usart_t UART8 __attribute__((section(".uart8")));
 
+volatile octospi_t OCTOSPI1 __attribute__((section(".octospi1")));
+volatile octospi_t OCTOSPI2 __attribute__((section(".octospi2")));
+volatile octospim_t OCTOSPIM __attribute__((section(".octospim")));
+
 volatile pwr_t PWR __attribute__((section(".pwr")));
+
+volatile bsec_t _BSEC __attribute__((section(".bsec")));
+
+volatile syscfg_t SYSCFG __attribute__((section(".syscfg")));
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // M33 specific

@@ -242,7 +242,8 @@ enum rcc_xbarmux
 enum rcc_xbar_channel
 {
 	RCC_ck_icn_hs_mcu		= 0,	//max 400 MHz
-	RCC_ck_ker_usart6		= 20	//max 100 MHz
+	RCC_ck_ker_usart6		= 20,	//max 100 MHz
+	RCC_ck_ker_ospi1		= 48	//max 133 MHz
 };
 
 enum rcc_apb_div

@@ -80,6 +80,124 @@ enum syscfg_pmcr
 	ETH_MODE_RMII	= 0x00800000
 };
 
+//STM32MP257
+#elif SYSCFG_T_VERSION == 2
+
+enum syscfg_bootmode_t
+{
+	BOOT_MODE_DEV1	= 3,
+	BOOT_MODE_DEV2	= 12
+};
+
+struct syscfg_t
+{
+	uint32_t	BOOTSR;
+	uint32_t	BOOTCR;
+	uint32_t	field_08[254];
+	uint32_t	DLYBSD1CR;
+	uint32_t	DLYBSD1SR;
+	uint32_t	SDMMC1CR;
+	uint32_t	field_40c[253];
+	uint32_t	DLYBSD2CR;
+	uint32_t	DLYBSD2SR;
+	uint32_t	SDMMC2CR;
+	uint32_t	field_80c[253];
+	uint32_t	DLYBSD3CR;
+	uint32_t	DLYBSD3SR;
+	uint32_t	field_c08[254];
+	uint32_t	DLYBOS1CR;
+	uint32_t	DLYBOS1SR;
+	uint32_t	field_1008[254];
+	uint32_t	DLYBOS2CR;
+	uint32_t	DLYBOS2SR;
+	uint32_t	field_1408[254];
+	uint32_t	VDERAMCR;
+	uint32_t	POTTAMPRSTCR;
+	uint32_t	field_1808[254];
+	uint32_t	M33SSCR;
+	uint32_t	field_1c04[255];
+	uint32_t	ICNQPCR1;
+	uint32_t	ICNQPCR2;
+	uint32_t	ICNEWRCR;
+	uint32_t	ICNCGCR;
+	uint32_t	ICNGPUBWLCR;
+	uint32_t	ICNE2EBWRCR;
+	uint32_t	SAFERSTCR;
+	uint32_t	ICNPCIBWLCR;
+	uint32_t	ICNETHBWLCR;
+	uint32_t	ICNUSB3BWLCR;
+	uint32_t	ICNCPU1BWLCR;
+	uint32_t	ICNLTDCBWLCR;
+	uint32_t	ICNDCMIPPBWLCR;
+	uint32_t	ICNVDEBWLCR;
+	uint32_t	field_2038[242];
+	uint32_t	USB2PHY1CR;
+	uint32_t	USB2PHY1BCCR;
+	uint32_t	USB2PHY1BCSR;
+	uint32_t	USB2PHY1TRIM1CR;
+	uint32_t	USB2PHY1TRIM2CR;
+	uint32_t	field_2414[3];
+	uint32_t	USBHCR;
+	uint32_t	field_2424[247];
+	uint32_t	USB2PHY2CR;
+	uint32_t	field_2804;
+	uint32_t	USB2PHY2TRIM1CR;
+	uint32_t	USB2PHY2TRIM2CR;
+	uint32_t	field_2810[252];
+	uint32_t	OCTOSPIAMCR;
+	uint32_t	field_2c04[255];
+	uint32_t	ETH1CR;
+	uint32_t	field_3004[3];
+	uint32_t	ETH1SR;
+	uint32_t	field_3014[251];
+	uint32_t	ETH2CR;
+	uint32_t	field_3404[3];
+	uint32_t	ETH2SR;
+	uint32_t	field_3414[251];
+	uint32_t	ETHSWCR;
+	uint32_t	field_3804[511];
+	uint32_t	VDDIO3CCCR;
+	uint32_t	VDDIO3CCSR;
+	uint32_t	VDDIO4CCCR;
+	uint32_t	VDDIO4CCSR;
+	uint32_t	SYSCFG_VDDCCCR;
+	uint32_t	SYSCFG_VDDCCSR;
+	uint32_t	VDDIO2CCCR;
+	uint32_t	VDDIO2CCSR;
+	uint32_t	VDDIO1CCCR;
+	uint32_t	VDDIO1CCSR;
+	uint32_t	field_4028[246];
+	uint32_t	CBR;
+	uint32_t	field_4404[255];
+	uint32_t	USB3DRCR;
+	uint32_t	USB3DRSR;
+	uint32_t	field_4808[254];
+	uint32_t	COMBOPHYCR1;
+	uint32_t	COMBOPHYCR2;
+	uint32_t	COMBOPHYCR3;
+	uint32_t	COMBOPHYCR4;
+	uint32_t	COMBOPHYCR5;
+	uint32_t	COMBOPHYSR;
+	uint32_t	field_4c18[250];
+	uint32_t	DISPLAYCLKCR;
+	uint32_t	field_5004[1023];
+	uint32_t	PCIECR;
+	uint32_t	PCIEPMEMSICR;
+	uint32_t	PCIEAERRCMSICR;
+	uint32_t	PCIESYSRCCR;
+	uint32_t	PCIEEPTMIRQCR;
+	uint32_t	field_6014[27];
+	uint32_t	PCIEPRGCR;
+	uint32_t	field_6084[31];
+	uint32_t	PCIESR1;
+	uint32_t	PCIESR2;
+	uint32_t	field_6108[190];
+	uint32_t	IDC;
+	uint32_t	field_6404[1788];
+	uint32_t	VERR;
+	uint32_t	IPIDR;
+	uint32_t	SIDR;
+};
 
 #else
 

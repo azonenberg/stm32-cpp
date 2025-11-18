@@ -34,6 +34,13 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Peripheral enabling
 
+#ifdef HAVE_BSEC
+void RCCHelper::Enable([[maybe_unused]]volatile bsec_t* unused)
+{
+	RCC.BSECCFGR |= RCC_GENERIC_CFGR_EN;
+}
+#endif
+
 #ifdef HAVE_DMA
 void RCCHelper::Enable(volatile dma_t* dma)
 {
@@ -595,6 +602,10 @@ void RCCHelper::Enable(volatile octospim_t* /*octospim*/)
 {
 	#if defined(STM32H735)
 		RCC.AHB3ENR |= RCC_AHB3_OCTOSPIM;
+	#elif defined(STM32MP257)
+		RCC.OSPIIOMCFGR |= RCC_GENERIC_CFGR_EN;
+	#else
+		#error Unknown OCTOSPIM configuration (unsupported part)
 	#endif
 }
 
@@ -605,6 +616,13 @@ void RCCHelper::Enable(volatile octospi_t* octospi)
 			RCC.AHB3ENR |= RCC_AHB3_OCTOSPI1;
 		else if(octospi == &OCTOSPI2)
 			RCC.AHB3ENR |= RCC_AHB3_OCTOSPI2;
+	#elif defined(STM32MP257)
+		if(octospi == &OCTOSPI1)
+			RCC.OSPI1CFGR |= RCC_GENERIC_CFGR_EN;
+		else if(octospi == &OCTOSPI2)
+			RCC.OSPI2CFGR |= RCC_GENERIC_CFGR_EN;
+	#else
+		#error Unknown OCTOSPI configuration (unsupported part)
 	#endif
 }
 
