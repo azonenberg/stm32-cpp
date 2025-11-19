@@ -41,40 +41,50 @@
 
 	@param chan			The peripheral to use
 	@param features		Capabilities of the requested timer
+	@param prescale		Pre-scaler value (one based, i.e. 1 = divide by 1)
  */
 Timer::Timer(volatile tim_t* chan, Features features, uint16_t prescale)
 	: m_chan(chan)
 	, m_features(features)
 {
 	RCCHelper::Enable(chan);
+	Initialize(prescale);
+}
 
+/**
+	@brief Reinitialize a timer
+
+	@param prescale	Pre-scaler value (one based, i.e. 1 = divide by 1)
+ */
+void Timer::Initialize(uint16_t prescale)
+{
 	//Configure the counter
-	chan->CNT = 0x0;
-	chan->PSC = (prescale - 1);
+	m_chan->CNT = 0x0;
+	m_chan->PSC = (prescale - 1);
 
 	//Turn off most features
-	chan->CR2 = 0x0;
-	chan->SMCR = 0x0;
-	chan->DIER = 0x0;
-	chan->CCMR1 = 0x0;
-	chan->CCMR2 = 0x0;
-	chan->CCR1 = 0x0;
-	chan->CCR2 = 0x0;
-	chan->CCR3 = 0x0;
-	chan->CCR4 = 0x0;
-	chan->CCER = 0x0;
+	m_chan->CR2 = 0x0;
+	m_chan->SMCR = 0x0;
+	m_chan->DIER = 0x0;
+	m_chan->CCMR1 = 0x0;
+	m_chan->CCMR2 = 0x0;
+	m_chan->CCR1 = 0x0;
+	m_chan->CCR2 = 0x0;
+	m_chan->CCR3 = 0x0;
+	m_chan->CCR4 = 0x0;
+	m_chan->CCER = 0x0;
 #if !defined(STM32H7) && !defined(STM32L0)
-	chan->BDTR = 0x0;
+	m_chan->BDTR = 0x0;
 #endif
-	chan->DCR = 0x0;
-	chan->DMAR = 0x0;
+	m_chan->DCR = 0x0;
+	m_chan->DMAR = 0x0;
 
 	//Reset the counter
-	chan->CR1 = 0x0;
-	chan->EGR = 0x1;
+	m_chan->CR1 = 0x0;
+	m_chan->EGR = 0x1;
 
 	//Enable the counter
-	chan->CR1 = 0x1;
+	m_chan->CR1 = 0x1;
 }
 
 /**
@@ -89,6 +99,7 @@ void Timer::Sleep(uint32_t ticks, bool reset)
 	{
 		Restart();
 		m_chan->CNT = 0;
+		asm("dmb");
 	}
 
 	if(m_features == FEATURE_GENERAL_PURPOSE_16BIT)

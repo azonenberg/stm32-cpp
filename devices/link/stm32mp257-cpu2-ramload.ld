@@ -60,6 +60,7 @@ SECTIONS
 		*(.bss)
 		*(.tcmbss)
 		__bss_end__ = .;
+		*(.bssnoinit)
 	} > RETRAM
 
 	/* Stack goes in RETRAM too, surprising nobody */

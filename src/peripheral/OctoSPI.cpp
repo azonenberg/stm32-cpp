@@ -55,6 +55,7 @@ OctoSPI::OctoSPI(volatile octospi_t* lane, uint32_t sizeBytes, uint8_t prescale)
 	lane->CR = 0;
 
 	//Default configuration
+	lane->DCR1 = OCTOSPI_MEM_TYPE_STANDARD;
 	SetSizeBytes(sizeBytes);
 	lane->DCR2 = prescale - 1;
 	lane->DCR3 = 0;
@@ -80,9 +81,7 @@ void OctoSPI::SetSizeBytes(uint32_t sizeBytes)
 	}
 	nbits --;
 
-	m_lane->DCR1 =
-		OCTOSPI_MEM_TYPE_STANDARD |
-		(nbits << 16);
+	m_lane->DCR1 = (m_lane->DCR1 & 0xffe0ffff) | (nbits << 16);
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

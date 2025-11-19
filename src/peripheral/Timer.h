@@ -84,6 +84,8 @@ public:
 
 	Timer(volatile tim_t* chan, Features features, uint16_t prescale);
 
+	void Initialize(uint16_t prescale);
+
 	/**
 		@brief Gets the current counter value
 	 */
