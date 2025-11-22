@@ -2,9 +2,15 @@ ENTRY(_start)
 
 MEMORY
 {
-	/* Actual RAM */
-	/*RETRAM(RWX):			ORIGIN = 0x20080000, LENGTH = 128K*/
+	/* Actual RAM (boot/secure aliases)*/
+	SYSRAM(RWX):			ORIGIN = 0x0e000000, LENGTH = 256K
+	SRAM1(RWX):				ORIGIN = 0x0e040000, LENGTH = 128K
+	SRAM2(RWX):				ORIGIN = 0x0e060000, LENGTH = 128K
 	RETRAM(RWX):			ORIGIN = 0x0e080000, LENGTH = 128K
+	VDERAM(RWX):			ORIGIN = 0x0e0a0000, LENGTH = 128K
+
+	/* SYSRAM with the first 0x2600 bytes reserved for the boot ROM (where is this documented??) */
+	FSBL_SYSRAM(RWX):		ORIGIN = 0x0e002600, LENGTH = 256K
 
 	/* AXI buses */
 	/* TODO: AXIM */
@@ -197,7 +203,7 @@ SECTIONS
 		. = ALIGN(65536);
 		KEEP (*(.pwr))
 		. = ALIGN(65536);
-		. += 1024;			/* EXTI1 not implemented */
+		KEEP (*(.exti1))
 		. = ALIGN(65536);
 		KEEP (*(.syscfg))
 		. = ALIGN(65536);

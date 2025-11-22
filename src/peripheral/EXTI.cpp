@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2020-2024 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2025 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -37,26 +37,37 @@
  */
 void EXTI::SetExtInterruptMux(int channel, ExtiPort sel)
 {
-	if(channel < 4)
-	{
-		int shift = channel * 4;
-		SYSCFG.EXTICR1 = (SYSCFG.EXTICR1 & ~(0x7 << shift)) | (sel << shift);
-	}
-	else if(channel < 8)
-	{
-		int shift = (channel - 4) * 4;
-		SYSCFG.EXTICR2 = (SYSCFG.EXTICR2 & ~(0x7 << shift)) | (sel << shift);
-	}
-	else if(channel < 12)
-	{
-		int shift = (channel - 8) * 4;
-		SYSCFG.EXTICR3 = (SYSCFG.EXTICR3 & ~(0x7 << shift)) | (sel << shift);
-	}
-	else
-	{
-		int shift = (channel - 12) * 4;
-		SYSCFG.EXTICR4 = (SYSCFG.EXTICR4 & ~(0x7 << shift)) | (sel << shift);
-	}
+	#if (EXTI_T_VERSION == 1) || (EXTI_T_VERSION == 2)
+
+		if(channel < 4)
+		{
+			int shift = channel * 4;
+			SYSCFG.EXTICR1 = (SYSCFG.EXTICR1 & ~(0x7 << shift)) | (sel << shift);
+		}
+		else if(channel < 8)
+		{
+			int shift = (channel - 4) * 4;
+			SYSCFG.EXTICR2 = (SYSCFG.EXTICR2 & ~(0x7 << shift)) | (sel << shift);
+		}
+		else if(channel < 12)
+		{
+			int shift = (channel - 8) * 4;
+			SYSCFG.EXTICR3 = (SYSCFG.EXTICR3 & ~(0x7 << shift)) | (sel << shift);
+		}
+		else
+		{
+			int shift = (channel - 12) * 4;
+			SYSCFG.EXTICR4 = (SYSCFG.EXTICR4 & ~(0x7 << shift)) | (sel << shift);
+		}
+
+	#elif EXTI_T_VERSION == 3
+		while(1)
+		{}
+
+	#else
+		#error Unrecognized EXTI_T_VERSION
+
+	#endif
 }
 
 #endif

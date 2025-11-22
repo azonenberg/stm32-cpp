@@ -36,6 +36,22 @@
 #if BSEC_T_VERSION == 1
 
 //Fuse addresses
+enum shadowed_fuseaddr_t
+{
+	BSEC_VIRGIN				= 0,	//Device is blank from the fab and not yet factory programmed
+	BSEC_ID_0				= 5,	//Unique ID word 0
+	BSEC_ID_1				= 6,	//Unique ID word 1
+	BSEC_ID_2				= 7,	//Unique ID word 2
+	BSEC_RPN				= 9,	//Device part number
+	BSEC_BOOTROM_CONFIG_7	= 16,	//Miscellaneous bitfields
+	BSEC_PKG				= 122,	//Device package
+};
+
+enum nonshadowed_fuseaddr_t
+{
+	BSEC_FSBLA_COUNT		= 12,	//Monotonic counter for FSBL-A
+	BSEC_REV_ID				= 102	//Device revision ID
+};
 
 struct bsec_t
 {

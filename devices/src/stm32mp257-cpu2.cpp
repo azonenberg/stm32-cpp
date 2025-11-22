@@ -96,6 +96,8 @@ volatile bsec_t _BSEC __attribute__((section(".bsec")));
 
 volatile syscfg_t SYSCFG __attribute__((section(".syscfg")));
 
+volatile exti_t EXTI1 __attribute__((section(".exti1")));
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // M33 specific
 volatile scb_t SCB __attribute__((section(".scb")));

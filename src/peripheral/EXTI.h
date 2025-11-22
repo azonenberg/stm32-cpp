@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2020-2024 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2025 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -65,6 +65,9 @@ public:
 				_EXTI.PR2 = (1 << (channel - 32));
 		#elif EXTI_T_VERSION == 2
 			_EXTI.PR = (1 << channel);
+		#elif EXTI_T_VERSION == 3
+			while(1)	//TODO
+			{}
 		#else
 			#error Unrecognized EXTI_T_VERSION
 		#endif
@@ -80,6 +83,9 @@ public:
 				_EXTI.IMR2 = (1 << (channel - 32));
 		#elif EXTI_T_VERSION == 2
 			_EXTI.IMR = (1 << channel);
+		#elif EXTI_T_VERSION == 3
+			while(1)	//TODO
+			{}
 		#else
 			#error Unrecognized EXTI_T_VERSION
 		#endif
@@ -95,6 +101,9 @@ public:
 				_EXTI.RTSR2 = (1 << (channel - 32));
 		#elif EXTI_T_VERSION == 2
 			_EXTI.RTSR = (1 << channel);
+		#elif EXTI_T_VERSION == 3
+			while(1)	//TODO
+			{}
 		#else
 			#error Unrecognized EXTI_T_VERSION
 		#endif
@@ -110,6 +119,9 @@ public:
 				_EXTI.FTSR2 = (1 << (channel - 32));
 		#elif EXTI_T_VERSION == 2
 			_EXTI.FTSR = (1 << channel);
+		#elif EXTI_T_VERSION == 3
+			while(1)	//TODO
+			{}
 		#else
 			#error Unrecognized EXTI_T_VERSION
 		#endif

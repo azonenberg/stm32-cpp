@@ -35,6 +35,22 @@
 class BSEC
 {
 public:
+
+	///@brief Read a shadowed fuse
+	static uint32_t ReadFuse(shadowed_fuseaddr_t addr)
+	{ return _BSEC.FVR[addr]; }
+
+	///@brief Read a non-shadowed fuse
+	static uint32_t ReadFuse(nonshadowed_fuseaddr_t addr)
+	{
+		_BSEC.OTPCR = addr;
+
+		while(_BSEC.OTPSR & 1)
+		{}
+
+		return _BSEC.FVR[addr];
+	}
+
 };
 
 #endif

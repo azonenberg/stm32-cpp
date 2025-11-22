@@ -124,6 +124,10 @@ extern volatile bsec_t _BSEC;
 #include "stm32-syscfg.h"
 extern volatile syscfg_t SYSCFG;
 
+#define EXTI_T_VERSION 3
+#include "stm32-exti.h"
+extern volatile exti_t EXTI1;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Peripherals only for CPU2 (Cortex-M33)
 
@@ -143,5 +147,6 @@ extern volatile scb_t SCB;
 
 //don't try to use internal flash
 #define NO_INTERNAL_FLASH
+#define HAVE_PKG
 
 #endif
