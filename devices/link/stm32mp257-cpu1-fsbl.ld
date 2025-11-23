@@ -57,11 +57,23 @@ SECTIONS
 		*(.bssnoinit)
 	} > FSBL_SYSRAM
 
-	/* Stack goes in SYSRAM too, surprising nobody */
+	/* Stack goes in SYSRAM too, surprising nobody. We have two cores, so allocate two stacks */
 	.stack (NOLOAD):
 	{
 		__end = .;
-		. = ORIGIN(SYSRAM) + LENGTH(SYSRAM) - 4;
-		__stack = .;
+
+		/* Blank space between end of globals and stack */
+
+		/* Core 0 gets 16 kB stack for now, starting 16 kB from the end of SYSRAM */
+		. = ORIGIN(FSBL_SYSRAM) + LENGTH(FSBL_SYSRAM) - 32768;
+		__core0stackend = .;
+		. = ORIGIN(FSBL_SYSRAM) + LENGTH(FSBL_SYSRAM) - 16384 - 4;
+		__core0stackstart = .;
+
+		/* Core 1 gets the rest */
+		. = ORIGIN(FSBL_SYSRAM) + LENGTH(FSBL_SYSRAM) - 16384;
+		__core1stackend = .;
+		. = ORIGIN(FSBL_SYSRAM) + LENGTH(FSBL_SYSRAM) - 4;
+		__core1stackstart = .;
 	} > FSBL_SYSRAM
 }

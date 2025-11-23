@@ -10,7 +10,7 @@ MEMORY
 	VDERAM(RWX):			ORIGIN = 0x0e0a0000, LENGTH = 128K
 
 	/* SYSRAM with the first 0x2600 bytes reserved for the boot ROM (where is this documented??) */
-	FSBL_SYSRAM(RWX):		ORIGIN = 0x0e002600, LENGTH = 256K
+	FSBL_SYSRAM(RWX):		ORIGIN = 0x0e002600, LENGTH = 252416
 
 	/* AXI buses */
 	/* TODO: AXIM */
