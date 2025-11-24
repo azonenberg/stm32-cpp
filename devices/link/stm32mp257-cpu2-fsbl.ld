@@ -67,7 +67,7 @@ SECTIONS
 	.stack (NOLOAD):
 	{
 		__end = .;
-		. = ORIGIN(RETRAM) + LENGTH(RETRAM) - 4;
+		. = ORIGIN(RETRAM) + LENGTH(RETRAM);
 		__stack = .;
 	} > RETRAM
 

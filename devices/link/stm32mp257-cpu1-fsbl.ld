@@ -67,13 +67,13 @@ SECTIONS
 		/* Core 0 gets 16 kB stack for now, starting 16 kB from the end of SYSRAM */
 		. = ORIGIN(FSBL_SYSRAM) + LENGTH(FSBL_SYSRAM) - 32768;
 		__core0stackend = .;
-		. = ORIGIN(FSBL_SYSRAM) + LENGTH(FSBL_SYSRAM) - 16384 - 4;
+		. = ORIGIN(FSBL_SYSRAM) + LENGTH(FSBL_SYSRAM) - 16384;
 		__core0stackstart = .;
 
 		/* Core 1 gets the rest */
 		. = ORIGIN(FSBL_SYSRAM) + LENGTH(FSBL_SYSRAM) - 16384;
 		__core1stackend = .;
-		. = ORIGIN(FSBL_SYSRAM) + LENGTH(FSBL_SYSRAM) - 4;
+		. = ORIGIN(FSBL_SYSRAM) + LENGTH(FSBL_SYSRAM);
 		__core1stackstart = .;
 	} > FSBL_SYSRAM
 }

@@ -105,7 +105,7 @@ SECTIONS
 		__tcmstart = .;
 		*(.tcmbss)
 		__end = .;
-		. = ORIGIN(DTCM) + LENGTH(DTCM) - 4;
+		. = ORIGIN(DTCM) + LENGTH(DTCM);
 		__stack = .;
 	} > DTCM
 

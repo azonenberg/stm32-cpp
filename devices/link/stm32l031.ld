@@ -64,7 +64,7 @@ SECTIONS
 		*(.bss)
 		__bss_end__ = .;
 		__end = .;
-		. = ORIGIN(SRAM) + LENGTH(SRAM) - 4;
+		. = ORIGIN(SRAM) + LENGTH(SRAM);
 		__stack = .;
 
 	} > SRAM
