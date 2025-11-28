@@ -34,6 +34,16 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Peripheral enabling
 
+#ifdef HAVE_IPCC
+void RCCHelper::Enable(volatile ipcc_t* ipcc)
+{
+	if(ipcc == &IPCC1)
+		RCC.IPCC1CFGR |= RCC_GENERIC_CFGR_EN;
+	//else if(ipcc == &IPCC2)
+	//	RCC.IPCC2CFGR |= RCC_GENERIC_CFGR_EN;
+}
+#endif
+
 #ifdef HAVE_BSEC
 void RCCHelper::Enable([[maybe_unused]]volatile bsec_t* unused)
 {

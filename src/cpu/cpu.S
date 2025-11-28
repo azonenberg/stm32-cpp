@@ -1,5 +1,21 @@
-//see https://stackoverflow.com/questions/78309423/bad-blx-instruction-generated-when-calling-asm-function-from-c-function-gcc-on
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// AARCH64 path
 
+#ifdef __aarch64__
+
+.globl GetCurrentCore
+.type GetCurrentCore, %function
+GetCurrentCore:
+	mrs		x0, MPIDR_EL1
+	and		x0, x0, #0xff
+	br		x30
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ARM-M path
+
+#else
+
+//see https://stackoverflow.com/questions/78309423/bad-blx-instruction-generated-when-calling-asm-function-from-c-function-gcc-on
 .globl DisableInterrupts
 .type DisableInterrupts, %function
 DisableInterrupts:
@@ -37,3 +53,5 @@ DisableFaults:
 EnableFaults:
 	msr		faultmask, r0
 	bx		lr
+
+#endif

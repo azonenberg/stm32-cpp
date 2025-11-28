@@ -27,24 +27,14 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#include <stm32.h>
+#include <stm32mp257.h>
 
-#ifdef __aarch64__
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Generic
 
-	//TODO
+#include "stm32mp257-common.h"
 
-#else
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// A35 specific
 
-uint32_t SCB_DisableDataFaults()
-{
-	SCB.CCR |= 0x100;
-	return DisableFaults();
-}
-
-void SCB_EnableDataFaults(uint32_t faultmask)
-{
-	SCB.CCR &= ~0x100;
-	EnableFaults(faultmask);
-}
-
-#endif
+//nothing here yet

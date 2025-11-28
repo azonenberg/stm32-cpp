@@ -2,9 +2,17 @@
 # Generic build configuration that's common to all users of stm32-cpp
 
 set(CMAKE_SYSTEM_NAME Generic)
-set(CMAKE_ASM_COMPILER arm-none-eabi-gcc)
-set(CMAKE_C_COMPILER arm-none-eabi-gcc)
-set(CMAKE_CXX_COMPILER arm-none-eabi-g++)
+
+if(NOT DEFINED ARCHITECTURE)
+	# Assuming 32 bit ARM build by default
+	set(CMAKE_ASM_COMPILER arm-none-eabi-gcc)
+	set(CMAKE_C_COMPILER arm-none-eabi-gcc)
+	set(CMAKE_CXX_COMPILER arm-none-eabi-g++)
+elseif(ARCHITECTURE STREQUAL "aarch64")
+	set(CMAKE_ASM_COMPILER aarch64-none-elf-gcc)
+	set(CMAKE_C_COMPILER aarch64-none-elf-gcc)
+	set(CMAKE_CXX_COMPILER aarch64-none-elf-g++)
+endif()
 
 set(CMAKE_CXX_STANDARD 20)
 

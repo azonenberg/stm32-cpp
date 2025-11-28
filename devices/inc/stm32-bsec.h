@@ -93,7 +93,7 @@ struct bsec_t
 
 #else
 
-#error Undefined or unspecified RCC_T_VERSION
+#error Undefined or unspecified BSEC_T_VERSION
 
 #endif	//version check
 

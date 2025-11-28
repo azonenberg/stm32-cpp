@@ -27,24 +27,72 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#include <stm32.h>
+#ifndef stm32_ca35ss_h
+#define stm32_ca35ss_h
 
-#ifdef __aarch64__
+#define HAVE_CA35SS
 
-	//TODO
+//STM32MP257
+#if CA35SS_T_VERSION == 1
+
+struct ca35ss_syscfg_t
+{
+	uint32_t ETR_LPI_CR;
+	uint32_t ETR_LPI_SR;
+	uint32_t STM_NSGUAREN_CR;
+	uint32_t TACE_CLK_DIV_CR;
+	uint32_t DBGPWR_CR;
+	uint32_t DBGL1RSTDISABLE_CR;
+	uint32_t DBGPWR_SR;
+	uint32_t EDBGACK_SR;
+	uint32_t GIC_CFGR;
+	uint32_t LP_SR;
+	uint32_t RSTACK_SR;
+	uint32_t field_2c[21];
+	uint32_t AARCH_MODE_CR;
+	uint32_t VBAR_CR;
+	uint32_t M33_ACCESS_CR;
+	uint32_t field_8c[5];
+	uint32_t M33_TZEN_CR;
+	uint32_t M33_INITSVTOR_CR;
+	uint32_t M33_INITNSVTOR_CR;
+};
+
+struct ca35ss_bitband_t
+{
+	uint32_t reg;
+	uint32_t set;
+	uint32_t clear;
+	uint32_t toggle;
+};
+
+struct ca35ss_t
+{
+	ca35ss_bitband_t CHGCLKREQ;
+	ca35ss_bitband_t BRM;
+	uint32_t field_20[24];
+	ca35ss_bitband_t PLL_FREQ1;
+	ca35ss_bitband_t PLL_FREQ2;
+	ca35ss_bitband_t PLL_EN;
+	uint32_t field_b0[8];
+	ca35ss_bitband_t LPI_TSGEN_NTS_CR;
+	uint32_t field_e0[8];
+	uint32_t C0_SMP;
+	uint32_t field_104[3];
+	uint32_t C1_SMP;
+	uint32_t field_114[11];
+	ca35ss_bitband_t LPI_STGEN_NTS_CR;
+	uint32_t field_150[156];
+	ca35ss_bitband_t NS_ENABLE_0_RW;
+	uint32_t SSC_NS_ENABLE_1;
+	uint32_t field_3d4[1803];
+	ca35ss_syscfg_t syscfg;
+};
 
 #else
 
-uint32_t SCB_DisableDataFaults()
-{
-	SCB.CCR |= 0x100;
-	return DisableFaults();
-}
+#error Undefined or unspecified CA35SS_T_VERSION
 
-void SCB_EnableDataFaults(uint32_t faultmask)
-{
-	SCB.CCR &= ~0x100;
-	EnableFaults(faultmask);
-}
+#endif	//version check
 
-#endif
+#endif	//include guard

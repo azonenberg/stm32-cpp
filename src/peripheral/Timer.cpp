@@ -99,7 +99,7 @@ void Timer::Sleep(uint32_t ticks, bool reset)
 	{
 		Restart();
 		m_chan->CNT = 0;
-		asm("dmb");
+		asm("dmb st");
 	}
 
 	if(m_features == FEATURE_GENERAL_PURPOSE_16BIT)

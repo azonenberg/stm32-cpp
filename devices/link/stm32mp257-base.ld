@@ -9,7 +9,9 @@ MEMORY
 	RETRAM(RWX):			ORIGIN = 0x0e080000, LENGTH = 128K
 	VDERAM(RWX):			ORIGIN = 0x0e0a0000, LENGTH = 128K
 
-	/* SYSRAM with the first 0x2600 bytes reserved for the boot ROM (where is this documented??) */
+	/*
+		SYSRAM with the first 0x2600 bytes reserved for the boot ROM (where is this documented??)
+	 */
 	FSBL_SYSRAM(RWX):		ORIGIN = 0x0e002600, LENGTH = 252416
 
 	/* AXI buses */
@@ -25,9 +27,9 @@ MEMORY
 
 	/* AHB buses */
 	AHB2(RW):				ORIGIN = 0x40400000, LENGTH = 1025K
-	/* TODO: AHB3 */
+	AHB3(RW):				ORIGIN = 0x42000000, LENGTH = 1285K
 	AHB4(RW):				ORIGIN = 0x44200000, LENGTH = 960K
-	/* TODO: AHB5 */
+	AHB5(RW):				ORIGIN = 0x48200000, LENGTH = 14M
 	/* TODO: AHB6 */
 	/* TODO: SmartRun AHB */
 }
@@ -179,7 +181,7 @@ SECTIONS
 		. = ALIGN(65536);
 		. += 1024;	/* DCACHE not implemented */
 		. = ALIGN(65536);
-		. += 1024;	/* IPCC1 not implemented */
+		KEEP (*(.ipcc1))
 		. = ALIGN(65536);
 		. += 1024;	/* DCMI not implemented */
 		. = ALIGN(65536);
@@ -195,6 +197,26 @@ SECTIONS
 		. = ALIGN(65536);
 		KEEP (*(.octospim))
 	} > AHB2
+
+	.sfr_ahb3  (NOLOAD):
+	{
+		. = ALIGN(65536);
+		. += 1024;	/* BKPSRAM not implemented */
+		. = ALIGN(65536);
+		. += 1024;	/* HASH not implemented */
+		. = ALIGN(65536);
+		. += 1024;	/* RNG not implemented */
+		. = ALIGN(65536);
+		. += 1024;	/* CRYP1 not implemented */
+		. = ALIGN(65536);
+		. += 1024;	/* CRYP2 not implemented */
+		. = ALIGN(65536);
+		. += 1024;	/* SAES not implemented */
+		. = ALIGN(65536);
+		. += 1024;	/* PKA not implemented */
+		. = ALIGN(65536);
+		KEEP (*(.ramcfg))
+	} > AHB3
 
 	.sfr_ahb4  (NOLOAD):
 	{
@@ -229,4 +251,32 @@ SECTIONS
 		. = ALIGN(65536);
 		KEEP (*(.gpiok))
 	} > AHB4
+
+	.sfr_ahb5  (NOLOAD):
+	{
+		. = ALIGN(64K);
+		. += 1024;	/* FMC not implemented */
+		. = ALIGN(128K);
+		. += 1024;	/* SDMMC1 not implemented */
+		. = ALIGN(64K);
+		. += 1024;	/* SDMMC2 not implemented */
+		. = ALIGN(64K);
+		. += 1024;	/* SDMMC3 not implemented */
+		. = ALIGN(256K);
+		. += 1024;	/* GPU not implemented */
+		. = ALIGN(256K);
+		. += 1024;	/* ETH1 not implemented */
+		. = ALIGN(64K);
+		. += 1024;	/* ETH2 not implemented */
+		. = ALIGN(64K);
+		. += 1024;	/* USBH_OHCI not implemented */
+		. = ALIGN(64K);
+		. += 1024;	/* USBH_EHCI not implemented */
+		. = ALIGN(1024K);
+		. += 1024;	/* USB3DR not implemented */
+		. = ALIGN(4096K);
+		. += 1024;	/* PCIE not implemented */
+		. = ALIGN(4096K);
+		KEEP (*(.ca35ss))
+	} > AHB5
 }

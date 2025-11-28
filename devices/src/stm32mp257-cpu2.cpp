@@ -31,72 +31,8 @@
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Generic
-// TODO: Move common peripherals into a header or something we can include to deduplicate
 
-volatile gpio_t GPIOA __attribute__((section(".gpioa")));
-volatile gpio_t GPIOB __attribute__((section(".gpiob")));
-volatile gpio_t GPIOC __attribute__((section(".gpioc")));
-volatile gpio_t GPIOD __attribute__((section(".gpiod")));
-volatile gpio_t GPIOE __attribute__((section(".gpioe")));
-volatile gpio_t GPIOF __attribute__((section(".gpiof")));
-volatile gpio_t GPIOG __attribute__((section(".gpiog")));
-volatile gpio_t GPIOH __attribute__((section(".gpioh")));
-volatile gpio_t GPIOI __attribute__((section(".gpioi")));
-volatile gpio_t GPIOJ __attribute__((section(".gpioj")));
-volatile gpio_t GPIOK __attribute__((section(".gpiok")));
-volatile gpio_t GPIOZ __attribute__((section(".gpioz")));
-
-volatile rcc_t RCC __attribute__((section(".rcc")));
-
-volatile tim_t TIM1 __attribute__((section(".tim1")));
-volatile tim_t TIM2 __attribute__((section(".tim2")));
-volatile tim_t TIM3 __attribute__((section(".tim3")));
-volatile tim_t TIM4 __attribute__((section(".tim4")));
-volatile tim_t TIM5 __attribute__((section(".tim5")));
-volatile tim_t TIM6 __attribute__((section(".tim6")));
-volatile tim_t TIM7 __attribute__((section(".tim7")));
-volatile tim_t TIM8 __attribute__((section(".tim8")));
-volatile tim_t TIM10 __attribute__((section(".tim10")));
-volatile tim_t TIM11 __attribute__((section(".tim11")));
-volatile tim_t TIM12 __attribute__((section(".tim12")));
-volatile tim_t TIM13 __attribute__((section(".tim13")));
-volatile tim_t TIM14 __attribute__((section(".tim14")));
-volatile tim_t TIM15 __attribute__((section(".tim15")));
-volatile tim_t TIM16 __attribute__((section(".tim16")));
-volatile tim_t TIM17 __attribute__((section(".tim17")));
-volatile tim_t TIM20 __attribute__((section(".tim20")));
-
-volatile crc_t _CRC __attribute__((section(".crc")));
-
-volatile i2c_t I2C1 __attribute__((section(".i2c1")));
-volatile i2c_t I2C2 __attribute__((section(".i2c2")));
-volatile i2c_t I2C3 __attribute__((section(".i2c3")));
-volatile i2c_t I2C4 __attribute__((section(".i2c4")));
-volatile i2c_t I2C5 __attribute__((section(".i2c5")));
-volatile i2c_t I2C6 __attribute__((section(".i2c6")));
-volatile i2c_t I2C7 __attribute__((section(".i2c7")));
-volatile i2c_t I2C8 __attribute__((section(".i2c8")));
-
-volatile usart_t USART1 __attribute__((section(".usart1")));
-volatile usart_t USART2 __attribute__((section(".usart2")));
-volatile usart_t USART3 __attribute__((section(".usart3")));
-volatile usart_t UART4 __attribute__((section(".uart4")));
-volatile usart_t UART5 __attribute__((section(".uart5")));
-volatile usart_t USART6 __attribute__((section(".usart6")));
-volatile usart_t UART7 __attribute__((section(".uart7")));
-volatile usart_t UART8 __attribute__((section(".uart8")));
-
-volatile octospi_t OCTOSPI1 __attribute__((section(".octospi1")));
-volatile octospi_t OCTOSPI2 __attribute__((section(".octospi2")));
-volatile octospim_t OCTOSPIM __attribute__((section(".octospim")));
-
-volatile pwr_t PWR __attribute__((section(".pwr")));
-
-volatile bsec_t _BSEC __attribute__((section(".bsec")));
-
-volatile syscfg_t SYSCFG __attribute__((section(".syscfg")));
-
-volatile exti_t EXTI1 __attribute__((section(".exti1")));
+#include "stm32mp257-common.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // M33 specific

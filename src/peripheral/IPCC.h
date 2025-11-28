@@ -27,24 +27,97 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#include <stm32.h>
+#ifndef IOPCC_h
+#define IOPCC_h
 
-#ifdef __aarch64__
+#ifdef HAVE_IPCC
 
-	//TODO
+/**
+	@brief A pointer that is always 64 bits in storage even if the native pointer size is smaller
 
-#else
-
-uint32_t SCB_DisableDataFaults()
+	Used for data exchange between 32 and 64 bit cores sharing a common physical address space in the low 4GB
+ */
+template<class T>
+class PaddedPointer
 {
-	SCB.CCR |= 0x100;
-	return DisableFaults();
-}
+public:
+	PaddedPointer()
+	{}
 
-void SCB_EnableDataFaults(uint32_t faultmask)
+	PaddedPointer(volatile T* p)
+	{ Set(p); }
+
+	volatile T* Get()
+	{ return reinterpret_cast<T*>(m_ptr); }
+
+	void Set(volatile T* p)
+	{ m_ptr = reinterpret_cast<uint64_t>(p); }
+
+	T* operator->()
+	{ return const_cast<T*>(Get()); }
+
+protected:
+	volatile uint64_t m_ptr;
+};
+
+class IPCC
 {
-	SCB.CCR &= ~0x100;
-	EnableFaults(faultmask);
-}
+public:
+
+	///@brief Create the IPCC object
+	IPCC(volatile ipcc_t* ipcc)
+		: m_ipcc(ipcc)
+	{
+		RCCHelper::Enable(ipcc);
+	}
+
+	///@brief Check if the channel is free in the primary to secondary direction
+	bool IsPrimaryToSecondaryChannelFree(uint32_t mask)
+	{ return (m_ipcc->C1TOC2SR & mask) == 0; }
+
+	///@brief Check if the channel is free in the secondary to primary direction
+	bool IsSecondaryToPrimaryChannelFree(uint32_t mask)
+	{ return (m_ipcc->C2TOC1SR & mask) == 0; }
+
+	///@brief Marks the channel as occupied in the primary to secondary direction
+	void SetPrimaryToSecondaryChannelBusy(uint32_t setmask)
+	{ m_ipcc->C1SCR = setmask; }
+
+	///@brief Marks the channel as free in the primary to secondary direction
+	void SetPrimaryToSecondaryChannelFree(uint32_t clearmask)
+	{ m_ipcc->C1SCR = clearmask; }
+
+	///@brief Marks the channel as occupied in the secondary to primary direction
+	void SetSecondaryToPrimaryChannelBusy(uint32_t setmask)
+	{ m_ipcc->C2SCR = setmask; }
+
+	///@brief Marks the channel as free in the secondary to primary direction
+	void SetSecondaryToPrimaryChannelFree(uint32_t clearmask)
+	{ m_ipcc->C2SCR = clearmask; }
+
+	///@brief Initialize it (done on the primary side)
+	void Initialize()
+	{
+		//Set all channels to secure privileged with no CID filtering
+		m_ipcc->C1CIDCFGR = 0;
+		m_ipcc->C1SECCFGR = 0xffff;
+		m_ipcc->C1PRIVCFGR = 0xffff;
+
+		m_ipcc->C2CIDCFGR = 0;
+		m_ipcc->C2SECCFGR = 0xffff;
+		m_ipcc->C2PRIVCFGR = 0xffff;
+
+		//Disable all interrupts
+		m_ipcc->C1CR = 0;
+		m_ipcc->C2CR = 0;
+
+		//Ignore mask in CxMR because we're not using interrupts yet
+	}
+
+protected:
+	PaddedPointer<ipcc_t> m_ipcc;
+};
+
+#endif
 
 #endif

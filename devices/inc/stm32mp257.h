@@ -128,6 +128,18 @@ extern volatile syscfg_t SYSCFG;
 #include "stm32-exti.h"
 extern volatile exti_t EXTI1;
 
+#define CA35SS_T_VERSION 1
+#include "stm32-ca35ss.h"
+extern volatile ca35ss_t CA35SS;
+
+#define RAMCFG_T_VERSION 1
+#include "stm32-ramcfg.h"
+extern volatile ramcfg_t RAMCFG;
+
+#define IPCC_T_VERSION 1
+#include "stm32-ipcc.h"
+extern volatile ipcc_t IPCC1;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Peripherals only for CPU2 (Cortex-M33)
 
@@ -137,8 +149,11 @@ extern volatile exti_t EXTI1;
 #include "stm32-scb.h"
 extern volatile scb_t SCB;
 
-//TODO: The M33 does in fact have an L1
+//TODO: The M33 does in fact have an L1 but it's special (not an ARM-provided one?)
 //#define HAVE_L1
+
+//We have a floating point unit, turn it on
+#define HAVE_FPU
 
 #endif
 

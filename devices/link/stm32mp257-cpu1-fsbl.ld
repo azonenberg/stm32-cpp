@@ -2,7 +2,17 @@ INCLUDE "stm32mp257-base.ld"
 
 SECTIONS
 {
-	/* Code comes right after the vector tables */
+	.resetptr : SUBALIGN(512)
+	{
+		/* Add jump to reset vector */
+		KEEP (*(.resetptr))
+
+		/* Padding to align .text to a 2K boundary */
+		. = ALIGN(2048);
+
+	} > FSBL_SYSRAM
+
+	/* Code comes right after the vector tables and is aligned */
 	.text :
 	{
 		KEEP (*(.vector))
@@ -44,6 +54,8 @@ SECTIONS
 		__data_romstart = LOADADDR(.data);
 		__data_start = .;
 		*(.data)
+		*(.got)
+		*(.got.*)
 		__data_end = .;
 	} > FSBL_SYSRAM
 
@@ -76,4 +88,14 @@ SECTIONS
 		. = ORIGIN(FSBL_SYSRAM) + LENGTH(FSBL_SYSRAM);
 		__core1stackstart = .;
 	} > FSBL_SYSRAM
+
+	/* IPC buffers live in SRAM2 */
+	.ipcbuf (NOLOAD):
+	{
+		/* At the very start we put the IPC channel descriptors */
+		*(.ipcdescriptors)
+
+		/* General purpose IPC buffers come after the descriptors*/
+		*(.ipcbuf)
+	} > SRAM2
 }

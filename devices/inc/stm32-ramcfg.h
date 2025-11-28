@@ -27,24 +27,62 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#include <stm32.h>
+#ifndef stm32_ramcfg_h
+#define stm32_ramcfg_h
 
-#ifdef __aarch64__
+#define HAVE_RAMCFG
 
-	//TODO
+//STM32MP257
+#if RAMCFG_T_VERSION == 1
+
+struct ramcfg_t
+{
+	uint32_t	SYSRAMCR;
+	uint32_t	field_4;
+	uint32_t	SYSRAMISR;
+	uint32_t	field_0c[7];
+	uint32_t	SYSRAMERKEYR;
+	uint32_t	field_2c[21];
+
+	uint32_t	SRAM1CR;
+	uint32_t	field_84;
+	uint32_t	SRAM1ISR;
+	uint32_t	field_8c[7];
+	uint32_t	SRAM1ERKEYR;
+	uint32_t	field_ac[21];
+
+	uint32_t	SRAM2CR;
+	uint32_t	field_104;
+	uint32_t	SRAM2ISR;
+	uint32_t	field_10c[7];
+	uint32_t	SRAM2ERKEYR;
+	uint32_t	field_102c[21];
+
+	uint32_t	RETRAMCR;
+	uint32_t	RETRAMIER;
+	uint32_t	RETRAMISR;
+	uint32_t	RETRAMSEAR;
+	uint32_t	RETRAMDEAR;
+	uint32_t	RETRAMICR;
+	uint32_t	field_198[3];
+	uint32_t	RETRAMECCKEYR;
+	uint32_t	RETRAMERKEYR;
+	uint32_t	field_1ac;
+	uint32_t	RETRAMCCR1;
+	uint32_t	RETRAMCCR2;
+	uint32_t	RETRAMCRSR;
+	uint32_t	RETRAMCSR;
+	uint32_t	RETRAMCCSR;
+	uint32_t	field_1c4[15];
+
+	uint32_t	LPSRAM1CR;
+	//TODO after here
+};
 
 #else
 
-uint32_t SCB_DisableDataFaults()
-{
-	SCB.CCR |= 0x100;
-	return DisableFaults();
-}
+#error Undefined or unspecified RAMCFG_T_VERSION
 
-void SCB_EnableDataFaults(uint32_t faultmask)
-{
-	SCB.CCR &= ~0x100;
-	EnableFaults(faultmask);
-}
+#endif	//version check
 
-#endif
+#endif	//include guard

@@ -44,6 +44,10 @@ class RCCHelper
 public:
 	static void Enable(volatile gpio_t* gpio);
 
+	#ifdef HAVE_IPCC
+	static void Enable(volatile ipcc_t* ipcc);
+	#endif
+
 	#ifdef HAVE_BSEC
 	static void Enable(volatile bsec_t* bsec);
 	#endif
@@ -217,6 +221,48 @@ public:
 	#endif
 
 	#ifdef STM32MP2
+
+		static void EnableMCO1()
+		{ RCC.MCO1CFGR |= 0x100; }
+
+		static void EnableMCO2()
+		{ RCC.MCO2CFGR |= 0x100; }
+
+		static void EnableSysram()
+		{ RCC.SYSRAMCFGR |= RCC_GENERIC_CFGR_EN; }
+
+		static void EnableVderam()
+		{ RCC.VDERAMCFGR |= RCC_GENERIC_CFGR_EN; }
+
+		static void EnableSram1()
+		{
+			RCC.SRAM1CFGR |= RCC_GENERIC_CFGR_EN;
+
+			//Wait for it to finish zeroizing
+			while( (RAMCFG.SRAM1ISR & 0x100) != 0)
+			{}
+		}
+
+		static void EnableSram2()
+		{
+			RCC.SRAM2CFGR |= RCC_GENERIC_CFGR_EN;
+
+			//Wait for it to finish zeroizing
+			while( (RAMCFG.SRAM2ISR & 0x100) != 0)
+			{}
+		}
+
+		static void EnableBackupSram()
+		{ RCC.BKPSRAMCFGR |= RCC_GENERIC_CFGR_EN; }
+
+		static void EnableLpsram1()
+		{ RCC.LPSRAM1CFGR |= RCC_GENERIC_CFGR_EN; }
+
+		static void EnableLpsram2()
+		{ RCC.LPSRAM2CFGR |= RCC_GENERIC_CFGR_EN; }
+
+		static void EnableLpsram3()
+		{ RCC.LPSRAM3CFGR |= RCC_GENERIC_CFGR_EN; }
 
 		///@brief Set the clock divider for ck_icn_ls_mcu (max 200 MHz) from ck_icn_hs_mcu. Must be /1 (powerup default) or /2
 		static void SetLowSpeedMCUClockDivider(bool divideBy2)

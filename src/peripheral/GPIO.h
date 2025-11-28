@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2020-2024 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2025 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -98,7 +98,7 @@ public:
 	: m_gpio(gpio)
 	, m_pin(pin)
 	, m_setmask(1 << pin)
-	, m_clearmask(~m_setmask)
+	, m_clearmask(1 << (pin + 16))
 	{
 		//Make sure the bank we're part of is turned on
 		RCCHelper::Enable(gpio);
@@ -124,9 +124,9 @@ public:
 	void Set(bool b)
 	{
 		if(b)
-			m_gpio->ODR |= m_setmask;
+			m_gpio->BSRR = m_setmask;
 		else
-			m_gpio->ODR &= m_clearmask;
+			m_gpio->BSRR = m_clearmask;
 	}
 
 	//Convenience helper for assigning GPIOs

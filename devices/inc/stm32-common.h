@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2020-2024 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2025 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -96,6 +96,11 @@ extern "C" void EnableDataCache();
 
 ///@brief Invalidate one section of the cache
 void CleanDataCache(void* baseAddr, size_t size);
+
+#ifdef MULTICORE
+///@brief Returns the current core ID
+extern "C" uint32_t GetCurrentCore();
+#endif
 
 #endif
 

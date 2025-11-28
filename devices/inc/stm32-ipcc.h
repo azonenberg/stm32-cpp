@@ -27,24 +27,42 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#include <stm32.h>
+#ifndef stm32_ipcc_h
+#define stm32_ipcc_h
 
-#ifdef __aarch64__
+#define HAVE_IPCC
 
-	//TODO
+//STM32MP257
+#if IPCC_T_VERSION == 1
+
+struct ipcc_t
+{
+	uint32_t	C1CR;
+	uint32_t	C1MR;
+	uint32_t	C1SCR;
+	uint32_t	C1TOC2SR;
+	uint32_t	C2CR;
+	uint32_t	C2MR;
+	uint32_t	C2SCR;
+	uint32_t	C2TOC1SR;
+	uint32_t	C1SECCFGR;
+	uint32_t	C1PRIVCFGR;
+	uint32_t	C1CIDCFGR;
+	uint32_t	C2SECCFGR;
+	uint32_t	C2PRIVCFGR;
+	uint32_t	C2CIDCFGR;
+	uint32_t	field_9c[213];
+	uint32_t	IPCC1_HWCFGR;
+	uint32_t	IPCC2_HWCFGR;
+	uint32_t	VERR;
+	uint32_t	PIDR;
+	uint32_t	SIDR;
+};
 
 #else
 
-uint32_t SCB_DisableDataFaults()
-{
-	SCB.CCR |= 0x100;
-	return DisableFaults();
-}
+#error Undefined or unspecified IPCC_T_VERSION
 
-void SCB_EnableDataFaults(uint32_t faultmask)
-{
-	SCB.CCR &= ~0x100;
-	EnableFaults(faultmask);
-}
+#endif	//version check
 
-#endif
+#endif	//include guard

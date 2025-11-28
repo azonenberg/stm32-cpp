@@ -83,4 +83,14 @@ SECTIONS
 		KEEP (*(.scb))
 		. = ALIGN(4096);
 	} > MCU
+
+	/* IPC buffers live in SRAM2 */
+	.ipcbuf (NOLOAD):
+	{
+		/* At the very start we put the IPC channel descriptors */
+		*(.ipcdescriptors)
+
+		/* General purpose IPC buffers come after the descriptors*/
+		*(.ipcbuf)
+	} > SRAM2
 }
