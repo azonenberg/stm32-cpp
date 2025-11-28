@@ -35,8 +35,20 @@ struct mpu_t
 	uint32_t	type;
 	uint32_t	ctrl;
 	uint32_t	rnr;
-	uint32_t	rbar;
+	uint32_t	rbar;	//9c
+#if SCB_T_VERSION == 3
+	uint32_t	rlar;
+	uint32_t	rbar_a1;
+	uint32_t	field_a8;
+	uint32_t	rbar_a2;
+	uint32_t	rlar_a1;
+	uint32_t	rbar_a3;
+	uint32_t	rlar_a2;
+	uint32_t	field_bc;
+	uint32_t	mair[2];
+#else
 	uint32_t	rasr;
+#endif
 };
 
 #endif	//include guard

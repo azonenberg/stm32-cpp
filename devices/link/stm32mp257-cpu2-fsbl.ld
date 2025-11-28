@@ -44,14 +44,27 @@ SECTIONS
 		__dtor_end = .;
 	} > RETRAM
 
-	/* Initialized data for the RAM load configuration just goes in RETRAM like everything else */
+	/*
+		Dummy section since the linker doesn't understand RETRAM and SEC_DSIDE_RETRAM are the same memory
+		so we need to block out the space in SEC_DSIDE_RETRAM occupied by .text
+	 */
+	.padding (NOLOAD):
+	{
+		. += SIZEOF(.text);
+	} > SEC_DSIDE_RETRAM
+
+	/*
+		Initialized data for the RAM load configuration just goes in RETRAM like everything else
+
+		but we need to use the other alias
+	 */
 	.data : ALIGN(32)
 	{
 		__data_romstart = LOADADDR(.data);
 		__data_start = .;
 		*(.data)
 		__data_end = .;
-	} > RETRAM
+	} > SEC_DSIDE_RETRAM AT> RETRAM
 
 	/* BSS is pretty straightforward */
 	.bss  (NOLOAD):
@@ -61,15 +74,15 @@ SECTIONS
 		*(.tcmbss)
 		__bss_end__ = .;
 		*(.bssnoinit)
-	} > RETRAM
+	} > SEC_DSIDE_RETRAM
 
 	/* Stack goes in RETRAM too, surprising nobody */
 	.stack (NOLOAD):
 	{
 		__end = .;
-		. = ORIGIN(RETRAM) + LENGTH(RETRAM);
+		. = ORIGIN(SEC_DSIDE_RETRAM) + LENGTH(SEC_DSIDE_RETRAM);
 		__stack = .;
-	} > RETRAM
+	} > SEC_DSIDE_RETRAM
 
 	.sfr_mcu  (NOLOAD):
 	{

@@ -139,6 +139,15 @@ extern volatile ramcfg_t RAMCFG;
 #define IPCC_T_VERSION 1
 #include "stm32-ipcc.h"
 extern volatile ipcc_t IPCC1;
+//TODO: IPCC2
+
+#define ICACHE_T_VERSION 1
+#include "stm32-icache.h"
+extern volatile icache_t _ICACHE;
+
+#define DCACHE_T_VERSION 1
+#include "stm32-dcache.h"
+extern volatile dcache_t _DCACHE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Peripherals only for CPU2 (Cortex-M33)

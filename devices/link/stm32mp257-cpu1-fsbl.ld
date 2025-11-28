@@ -48,7 +48,7 @@ SECTIONS
 		__dtor_end = .;
 	} > FSBL_SYSRAM
 
-	/* Initialized data for the RAM load configuration just goes in RETRAM like everything else */
+	/* Initialized data for the RAM load configuration just goes in SYSRAM like everything else */
 	.data : ALIGN(32)
 	{
 		__data_romstart = LOADADDR(.data);

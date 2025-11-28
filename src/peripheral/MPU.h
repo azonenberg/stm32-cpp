@@ -46,19 +46,31 @@ public:
 	};
 
 	static void Configure(defaultMapMode mapMode, faultMode fmode)
-	{ SCB._MPU.ctrl = 1 | mapMode | fmode; }
+	{
+		SCB._MPU.ctrl = 1 | mapMode | fmode;
+
+		//Set up attributes
+		#if SCB_T_VERSION == 3
+			SCB._MPU.mair[0] = 0x4f;
+			SCB._MPU.mair[1] = 0;
+		#endif
+	}
 
 	enum sizeCode
 	{
-		SIZE_128K	= 0x10,
-		SIZE_256K	= 0x11,
-		SIZE_512K	= 0x12,
-		SIZE_1M		= 0x13,
-		SIZE_2M		= 0x14,
-		SIZE_4M		= 0x15,
-		SIZE_8M		= 0x16,
-		SIZE_16M	= 0x17,
-		SIZE_32M	= 0x18
+		#if SCB_T_VERSION == 3
+			SIZE_128K	= ( (128*1024) - 1 ) & 0xffff'ffe0
+		#else
+			SIZE_128K	= 0x10,
+			SIZE_256K	= 0x11,
+			SIZE_512K	= 0x12,
+			SIZE_1M		= 0x13,
+			SIZE_2M		= 0x14,
+			SIZE_4M		= 0x15,
+			SIZE_8M		= 0x16,
+			SIZE_16M	= 0x17,
+			SIZE_32M	= 0x18
+		#endif
 	};
 
 	enum texscb
@@ -75,15 +87,47 @@ public:
 
 	enum nxmode
 	{
-		EXECUTE_ALLOWED	= 0x0,
-		EXECUTE_NEVER	= 0x1
+		#if SCB_T_VERSION == 3
+			EXECUTE_ALLOWED	= 0x0,
+			EXECUTE_NEVER	= 0x100
+		#else
+			EXECUTE_ALLOWED	= 0x0,
+			EXECUTE_NEVER	= 0x1
+		#endif
 	};
 
-	static void ConfigureRegion(uint8_t region, uint32_t baseAddress, texscb t, aperm ap, nxmode nx, sizeCode sizecode)
+	static void ConfigureRegion(
+		uint8_t region,
+		uint32_t baseAddress,
+		[[maybe_unused]] texscb t,
+		[[maybe_unused]] aperm ap,
+		nxmode nx,
+		sizeCode sizecode)
 	{
 		SCB._MPU.rnr = region;
 		SCB._MPU.rbar = (baseAddress & 0xFFFFFFE0);
-		SCB._MPU.rasr = (nx << 28) | (ap << 24) | (t << 16) | (sizecode << 1) | 1;
+
+		//ARMv8-m
+		#if SCB_T_VERSION == 3
+
+			//TODO: finish implementing this
+			while(1)
+			{}
+
+			//Index of attributes in MAIR
+			//TODO: base this on texscab/aperm or make new stuff for it
+			uint32_t attribIndex = 0;
+
+			//Set end address and attributes
+			SCB._MPU.rlar = (uint32_t)sizecode |
+							(uint32_t)nx |
+							(attribIndex << 1) |
+							1;
+
+		//ARMV7-m
+		#else
+			SCB._MPU.rasr = (nx << 28) | (ap << 24) | (t << 16) | (sizecode << 1) | 1;
+		#endif
 	}
 };
 

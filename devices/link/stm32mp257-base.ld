@@ -9,6 +9,9 @@ MEMORY
 	RETRAM(RWX):			ORIGIN = 0x0e080000, LENGTH = 128K
 	VDERAM(RWX):			ORIGIN = 0x0e0a0000, LENGTH = 128K
 
+	/* Secure D-side bus aliases for M33 */
+	SEC_DSIDE_RETRAM(RW):	ORIGIN = 0x30080000, LENGTH = 128K
+
 	/*
 		SYSRAM with the first 0x2600 bytes reserved for the boot ROM (where is this documented??)
 	 */
@@ -177,9 +180,9 @@ SECTIONS
 		. = ALIGN(65536);
 		. += 1024;	/* OTFDEC2 not implemented */
 		. = ALIGN(65536);
-		. += 1024;	/* ICACHE not implemented */
+		KEEP (*(.icache))
 		. = ALIGN(65536);
-		. += 1024;	/* DCACHE not implemented */
+		KEEP (*(.dcache))
 		. = ALIGN(65536);
 		KEEP (*(.ipcc1))
 		. = ALIGN(65536);

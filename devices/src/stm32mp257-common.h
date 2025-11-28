@@ -99,3 +99,6 @@ volatile ca35ss_t CA35SS __attribute__((section(".ca35ss")));
 volatile ramcfg_t RAMCFG __attribute__((section(".ramcfg")));
 
 volatile ipcc_t IPCC1 __attribute__((section(".ipcc1")));
+
+volatile icache_t _ICACHE __attribute__((section(".icache")));
+volatile dcache_t _DCACHE __attribute__((section(".dcache")));

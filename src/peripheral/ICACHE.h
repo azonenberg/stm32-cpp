@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2020-2024 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2025 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -27,104 +27,140 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef stm32_scb_h
-#define stm32_scb_h
+#ifndef ICACHE_h
+#define ICACHE_h
 
-#include "stm32-mpu.h"
+#ifdef HAVE_ICACHE
 
-//ARMv8-M (currently Cortex-M33)
-#if SCB_T_VERSION == 3
-
-//so far we don't implement the nonsecure alias
-typedef struct
+//@brief STM32MP2 etc ICACHE block
+class ICACHE
 {
-	uint32_t	CPUID;
-	uint32_t	ICSR;
-	uint32_t	VTOR;
-	uint32_t	AIRCR;
-	uint32_t	SCR;	//ed10
-	uint32_t	CCR;
-	uint8_t		SHP[12];
-	uint32_t	SHCSR;
-	uint32_t	CFSR;	//ed28, contains MMFSR / BFSR / UFSR
-	uint32_t	HFSR;
-	uint32_t	field_30;
-	uint32_t	MMFAR;
-	uint32_t	BFAR;
-	uint32_t	AFSR;
-	uint32_t	field_40[18];
-	uint32_t	CPACR;
-	uint32_t	NSACR;
-	mpu_t		_MPU;
-	uint32_t	field_edc8;
-} scb_t;
+public:
 
-#else
+	///@brief Wait until we're not busy
+	static void WaitIdle()
+	{
+		while(IsBusy())
+		{}
+	}
 
-//ARMv7-M
-typedef struct
-{
-	uint32_t	CPUID;
-	uint32_t	ICSR;
-	uint32_t	VTOR;
-	uint32_t	AIRCR;
-	uint32_t	SCR;
-	uint32_t	CCR;
-	uint8_t		SHP[12];
-	uint32_t	SHCR;
-	uint32_t	CFSR;
-	uint32_t	HFSR;
-	uint32_t	DFSR;
-	uint32_t	MMFAR;
-	uint32_t	BFAR;
-	uint32_t	AFSR;
-	uint32_t	PFR[2];
-	uint32_t	DFR;
-	uint32_t	ADR;
-	uint32_t	MMFR[4];
-	uint32_t	ISAR[5];
-	uint32_t	field_e000ed74;
-#if SCB_T_VERSION == 2
-	uint32_t	CLIDR;
-	uint32_t	CTR;
-	uint32_t	CCSIDR;
-	uint32_t	CCSELR;
-	uint32_t	CPACR;
-	uint32_t	field_e000ed8c;
-	mpu_t		_MPU;
-	uint32_t	field_e000eda4[22];
-	uint32_t	DEMCR;
-	uint32_t	field_e000ee00[64];
-	uint32_t	STIR;
-	uint32_t	field_e000ef04[19];
-	uint32_t	ICIALLU;
-	uint32_t	field_e000ef54;
-	uint32_t	ICIMVAU;
-	uint32_t	DCIMVAC;
-	uint32_t	DCISW;
-	uint32_t	DCCMVAU;
-	uint32_t	DCCMVAC;
-	uint32_t	DCCSW;
-	uint32_t	DCCIMVAC;
-	uint32_t	DCCISW;
-	uint32_t	BPIALL;
-	uint32_t	field_e000ef7c;
-	uint32_t	field_e000ef80;
-	uint32_t	field_e000ef84;
-	uint32_t	field_e000ef88;
-	uint32_t	field_e000ef8c;
-	uint32_t	CM7_ITCMCR;
-	uint32_t	CM7_DTCMCR;
-	uint32_t	CM7_AHBPCR;
-	uint32_t	CM7_CACR;
-	uint32_t	CM7_AHBSCR;
-	uint32_t	field_e000efa4;
-	uint32_t	CM7_ABFSR;
+	///@brief Check if the cache is enabled
+	static bool IsEnabled()
+	{ return (_ICACHE.CR & ICACHE_CR_EN) ? true : false; }
 
-	//more after this
+	///@brief Turn the cache on
+	static void Enable()
+	{
+		WaitIdle();
+		_ICACHE.CR |= ICACHE_CR_EN;
+	}
+
+	///@brief Invalidate all lines in the cache
+	static void InvalidateAll()
+	{
+		_ICACHE.CR |= ICACHE_CR_CACHEINV;
+		WaitIdle();
+	}
+
+	///@brief Check if the cache is busy
+	static bool IsBusy()
+	{ return (_ICACHE.SR & ICACHE_SR_BUSYF) != 0; }
+
+	///@brief Return the current number of cache hits (saturates at max)
+	static uint32_t PerfGetHitCount()
+	{ return _ICACHE.HMONR; }
+
+	///@brief Return the current number of cache misses (note this is only 16 bits and saturates at max)
+	static uint16_t PerfGetMissCount()
+	{ return _ICACHE.MMONR; }
+
+	///@brief Reset the hit counter
+	static void PerfResetHitCount()
+	{
+		_ICACHE.CR |= ICACHE_CR_HITMRST;
+		_ICACHE.CR &= ~ICACHE_CR_HITMRST;
+	}
+
+	///@brief Reset the miss counter
+	static void PerfResetMissCount()
+	{
+		_ICACHE.CR |= ICACHE_CR_MISSMRST;
+		_ICACHE.CR &= ~ICACHE_CR_MISSMRST;
+	}
+
+	///@brief Enable the hit counter
+	static void PerfEnableHitCount()
+	{ _ICACHE.CR |= ICACHE_CR_HITMEN;  }
+
+	///@brief Enable the miss counter
+	static void PerfEnableMissCount()
+	{ _ICACHE.CR |= ICACHE_CR_MISSMEN; }
+
+	///@brief Get width of the AHB slave interface
+	static uint32_t GetAHBSWidth()
+	{
+		switch( (_ICACHE.HWCFGR >> 26) & 3)
+		{
+			case 0:	return 32;
+			case 1: return 64;
+			case 2: return 128;
+			default: return 0;
+		}
+	}
+
+	///@brief Get width of the AHB master2 interface
+	static uint32_t GetAHBM2Width()
+	{
+		switch( (_ICACHE.HWCFGR >> 23) & 3)
+		{
+			case 0:	return 0;
+			case 1: return 32;
+			case 2: return 64;
+			default: return 0;
+		}
+	}
+
+	///@brief Get width of the AHB master1 interface
+	static uint32_t GetAHBM1Width()
+	{
+		switch( (_ICACHE.HWCFGR >> 21) & 3)
+		{
+			case 0:	return 0;
+			case 1: return 32;
+			case 2: return 64;
+			default: return 128;
+		}
+	}
+
+	///@brief Get the number of available remap regions
+	static uint32_t GetRemapRegions()
+	{ return (_ICACHE.HWCFGR >> 16) & 7; }
+
+	///@brief Get the size of each remap region, in MB
+	static uint32_t GetRemapRegionSize()
+	{ return 1 << ( (_ICACHE.HWCFGR >> 12) & 0xf); }
+
+	///@brief Get width of the cache line, in bytes
+	static uint32_t GetCacheLineWidth()
+	{
+		switch( (_ICACHE.HWCFGR >> 9) & 3)
+		{
+			case 1:	return 8;
+			case 2: return 16;
+			case 3: return 32;
+			default: return 0;
+		}
+	}
+
+	///@brief Get the total cache size, in kB
+	static uint32_t GetCacheSize()
+	{ return 1 << ( (_ICACHE.HWCFGR >> 4) & 7 ); }
+
+	///@brief Get the number of ways of associacivity
+	static uint32_t GetNumWays()
+	{ return 1 << ( _ICACHE.HWCFGR & 3 ); }
+};
+
 #endif
-} scb_t;
 
 #endif
-
-#endif	//include guard
