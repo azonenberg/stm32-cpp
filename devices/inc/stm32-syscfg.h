@@ -85,8 +85,9 @@ enum syscfg_pmcr
 
 enum syscfg_bootmode_t
 {
-	BOOT_MODE_DEV1	= 3,
-	BOOT_MODE_DEV2	= 12
+	BOOT_MODE_DEV1		= 3,
+	BOOT_MODE_M33TD_SPI = 11,
+	BOOT_MODE_DEV2		= 12
 };
 
 struct syscfg_t

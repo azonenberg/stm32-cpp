@@ -52,7 +52,16 @@ typedef struct
 	uint32_t	MMFAR;
 	uint32_t	BFAR;
 	uint32_t	AFSR;
-	uint32_t	field_40[18];
+	uint32_t	ID_PFR0;
+	uint32_t	ID_PFR1;
+	uint32_t	ID_DFR0;
+	uint32_t	ID_AFR0;
+	uint32_t	ID_MMFR[4];
+	uint32_t	ID_ISAR[6];
+	uint32_t	CLIDR;
+	uint32_t	CTR;
+	uint32_t	CCSIDR;
+	uint32_t	CSSELR;
 	uint32_t	CPACR;
 	uint32_t	NSACR;
 	mpu_t		_MPU;

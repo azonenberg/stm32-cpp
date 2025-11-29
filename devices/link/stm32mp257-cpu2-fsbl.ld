@@ -105,5 +105,5 @@ SECTIONS
 
 		/* General purpose IPC buffers come after the descriptors*/
 		*(.ipcbuf)
-	} > SRAM2
+	} > SEC_DSIDE_SRAM2
 }

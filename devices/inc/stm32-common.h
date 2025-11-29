@@ -102,5 +102,29 @@ void CleanDataCache(void* baseAddr, size_t size);
 extern "C" uint32_t GetCurrentCore();
 #endif
 
+//AARCH64 stuff
+#ifdef __aarch64__
+
+//MAIR_ELx holds eight possible attributes
+//Here, we define what each is
+enum mairidx_t
+{
+	MAIR_IDX_NORM_UNCACHE	= 0,	//Normal memory but uncacheable
+	MAIR_IDX_NORMAL			= 1,	//Normal memory
+	MAIR_IDX_DEVICE			= 2		//Device memory
+	//slots 3-7 not used for now
+};
+
+enum MAIR_TYPE
+{
+	MAIR_TYPE_DEVICE_NGNRNE	= 0x00,	//Device memory, nGnRnE
+	MAIR_TYPE_NORMAL		= 0xff,	//Normal, inner/outer WB/WA/RA
+	MAIR_TYPE_NONCACHE		= 0x44	//Normal, inner/outer noncacheable
+};
+
+extern "C" void InitializeMMU(void* pageTable);
+
+#endif
+
 #endif
 

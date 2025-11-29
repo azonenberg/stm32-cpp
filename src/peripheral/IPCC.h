@@ -71,29 +71,29 @@ public:
 		RCCHelper::Enable(ipcc);
 	}
 
-	///@brief Check if the channel is free in the primary to secondary direction
+	///@brief Check if the channel is free in the primary to secondary direction (should be low half)
 	bool IsPrimaryToSecondaryChannelFree(uint32_t mask)
 	{ return (m_ipcc->C1TOC2SR & mask) == 0; }
 
-	///@brief Check if the channel is free in the secondary to primary direction
+	///@brief Check if the channel is free in the secondary to primary direction (should be low half)
 	bool IsSecondaryToPrimaryChannelFree(uint32_t mask)
 	{ return (m_ipcc->C2TOC1SR & mask) == 0; }
 
-	///@brief Marks the channel as occupied in the primary to secondary direction
+	///@brief Marks the channel as occupied in the primary to secondary direction (should be high half)
 	void SetPrimaryToSecondaryChannelBusy(uint32_t setmask)
 	{ m_ipcc->C1SCR = setmask; }
 
-	///@brief Marks the channel as free in the primary to secondary direction
+	///@brief Marks the channel as free in the primary to secondary direction (should be low half)
 	void SetPrimaryToSecondaryChannelFree(uint32_t clearmask)
-	{ m_ipcc->C1SCR = clearmask; }
+	{ m_ipcc->C2SCR = clearmask; }
 
-	///@brief Marks the channel as occupied in the secondary to primary direction
+	///@brief Marks the channel as occupied in the secondary to primary direction (should be high half)
 	void SetSecondaryToPrimaryChannelBusy(uint32_t setmask)
 	{ m_ipcc->C2SCR = setmask; }
 
-	///@brief Marks the channel as free in the secondary to primary direction
+	///@brief Marks the channel as free in the secondary to primary direction (should be low half)
 	void SetSecondaryToPrimaryChannelFree(uint32_t clearmask)
-	{ m_ipcc->C2SCR = clearmask; }
+	{ m_ipcc->C1SCR = clearmask; }
 
 	///@brief Initialize it (done on the primary side)
 	void Initialize()

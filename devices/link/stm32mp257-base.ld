@@ -9,8 +9,10 @@ MEMORY
 	RETRAM(RWX):			ORIGIN = 0x0e080000, LENGTH = 128K
 	VDERAM(RWX):			ORIGIN = 0x0e0a0000, LENGTH = 128K
 
-	/* Secure D-side bus aliases for M33 */
+	/* Secure D-side bus aliases */
 	SEC_DSIDE_RETRAM(RW):	ORIGIN = 0x30080000, LENGTH = 128K
+	SEC_DSIDE_SRAM2(RWX):	ORIGIN = 0x30060000, LENGTH = 128K
+	SEC_DSIDE_SYSRAM(RW):	ORIGIN = 0x30000000, LENGTH = 256K
 
 	/*
 		SYSRAM with the first 0x2600 bytes reserved for the boot ROM (where is this documented??)
