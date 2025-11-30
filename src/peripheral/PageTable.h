@@ -27,104 +27,83 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef stm32_common_h
-#define stm32_common_h
+#ifndef PageTable_h
+#define PageTable_h
 
-#include <stdint.h>
-#include <cstddef>
-
-/**
-	@brief Disables interrupts without saving the previous enable state
- */
-extern "C" void DisableInterrupts();
-
-/**
-	@brief Enables interrupts without saving the previous enable state
- */
-extern "C" void EnableInterrupts();
-
-/**
-	@brief Enters a critical section, disables interrupts, and returns the previous PRIMASK value
- */
-extern "C" uint32_t EnterCriticalSection();
-
-/**
-	@brief Leaves a critical section and restores the previous PRIMASK value
- */
-extern "C" void LeaveCriticalSection(uint32_t cpu_sr);
-
-//Linker variables
-extern uint8_t __data_romstart;
-extern uint8_t __data_start;
-extern uint8_t __data_end;
-extern uint8_t __itcm_start;
-extern uint8_t __itcm_romstart;
-extern uint8_t __itcm_end;
-
-/**
-	@brief Enables an IRQ lane in the NVIC
- */
-void NVIC_EnableIRQ(int lane);
-
-/**
-	@brief Disables bus fault errors for data accesses
- */
-uint32_t SCB_DisableDataFaults();
-
-/**
-	@brief Re-enables bus fault errors for data accesses
- */
-void SCB_EnableDataFaults(uint32_t faultmask);
-
-///@brief Disable faults via FAULTMASK
-extern "C" uint32_t DisableFaults();
-
-///@brief Enable faults via FAULTMASK
-extern "C" uint32_t EnableFaults(uint32_t faultmask);
-
-///@brief Invalidate the instruction cache
-extern "C" void InvalidateInstructionCache();
-
-///@brief Enable the instruction cache
-extern "C" void EnableInstructionCache();
-
-///@brief Invalidate the data cache
-extern "C" void InvalidateDataCache();
-
-///@brief Enable the data cache
-extern "C" void EnableDataCache();
-
-///@brief Invalidate one section of the cache
-void CleanDataCache(void* baseAddr, size_t size);
-
-#ifdef MULTICORE
-///@brief Returns the current core ID
-extern "C" uint32_t GetCurrentCore();
-#endif
-
-//AARCH64 stuff
 #ifdef __aarch64__
 
-//MAIR_ELx holds eight possible attributes
-//Here, we define what each is
-enum mairidx_t
+/**
+	@brief An aarch64 page table
+ */
+template<uint64_t entrySize, uint32_t numEntries = 512>
+class PageTable
 {
-	MAIR_IDX_NORM_UNCACHE	= 0,	//Normal memory but uncacheable
-	MAIR_IDX_NORMAL			= 1,	//Normal memory
-	MAIR_IDX_DEVICE			= 2		//Device memory
-	//slots 3-7 not used for now
+public:
+
+	///@brief Initialize the page table to all zeroes (invalid/unmapped)
+	PageTable()
+	{ }
+
+	void Clear()
+	{
+		//Can't use memset since we probably haven't configured the MMU yet
+		for(uint32_t i=0; i<numEntries; i++)
+			m_entries[i] = 0;
+	}
+
+	///@brief Fill out an entry for a leaf page
+	void SetLeafEntry(uint64_t vaddr, uint64_t paddr, bool nx, mairidx_t attribs)
+	{
+		uint32_t idx = vaddr / entrySize;
+
+		//Fill out the base descriptor
+		uint64_t descriptor =
+			paddr |				//Block address
+			(1 << 10) |			//AF pre set so we don't fault
+			(attribs << 2) |	//Attributes
+			1;					//Valid bit
+
+		//Add NX bit if requested
+		if(nx)
+			descriptor |= (1LL << 53);
+
+		//bit 9:8: SH (shareability), default to zero (non-shareable)
+		//for normal memory, mark as inner shareable
+		if(attribs == MAIR_IDX_NORMAL)
+			descriptor |= (3 << 8);
+
+		m_entries[idx] = descriptor;
+	}
+
+	///@brief Fill out an entry for a child page
+	void SetChildEntry(uint64_t vaddr, PageTable<entrySize/512>& child)
+	{
+		uint32_t idx = vaddr / entrySize;
+		uint64_t paddr = reinterpret_cast<uint64_t>(child.GetData());
+
+		//Fill out the base descriptor
+		uint64_t descriptor =
+			paddr |				//Table address
+			(1 << 10) |			//AF pre set so we don't fault
+			2 |					//This is a descriptor not a leaf entry
+			1;					//Valid bit
+
+		m_entries[idx] = descriptor;
+	}
+
+	///@brief Get a pointer to the page table itself
+	const uint64_t* GetData()
+	{ return m_entries; }
+
+	///@brief Get the number of bytes addressed by one page table entry
+	uint64_t GetEntrySize()
+	{ return entrySize; }
+
+protected:
+
+	///@brief The actual entries in the page table
+	uint64_t m_entries[numEntries];
 };
 
-enum MAIR_TYPE
-{
-	MAIR_TYPE_DEVICE_NGNRNE	= 0x00,	//Device memory, nGnRnE
-	MAIR_TYPE_NORMAL		= 0xff,	//Normal, inner/outer WB/WA/RA
-	MAIR_TYPE_NONCACHE		= 0x44	//Normal, inner/outer noncacheable
-};
-
-extern "C" void InitializeMMU(const void* pageTable);
-
 #endif
-
 #endif
-
