@@ -33,17 +33,14 @@
 #ifdef __aarch64__
 
 /**
-	@brief An aarch64 page table
+	@brief Base class for aarch64 page tables
  */
 template<uint64_t entrySize, uint32_t numEntries = 512>
-class PageTable
+class PageTableBase
 {
 public:
 
 	///@brief Initialize the page table to all zeroes (invalid/unmapped)
-	PageTable()
-	{ }
-
 	void Clear()
 	{
 		//Can't use memset since we probably haven't configured the MMU yet
@@ -51,10 +48,33 @@ public:
 			m_entries[i] = 0;
 	}
 
+	///@brief Get a pointer to the page table itself
+	const uint64_t* GetData()
+	{ return m_entries; }
+
+	///@brief Get the number of bytes addressed by one page table entry
+	uint64_t GetEntrySize()
+	{ return entrySize; }
+
+protected:
+
+	///@brief The actual entries in the page table
+	uint64_t m_entries[numEntries];
+};
+
+/**
+	@brief An aarch64 page table
+ */
+template<uint64_t entrySize, uint64_t baseVaddr, uint32_t numEntries = 512>
+class PageTable
+	: public PageTableBase<entrySize, numEntries>
+{
+public:
+
 	///@brief Fill out an entry for a leaf page
 	void SetLeafEntry(uint64_t vaddr, uint64_t paddr, bool nx, mairidx_t attribs)
 	{
-		uint32_t idx = vaddr / entrySize;
+		uint32_t idx = (vaddr - baseVaddr) / entrySize;
 
 		//Fill out the base descriptor
 		uint64_t descriptor =
@@ -72,13 +92,14 @@ public:
 		if(attribs == MAIR_IDX_NORMAL)
 			descriptor |= (3 << 8);
 
-		m_entries[idx] = descriptor;
+		//compiler can't resolve template base w/o explicitly making it a member reference
+		this->m_entries[idx] = descriptor;
 	}
 
 	///@brief Fill out an entry for a child page
-	void SetChildEntry(uint64_t vaddr, PageTable<entrySize/512>& child)
+	void SetChildEntry(uint64_t vaddr, PageTableBase<entrySize / 512, 512>& child)
 	{
-		uint32_t idx = vaddr / entrySize;
+		uint32_t idx = (vaddr - baseVaddr) / entrySize;
 		uint64_t paddr = reinterpret_cast<uint64_t>(child.GetData());
 
 		//Fill out the base descriptor
@@ -88,21 +109,9 @@ public:
 			2 |					//This is a descriptor not a leaf entry
 			1;					//Valid bit
 
-		m_entries[idx] = descriptor;
+		//compiler can't resolve template base w/o explicitly making it a member reference
+		this->m_entries[idx] = descriptor;
 	}
-
-	///@brief Get a pointer to the page table itself
-	const uint64_t* GetData()
-	{ return m_entries; }
-
-	///@brief Get the number of bytes addressed by one page table entry
-	uint64_t GetEntrySize()
-	{ return entrySize; }
-
-protected:
-
-	///@brief The actual entries in the page table
-	uint64_t m_entries[numEntries];
 };
 
 #endif
