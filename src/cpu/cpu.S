@@ -10,6 +10,25 @@ GetCurrentCore:
 	and		x0, x0, #0xff
 	br		x30
 
+.globl GetMIDR
+.type GetMIDR, %function
+GetMIDR:
+	mrs		x0, MIDR_EL1
+	br		x30
+
+.globl GetCLIDR
+.type GetCLIDR, %function
+GetCLIDR:
+	mrs		x0, CLIDR_EL1
+	br		x30
+
+.globl GetCCSIDR
+.type GetCCSIDR, %function
+GetCCSIDR:
+	msr		CSSELR_EL1, x0
+	mrs		x0, CCSIDR_EL1
+	br		x30
+
 //Turn on the MMU
 //void InitializeMMU(void* rootPageTable)
 .globl InitializeMMU

@@ -105,6 +105,10 @@ extern "C" uint32_t GetCurrentCore();
 //AARCH64 stuff
 #ifdef __aarch64__
 
+extern "C" uint64_t GetMIDR();
+extern "C" uint64_t GetCLIDR();
+extern "C" uint64_t GetCCSIDR(uint64_t ccselr);
+
 //MAIR_ELx holds eight possible attributes
 //Here, we define what each is
 enum mairidx_t
