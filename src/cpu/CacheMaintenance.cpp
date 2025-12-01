@@ -31,6 +31,9 @@
 
 #ifdef HAVE_L1
 
+#ifdef __aarch64__
+#else
+
 void CleanDataCache(void* baseAddr, size_t size)
 {
 	asm("dmb st");
@@ -54,5 +57,7 @@ void CleanDataCache(void* baseAddr, size_t size)
 	asm("dsb");
 	asm("isb");
 }
+
+#endif
 
 #endif

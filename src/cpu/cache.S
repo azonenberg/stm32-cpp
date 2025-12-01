@@ -3,6 +3,137 @@
 
 #ifdef __aarch64__
 
+//x0 = addr
+//x1 = size
+//for now assumes 64 byte cache line
+.globl CleanDataCache
+.type CleanDataCache, %function
+CleanDataCache:
+
+	//Commit any pending writes to cache
+	dmb		st
+
+	//End address
+	add		x3, x0, x1
+
+	//Round start address to cache line
+	mov		x4, #0x3f
+	neg		x4, x4
+	and		x0, x0, x4
+
+cleanloop:
+	dc		ivac, x0
+	add		x0, x0, #64
+	cmp		x0, x3
+	blt		cleanloop
+
+	br		x30
+
+.globl EnableDataCache
+.type EnableDataCache, %function
+EnableDataCache:
+
+	mrs		x0, SCTLR_EL3
+	mov		x1, #4
+	orr		x0, x0, x1
+	msr		SCTLR_EL3, x0
+	isb
+
+	br		x30
+
+.globl EnableInstructionCache
+.type EnableInstructionCache, %function
+EnableInstructionCache:
+
+	mrs		x0, SCTLR_EL3
+	mov		x1, #0x1000
+	orr		x0, x0, x1
+	msr		SCTLR_EL3, x0
+	isb
+
+	br		x30
+
+.globl InvalidateInstructionCache
+.type InvalidateInstructionCache, %function
+InvalidateInstructionCache:
+	ic		iallu
+	br		x30
+
+.globl InvalidateDataCache
+.type InvalidateDataCache, %function
+InvalidateDataCache:
+
+	//TODO: handle arbitrarily large caches
+	//For now this is hard coded for the STM32MP2 Cortex-A35
+
+	//Don't bother using the stack to save our return address, just shove it in a register
+	mov		x19, x30
+
+	//Flush the L1
+	mov		x0, #128	//128 sets
+	mov		x1, #4		//4-way associative
+	mov		x2, #0		//level 1
+	mov		x3, 6		//log(linelen)
+	mov		x4, 2		//log(nways)
+	bl		InvalidateDataOrUnifiedCache
+
+	//Flush the L2
+	mov		x0, #1024	//1024 sets
+	mov		x1, #8		//8-way associative
+	mov		x2, #1		//level 2
+	mov		x3, 6		//log(linelen)
+	mov		x4, 3		//log(nways)
+	bl		InvalidateDataOrUnifiedCache
+
+	//Just jump straight to the saved return address, no reason to move it back to x30 first
+	//(will this confuse branch predictors or something?)
+	br		x19
+
+//Clear the D-side L1 cache
+//x0 = number of sets
+//x1 = number of ways
+//x2 = cache level minus 1
+//x3 = log(linelen)
+//x4 = log(nways)
+InvalidateDataOrUnifiedCache:
+
+	//Select the cache level we're flushing
+	//Pre-shift it left by one bit since "dc isw" wants the level in bits 3:1
+	lsl		x2, x2, #1
+
+	//x4 = 32 - log(nways)
+	mov		x6, #32
+	sub		x4, x6, x4
+
+	//Current cache set, x6. ranges from x0-1 to 0
+	mov		x6, x0
+setloop:
+	sub		x6, x6, #1
+
+	//Current cache way, x7. ranges from x1-1 to 0
+	mov		x7, x1
+wayloop:
+	sub		x7, x7, #1
+
+	//Given set in x6 and way in x7, format setway into 5
+	//bits 31 to (32-A) is way number
+	//bits B-1 to L is set
+	lsl		x5, x7, x4		//nway << (32 - log(nways))
+	lsl		x9, x6, x3		//nset << log(linelen)
+	orr		x5, x5, x9		//way | set
+	orr		x5, x5, x2		//way | set | level
+	dc		isw, x5			//Cache line invalidate by set/way
+
+	//End of inner loop
+	cbnz	x7, wayloop
+
+	//End of outer loop
+	cbnz	x6, setloop
+
+	//Done
+	br		x30
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // ARM-M path
 

@@ -40,7 +40,12 @@ class PageTableBase
 {
 public:
 
-	///@brief Initialize the page table to all zeroes (invalid/unmapped)
+	/**
+		@brief Initialize the page table to all zeroes (invalid/unmapped)
+
+		This cannot be done in a constructor, because we initialize the page table during very early boot
+		before global constructors are called
+	 */
 	void Clear()
 	{
 		//Can't use memset since we probably haven't configured the MMU yet

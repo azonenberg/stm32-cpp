@@ -59,17 +59,8 @@ InitializeMMU:
 
 	//Turn on the MMU
 	mov		x3, #1
-	//TODO: enable caches see 2.8 of tutorial
 	msr		SCTLR_EL3, x3
 	isb
-
-	//DEBUG
-	nop
-	nop
-	nop
-	nop
-	nop
-	nop
 
 	br		x30
 

@@ -85,17 +85,26 @@ extern "C" uint32_t EnableFaults(uint32_t faultmask);
 ///@brief Invalidate the instruction cache
 extern "C" void InvalidateInstructionCache();
 
-///@brief Enable the instruction cache
-extern "C" void EnableInstructionCache();
-
 ///@brief Invalidate the data cache
 extern "C" void InvalidateDataCache();
+
+///@brief Enable the instruction cache
+extern "C" void EnableInstructionCache();
 
 ///@brief Enable the data cache
 extern "C" void EnableDataCache();
 
-///@brief Invalidate one section of the cache
-void CleanDataCache(void* baseAddr, size_t size);
+#ifdef __aarch64__
+
+	///@brief Invalidate one section of the cache
+	extern "C" void CleanDataCache(void* baseAddr, size_t size);
+
+#else
+
+	///@brief Invalidate one section of the cache
+	void CleanDataCache(void* baseAddr, size_t size);
+
+#endif
 
 #ifdef MULTICORE
 ///@brief Returns the current core ID
