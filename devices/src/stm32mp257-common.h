@@ -102,3 +102,8 @@ volatile ipcc_t IPCC1 __attribute__((section(".ipcc1")));
 
 volatile icache_t _ICACHE __attribute__((section(".icache")));
 volatile dcache_t _DCACHE __attribute__((section(".dcache")));
+
+volatile risaf_t RISAF1 __attribute__((section(".risaf1")));
+volatile risaf_t RISAF2 __attribute__((section(".risaf2")));
+volatile risaf_t RISAF4 __attribute__((section(".risaf4")));
+volatile risaf_t RISAF5 __attribute__((section(".risaf5")));

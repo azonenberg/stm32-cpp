@@ -149,6 +149,13 @@ extern volatile icache_t _ICACHE;
 #include "stm32-dcache.h"
 extern volatile dcache_t _DCACHE;
 
+#define RISAF_T_VERSION 1
+#include "stm32-risaf.h"
+extern volatile risaf_t RISAF1;
+extern volatile risaf_t RISAF2;
+extern volatile risaf_t RISAF4;
+extern volatile risaf_t RISAF5;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Peripherals only for CPU1 (Cortex-A35)
 

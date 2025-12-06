@@ -221,6 +221,20 @@ SECTIONS
 		. += 1024;	/* PKA not implemented */
 		. = ALIGN(65536);
 		KEEP (*(.ramcfg))
+		. = ALIGN(65536);
+		. += 1024;	/* RIFSC not implemented */
+		. = ALIGN(65536);
+		. += 1024;	/* IAC not implemented */
+		. = ALIGN(65536);
+		KEEP (*(.risaf1))
+		. = ALIGN(65536);
+		KEEP (*(.risaf2))
+		. = ALIGN(65536);
+		. += 1024;	/* void space where RISAF3 would be, but there's nothing there */
+		. = ALIGN(65536);
+		KEEP (*(.risaf4))
+		. = ALIGN(65536);
+		KEEP (*(.risaf5))
 	} > AHB3
 
 	.sfr_ahb4  (NOLOAD):

@@ -248,9 +248,11 @@ enum rcc_xbar_channel
 	RCC_ck_icn_hsl			= 4,	//max 300 MHz
 	RCC_ck_icn_nic			= 5,	//max 400 MHz
 	RCC_ck_ker_usart6		= 20,	//max 100 MHz
+	RCC_ck_ker_usb3pciephy	= 34,	//max 25 MHz
 	RCC_ck_ker_ospi1		= 48,	//max 133 MHz
 	RCC_ck_mco1				= 61,	//max 160 MHz
-	RCC_ck_mco2				= 62	//max 160 MHz
+	RCC_ck_mco2				= 62,	//max 160 MHz
+	RCC_ck_cpu1_ext2f		= 63	//max 400 MHz
 };
 
 enum rcc_apb_div
