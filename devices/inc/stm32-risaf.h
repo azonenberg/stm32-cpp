@@ -35,11 +35,22 @@
 //STM32MP257
 #if RISAF_T_VERSION == 1
 
+enum risaf_cfgr_t
+{
+	RISAF_CFGR_SEC		= 0x100,
+	RISAF_CFGR_BREN		= 0x01
+};
+
 enum risaf_iaesr_t
 {
 	RISAF_IAESR_IANRW	= 0x80,
 	RISAF_IAESR_IASEC	= 0x20,
 	RISAF_IAESR_IAPRIV	= 0x10
+};
+
+enum risaf_sr_t
+{
+	RISAF_SR_ENCDIS		= 0x4
 };
 
 enum risaf_iasr_t
