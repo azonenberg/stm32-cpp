@@ -156,6 +156,10 @@ extern volatile risaf_t RISAF2;
 extern volatile risaf_t RISAF4;
 extern volatile risaf_t RISAF5;
 
+#define COMBOPHY_T_VERSION 1
+#include "stm32-combophy.h"
+extern volatile combophy_t COMBOPHY;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Peripherals only for CPU1 (Cortex-A35)
 

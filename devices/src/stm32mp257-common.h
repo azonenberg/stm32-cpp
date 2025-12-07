@@ -107,3 +107,5 @@ volatile risaf_t RISAF1 __attribute__((section(".risaf1")));
 volatile risaf_t RISAF2 __attribute__((section(".risaf2")));
 volatile risaf_t RISAF4 __attribute__((section(".risaf4")));
 volatile risaf_t RISAF5 __attribute__((section(".risaf5")));
+
+volatile combophy_t _COMBOPHY __attribute__((section(".combophy")));

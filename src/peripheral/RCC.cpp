@@ -35,6 +35,13 @@
 // Peripheral enabling
 
 #ifdef HAVE_IPCC
+void RCCHelper::Enable([[maybe_unused]] volatile combophy_t* combophy)
+{
+	RCC.USB3PCIEPHYCFGR = RCC_GENERIC_CFGR_EN;
+}
+#endif
+
+#ifdef HAVE_IPCC
 void RCCHelper::Enable(volatile ipcc_t* ipcc)
 {
 	if(ipcc == &IPCC1)

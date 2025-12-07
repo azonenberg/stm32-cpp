@@ -26,7 +26,7 @@ MEMORY
 	APB1(RW):				ORIGIN = 0x50000000, LENGTH = 2048K
 	APB2(RW):				ORIGIN = 0x50200000, LENGTH = 1536K
 	APB3(RW):				ORIGIN = 0x54000000, LENGTH = 2048K
-	/* TODO: APB4 */
+	APB4(RW):				ORIGIN = 0x58000000, LENGTH = 2048K
 	/* TODO: SmartRun APB */
 	/* TODO: A35 debug APB */
 
@@ -164,6 +164,40 @@ SECTIONS
 		. = ALIGN(65536);
 		KEEP (*(.bsec))
 	} > APB3
+
+	.sfr_apb4  (NOLOAD):
+	{
+		. = ALIGN(65536);
+		. += 1024;	/* DSI not implemented */
+		. = ALIGN(65536);
+		. += 1024;	/* LTDC not implemented */
+		. = ALIGN(65536);
+		. += 1024;	/* CSI not implemented */
+		. = ALIGN(65536);
+		. += 1024;	/* DCMIPP not implemented */
+		. = ALIGN(65536);
+		. += 1024;	/* DDRCTRL/DDRPERFM not implemented */
+		. = ALIGN(65536);
+		. += 1024;	/* DDRDBG not implemented */
+		. = ALIGN(65536);
+		. += 1024;	/* LVDS not implemented */
+		. = ALIGN(65536);
+		. += 1024;	/* STGENR not implemented */
+		. = ALIGN(65536);
+		. += 1024;	/* STGENC not implemented */
+		. = ALIGN(65536);
+		. += 1024;	/* GIV2M not implemented */
+		. = ALIGN(65536);
+		. += 1024;	/* UCPD1 not implemented */
+		. = ALIGN(65536);
+		. += 1024;	/* Nothing at 580b */
+		. = ALIGN(65536);
+		KEEP (*(.combophy))
+		. = ALIGN(65536);
+		. += 1024;	/* VDEC not implemented */
+		. = ALIGN(65536);
+		. += 1024;	/* VENC not implemented */
+	} > APB4
 
 	.sfr_ahb2  (NOLOAD):
 	{
