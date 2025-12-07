@@ -37,6 +37,42 @@ class PCIE
 {
 public:
 
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// System configuration and setup
+
+	enum RefclkType
+	{
+		REFCLK_EXT_100MHZ,	//100 MHz on PCIE_CLKIN_P/N
+		REFCLK_INT_25MHZ	//25 MHz from RCC (on ck_ker_usb3pciephy, flexclkgen channel 34)
+	};
+
+	static void Initialize(RefclkType refclkType, bool autoTrainToFullSpeed);
+	static void WaitForLinkUp();
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// Runtime helpers
+
+	/**
+		@brief Send a vendor-specific DLLP (type 0x30)
+
+		@param payload 24 bit DLLP payload (high 8 bits ignored)
+	 */
+	static void SendVendorSpecificDLLP(uint32_t payload)
+	{
+		auto portLogic = GetPortLogic();
+		portLogic->VENDOR_SPEC_DLLP = (payload << 8) | PCIE_DLLP_TYPE_VENDOR_SPEC;
+		portLogic->PORT_LINK_CTRL |= PCIE_VENDOR_SPECIFIC_DLLP_REQ;
+	}
+
+	static void UnlockConfig()
+	{ GetPortLogic()->MISC_CONTROL_1 |= PCIE_DBI_RO_WR_EN; }
+
+	static void LockConfig()
+	{ GetPortLogic()->MISC_CONTROL_1 &= ~PCIE_DBI_RO_WR_EN; }
+
+	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	// ATU configuration
+
 	static void SetupOutboundATURegion(
 		size_t iregion,
 		pcie_tlptype_t tlptype,
@@ -53,8 +89,12 @@ public:
 
 	static void ClearInboundATURegion(size_t iregion);
 
+protected:
 	static volatile pcie_atu_cfg_t* GetATU()
 	{ return reinterpret_cast<volatile pcie_atu_cfg_t*>(reinterpret_cast<volatile uint8_t*>(&_PCIE) + 0x30'0000); }
+
+	static volatile pcie_portlogic_t* GetPortLogic()
+	{ return reinterpret_cast<volatile pcie_portlogic_t*>(reinterpret_cast<volatile uint8_t*>(&_PCIE) + 0x700); }
 
 	//no pcie member, assume we have only one instance so we use it implicitly
 };

@@ -137,12 +137,80 @@ struct pcie_atu_cfg_t
 	pcie_atublock_t	inbound;
 };
 
+struct pcie_vc_t
+{
+	uint32_t	P_RX_Q_CTRL;
+	uint32_t	NP_RX_Q_CTRL;
+	uint32_t	CPL_RX_Q_CTRL;
+};
+
+enum dllptype_t
+{
+	PCIE_DLLP_TYPE_VENDOR_SPEC = 0x30
+};
+
+enum pcie_port_link_ctrl_t
+{
+	PCIE_VENDOR_SPECIFIC_DLLP_REQ		= 0x1
+};
+
+enum pcie_misc_control_1_t
+{
+	PCIE_DBI_RO_WR_EN					= 0x1
+};
+
+enum pcie_gen2_ctrl_t
+{
+	PCIE_GEN2_CTRL_DIRECT_SPEED_CHANGE	= 0x2'0000
+};
+
+struct pcie_portlogic_t
+{
+	uint32_t	ACK_LATENCY_TIMER;
+	uint32_t	VENDOR_SPEC_DLLP;
+	uint32_t	PORT_FORCE;
+	uint32_t	ACK_F_ASPM_CTRL;
+	uint32_t	PORT_LINK_CTRL;
+	uint32_t	LANE_SKEW;
+	uint32_t	TIMER_CTRL_MAX_FUNC_NUM;
+	uint32_t	SYMBOL_TIMER_FILTER_1;
+	uint32_t	FILTER_MASK_2;
+	uint32_t	AMBA_MUL_OB_DECOMP_NP_SUB_REQ_CTRL;
+	uint32_t	PL_DEBUG0;
+	uint32_t	PL_DEBUG1;
+	uint32_t	TX_P_FC_CREDIT_STATUS;
+	uint32_t	TX_NP_FC_CREDIT_STATUS;
+	uint32_t	TX_CPL_FC_CREDIT_STATUS;
+	uint32_t	QUEUE_STATUS;
+	uint32_t	VC_TX_ARBI_1;
+	uint32_t	VC_TX_ARBI_2;
+	pcie_vc_t	vcqctl[2];		//TODO how many VCs in our instance?
+	uint32_t	field_760[53];
+	uint32_t	GEN2_CTRL;
+	uint32_t	PHY_STATUS;
+	uint32_t	PHY_CONTROL;
+	uint32_t	field_818;
+	uint32_t	TRGT_MAP_CTRL;
+	uint32_t	field_820[33];
+	uint32_t	CLOCK_GATING_CTRL;
+	uint32_t	GEN3_RELATED;
+	uint32_t	GEN3_EQ_LOCAL_FS_LF;
+	uint32_t	GEN3_EQ_PSET_COEFF_MAP[11];
+	uint32_t	GEN3_EQ_PSET_INDEX;
+	uint32_t	field_8a0;
+	uint32_t	GEN3_EQ_COEFF_LEGALITY_STATUS;
+	uint32_t	GEN3_EQ_CONTROL;
+	uint32_t	GEN3_EQ_FB_MODE_DIR_CHANGE;
+	uint32_t	field_8b0;
+	uint32_t	ORDER_RULE_CTRL;
+	uint32_t	PIPE_LOOPBACK_CONTROL;
+	uint32_t	MISC_CONTROL_1;
+};
+
 struct pcie_t
 {
 	//Base configuration registers
 	pcie_cfg_t	base;
-
-	//TODO: ATU
 };
 
 #else
