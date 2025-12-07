@@ -109,3 +109,4 @@ volatile risaf_t RISAF4 __attribute__((section(".risaf4")));
 volatile risaf_t RISAF5 __attribute__((section(".risaf5")));
 
 volatile combophy_t _COMBOPHY __attribute__((section(".combophy")));
+volatile pcie_t _PCIE __attribute__((section(".pcie")));

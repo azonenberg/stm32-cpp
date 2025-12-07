@@ -158,7 +158,11 @@ extern volatile risaf_t RISAF5;
 
 #define COMBOPHY_T_VERSION 1
 #include "stm32-combophy.h"
-extern volatile combophy_t COMBOPHY;
+extern volatile combophy_t _COMBOPHY;
+
+#define PCIE_T_VERSION 1
+#include "stm32-pcie.h"
+extern volatile pcie_t _PCIE;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Peripherals only for CPU1 (Cortex-A35)

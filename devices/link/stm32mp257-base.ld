@@ -328,7 +328,7 @@ SECTIONS
 		. = ALIGN(1024K);
 		. += 1024;	/* USB3DR not implemented */
 		. = ALIGN(4096K);
-		. += 1024;	/* PCIE not implemented */
+		KEEP (*(.pcie))
 		. = ALIGN(4096K);
 		KEEP (*(.ca35ss))
 	} > AHB5

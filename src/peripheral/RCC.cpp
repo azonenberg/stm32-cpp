@@ -34,7 +34,14 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Peripheral enabling
 
-#ifdef HAVE_IPCC
+#ifdef HAVE_PCIE
+void RCCHelper::Enable([[maybe_unused]] volatile pcie_t* pcie)
+{
+	RCC.PCIECFGR = RCC_GENERIC_CFGR_EN;
+}
+#endif
+
+#ifdef HAVE_COMBOPHY
 void RCCHelper::Enable([[maybe_unused]] volatile combophy_t* combophy)
 {
 	RCC.USB3PCIEPHYCFGR = RCC_GENERIC_CFGR_EN;
