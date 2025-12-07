@@ -207,11 +207,13 @@ struct pcie_portlogic_t
 	uint32_t	MISC_CONTROL_1;
 };
 
+//see PCI Code and ID Assignment Spec rev 1.11 table 2-1
 enum pcie_captype_t
 {
-	PCIE_CAPTYPE_PCIE	= 0x10,
+	PCIE_CAPTYPE_PM		= 0x01,
 	PCIE_CAPTYPE_MSI	= 0x05,
-	PCIE_CAPTYPE_PM		= 0x01
+	PCIE_CAPTYPE_PCIE	= 0x10,
+	PCIE_CAPTYPE_MSI_X	= 0x11
 };
 
 enum pcie_ptype_t
