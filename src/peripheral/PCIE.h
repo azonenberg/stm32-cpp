@@ -27,128 +27,29 @@
 *                                                                                                                      *
 ***********************************************************************************************************************/
 
-#ifndef stm32_pcie_h
-#define stm32_pcie_h
+#ifndef PCIE_h
+#define PCIE_h
 
-#define HAVE_PCIE
+#ifdef HAVE_PCIE
 
-//STM32MP257
-#if PCIE_T_VERSION == 1
-
-struct pcie_type0_cfg_t
+///@brief PCIe controller
+class PCIE
 {
-	uint32_t	bar2;
-	uint32_t	bar3;
-	uint32_t	bar4;
-	uint32_t	bar5;
-	uint32_t	legacy_cardbus_cis;
-	uint16_t	subsysVendor;
-	uint16_t	subsysID;
-	uint32_t	expansionRomBase;
-	uint8_t		capsPtr;
-	uint8_t		padding_caps[3];
-	uint32_t	field_14;
-	uint8_t		irqLine;
-	uint8_t		irqPin;
-	uint8_t		minGnt;
-	uint8_t		maxLat;
+public:
+
+	static void SetupOutboundATURegion(
+		size_t iregion,
+		pcie_tlptype_t tlptype,
+		uint32_t cpuaddr,
+		uint32_t cpulimit,
+		uint32_t targetaddr);
+
+	static volatile pcie_atu_cfg_t* GetATU()
+	{ return reinterpret_cast<volatile pcie_atu_cfg_t*>(reinterpret_cast<volatile uint8_t*>(&_PCIE) + 0x30'0000); }
+
+	//no pcie member, assume we have only one instance so we use it implicitly
 };
 
-struct pcie_type1_cfg_t
-{
-	uint8_t		primaryBus;
-	uint8_t		secondaryBus;
-	uint8_t		subordinateBus;
-	uint8_t		secondaryLatency;
-	uint8_t		ioBase;
-	uint8_t		ioLimit;
-	uint16_t	secondaryStatus;
-	uint16_t	memoryBase;
-	uint16_t	memoryLimit;
-	uint16_t	prefetchableBase;
-	uint16_t	prefetchableLimit;
-	uint32_t	prefetchableBaseHigh;
-	uint32_t	prefetchableLimitHigh;
-	uint16_t	ioBaseHigh;
-	uint16_t	ioLimitHigh;
-	uint8_t		capsPtr;
-	uint8_t		padding_caps[3];
-	uint32_t	expansionRomBase;
-	uint8_t		irqLine;
-	uint8_t		irqPin;
-	uint16_t	bridgeCtl;
-};
+#endif
 
-//PCIe type base configuration space
-struct pcie_cfg_t
-{
-	//Base fields common to all types
-	uint16_t	vendor;
-	uint16_t	device;
-	uint16_t	command;
-	uint16_t	status;
-	uint32_t	class_revision;
-	uint8_t		cacheLineSize;
-	uint8_t		latencyTimer;
-	uint8_t		headerType;
-	uint8_t		bist;
-	uint32_t	bar0;
-	uint32_t	bar1;
-
-	//Type specific fields
-	union
-	{
-		pcie_type0_cfg_t	type0;
-		pcie_type1_cfg_t	type1;
-	};
-
-	//extensions come later
-};
-
-enum pcie_tlptype_t
-{
-	PCIE_TLP_TYPE_NORMAL	= 0,
-	PCIE_TLP_TYPE_IO		= 2,
-	PCIE_TLP_TYPE_CONFIG	= 4
-};
-
-enum pcie_region_ctrl_2_t
-{
-	PCIE_REGION_CTL_2_REGION_EN	= 0x8000'0000
-};
-
-struct pcie_atublock_t
-{
-	uint32_t	region_ctrl_1;
-	uint32_t	region_ctrl_2;
-	uint32_t	lwr_base_addr;
-	uint32_t	upper_base_addr;	//high half of base address, leave zero
-	uint32_t	limit_addr;
-	uint32_t	lwr_target_addr;
-	uint32_t	upper_target_addr;	//high half of target address, leave zero
-	uint32_t	region_ctrl_3;		//only used for SRIOV, ignore/leave zero
-	uint32_t	upper_limit_addr;	//high half of limit address, leave zero
-	uint32_t	field_24[55];
-};
-
-struct pcie_atu_cfg_t
-{
-	pcie_atublock_t	outbound;
-	pcie_atublock_t	inbound;
-};
-
-struct pcie_t
-{
-	//Base configuration registers
-	pcie_cfg_t	base;
-
-	//TODO: ATU
-};
-
-#else
-
-#error Undefined or unspecified PCIE_T_VERSION
-
-#endif	//version check
-
-#endif	//include guard
+#endif

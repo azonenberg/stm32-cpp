@@ -22,6 +22,7 @@ add_library(stm32-cpp STATIC
 	src/peripheral/MDMA.cpp
 	src/peripheral/OctoSPI.cpp
 	src/peripheral/OctoSPIManager.cpp
+	src/peripheral/PCIE.cpp
 	src/peripheral/Power.cpp
 	src/peripheral/QuadSPI.cpp
 	src/peripheral/RCC.cpp
