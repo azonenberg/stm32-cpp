@@ -44,6 +44,10 @@ class RCCHelper
 public:
 	static void Enable(volatile gpio_t* gpio);
 
+	#ifdef HAVE_RISAF
+	static void Enable(volatile risaf_t* risaf);
+	#endif
+
 	#ifdef HAVE_PCIE
 	static void Enable(volatile pcie_t* pcie);
 	#endif

@@ -34,6 +34,33 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Peripheral enabling
 
+#ifdef HAVE_RISAF
+
+/**
+	@brief Enable a RISAF block
+
+	Note that the RISAF does not have its own clock source, but the clock for the bus it's on must be running
+	for its configuration registers to be accessible.
+
+	Thus, enabling a RISAF implicitly enables the peripheral it's in front of.
+ */
+void RCCHelper::Enable(volatile risaf_t* risaf)
+{
+	#ifdef STM32MP2
+		if(risaf == &RISAF5)
+			Enable(&_PCIE);
+		else
+		{
+			//unimplemented
+			while(1)
+			{}
+		}
+	#else
+		#error unimplemented
+	#endif
+}
+#endif
+
 #ifdef HAVE_PCIE
 void RCCHelper::Enable([[maybe_unused]] volatile pcie_t* pcie)
 {

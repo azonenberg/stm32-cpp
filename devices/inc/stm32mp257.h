@@ -149,6 +149,9 @@ extern volatile icache_t _ICACHE;
 #include "stm32-dcache.h"
 extern volatile dcache_t _DCACHE;
 
+#define RIFSC_T_VERSION 1
+#include "stm32-rifsc.h"
+
 #define RISAF_T_VERSION 1
 #include "stm32-risaf.h"
 extern volatile risaf_t RISAF1;
