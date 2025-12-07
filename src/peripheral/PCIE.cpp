@@ -75,4 +75,58 @@ void PCIE::SetupOutboundATURegion(
 	{}
 }
 
+/**
+	@brief Setup an iATU inbound region
+
+	@param iregion		Region index. Ranges from 0 to 3 on the STM32MP2, other IP configs might be different
+	@param tlptype		TLP type to translate the requests to
+	@param cpuaddr		Start address on the CPU side (not an offset)
+	@param cpulimit		End address on the CPU side (not an offset)
+	@param targetaddr	Destination address on the peripheral side
+ */
+void PCIE::SetupInboundATURegion(
+	size_t iregion,
+	pcie_tlptype_t tlptype,
+	uint32_t cpuaddr,
+	uint32_t cpulimit,
+	uint32_t targetaddr)
+{
+	auto atu = PCIE::GetATU();
+	auto& region = atu[iregion].inbound;
+
+	//TLP header, leave other fields zeroed
+	region.region_ctrl_1		= tlptype;
+
+	//Hook up addresses
+	region.lwr_base_addr		= cpuaddr;
+	region.limit_addr			= cpulimit;
+	region.lwr_target_addr		= targetaddr;
+
+	//Tie off high half of all 64-bit fields. We're a 64-bit system but nothing in the pcie address space is above 4GB
+	region.upper_base_addr		= 0x0000'0000;
+	region.upper_limit_addr		= 0x0000'0000;
+	region.upper_target_addr	= 0x0000'0000;
+
+	//region_ctrl_3 is only used for SR-IO, zero it
+	region.region_ctrl_3		= 0x0000'0000;
+
+	//Enable the region after configuring it
+	region.region_ctrl_2	= PCIE_REGION_CTL_2_REGION_EN;
+
+	//Read back and wait for write to commit
+	while( (region.region_ctrl_2 & PCIE_REGION_CTL_2_REGION_EN) == 0)
+	{}
+}
+
+/**
+	@brief Clear an inbound iATU region to empty
+ */
+void PCIE::ClearInboundATURegion(size_t iregion)
+{
+	auto atu = PCIE::GetATU();
+	auto& region = atu[iregion].inbound;
+
+	region.region_ctrl_1 = 0x0000'0000;
+}
+
 #endif

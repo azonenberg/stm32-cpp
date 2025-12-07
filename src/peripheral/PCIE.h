@@ -44,6 +44,15 @@ public:
 		uint32_t cpulimit,
 		uint32_t targetaddr);
 
+	static void SetupInboundATURegion(
+		size_t iregion,
+		pcie_tlptype_t tlptype,
+		uint32_t cpuaddr,
+		uint32_t cpulimit,
+		uint32_t targetaddr);
+
+	static void ClearInboundATURegion(size_t iregion);
+
 	static volatile pcie_atu_cfg_t* GetATU()
 	{ return reinterpret_cast<volatile pcie_atu_cfg_t*>(reinterpret_cast<volatile uint8_t*>(&_PCIE) + 0x30'0000); }
 

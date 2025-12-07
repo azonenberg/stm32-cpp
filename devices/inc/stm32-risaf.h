@@ -77,6 +77,10 @@ struct risafrgn_t
 	uint32_t	field_30[4];
 };
 
+/*
+	NOTE: not all regions are implemented in all RISAFs.
+	RISAF1 has 4, RISAF2 has 4, RISAF5 has 2, only RISAF4 has the full 15 implemented
+ */
 struct risaf_t
 {
 	uint32_t	CR;
