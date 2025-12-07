@@ -207,6 +207,44 @@ struct pcie_portlogic_t
 	uint32_t	MISC_CONTROL_1;
 };
 
+enum pcie_captype_t
+{
+	PCIE_CAPTYPE_PCIE	= 0x10,
+	PCIE_CAPTYPE_MSI	= 0x05,
+	PCIE_CAPTYPE_PM		= 0x01
+};
+
+enum pcie_ptype_t
+{
+	PCIE_PTYPE_ENDPOINT		= 0,
+	PCIE_PTYPE_ROOT_OF_ROOT	= 4
+};
+
+//PCIe base capability structure
+struct pcie_cap_t
+{
+	//Common to all extended caps
+	uint8_t		type;
+	uint8_t		nextcap;
+
+	//Generic capability register, type dependent
+	uint16_t	capreg;
+};
+
+enum pcie_devcaps_t
+{
+	PCIE_DEVCAPS_FLR	= 0x1000'0000
+};
+
+//PCIe capability structure
+struct pcie_pcie_cap_t
+{
+	pcie_cap_t	base;
+	uint32_t	device_caps;
+	uint32_t	device_ctrl_status;
+	uint32_t	link_caps;
+};
+
 struct pcie_t
 {
 	//Base configuration registers
