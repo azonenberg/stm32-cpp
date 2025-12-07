@@ -21,7 +21,7 @@ set(ARCHITECTURE "aarch64")
 add_compile_definitions(LOGGER_CPU_TAG="a35-%d")
 
 # Platform flags
-set(ARCHFLAGS "-mcpu=cortex-a35 -fno-exceptions -fno-rtti -static -nostartfiles -fno-threadsafe-statics -no-pie")
+set(ARCHFLAGS "-mcpu=cortex-a35 -fno-exceptions -fno-rtti -static -nostartfiles -fno-threadsafe-statics -no-pie -fno-use-cxa-atexit")
 
 ########################################################################################################################
 # Common build flags at the end since they pull in ARCHFLAGS
