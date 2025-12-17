@@ -93,6 +93,7 @@ public:
 		uint32_t targetaddr);
 
 	static void ClearInboundATURegion(size_t iregion);
+	static void ClearOutboundATURegion(size_t iregion);
 
 protected:
 	static volatile pcie_atu_cfg_t* GetATU()

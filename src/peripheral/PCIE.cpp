@@ -220,4 +220,15 @@ void PCIE::ClearInboundATURegion(size_t iregion)
 	region.region_ctrl_1 = 0x0000'0000;
 }
 
+/**
+	@brief Clear an outbound iATU region to empty
+ */
+void PCIE::ClearOutboundATURegion(size_t iregion)
+{
+	auto atu = PCIE::GetATU();
+	auto& region = atu[iregion].outbound;
+
+	region.region_ctrl_1 = 0x0000'0000;
+}
+
 #endif
