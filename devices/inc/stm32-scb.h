@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2020-2024 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2026 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -87,11 +87,12 @@ typedef struct
 	uint32_t	MMFAR;
 	uint32_t	BFAR;
 	uint32_t	AFSR;
-	uint32_t	PFR[2];
-	uint32_t	DFR;
-	uint32_t	ADR;
-	uint32_t	MMFR[4];
-	uint32_t	ISAR[5];
+	uint32_t	ID_PFR0;
+	uint32_t	ID_PFR1;
+	uint32_t	ID_DFR0;
+	uint32_t	ID_AFR0;
+	uint32_t	ID_MMFR[4];
+	uint32_t	ID_ISAR[5];
 	uint32_t	field_e000ed74;
 #if SCB_T_VERSION == 2
 	uint32_t	CLIDR;
