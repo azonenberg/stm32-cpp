@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2020-2025 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2026 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -84,7 +84,7 @@ SPIBase::SPIBase(volatile spi_t* lane, bool fullDuplex, uint16_t baudDiv, bool m
 		//Set master mode with CS# in output mode
 		//(we don't have to configure the alt mode on CS# but this keeps it from detecting false mode faults)
 		if(masterMode)
-			lane->CFG2 = SPI_MASTER | SPI_SSOE;
+			lane->CFG2 = SPI_MASTER | SPI_SSOE | (fullDuplex ? SPI_FULL_DUPLEX : SPI_HALF_DUPLEX);
 		else
 			lane->CFG2 = 0;
 
@@ -121,7 +121,7 @@ SPIBase::SPIBase(volatile spi_t* lane, bool fullDuplex, uint16_t baudDiv, bool m
 
 void SPIBase::SetBaudDiv(uint16_t baudDiv)
 {
-	#ifdef STM32H735
+	#if (SPI_T_VERSION == 2)
 		m_lane->CFG1 &= ~(7 << 28);
 
 		switch(baudDiv)
@@ -236,11 +236,15 @@ void SPIBase::NonblockingWriteDevice(uint8_t data)
 
 void SPIBase::BlockingWrite(uint8_t data)
 {
-	m_lastWasWrite = true;
-
 	#if SPI_T_VERSION == 2
 
-		//TODO: half duplex support
+		//In half-duplex mode, select output mode
+		if(!m_fullDuplex /* && !m_lastWasWrite */)
+		{
+			m_lane->CR1 &= ~SPI_ENABLE;
+			m_lane->CR1 |= SPI_HDDIR;
+			m_lane->CR1 |= SPI_ENABLE;
+		}
 
 		//If FIFO is full, block
 		while( (m_lane->SR & SPI_TX_FIFO_MASK) == 0)
@@ -249,6 +253,17 @@ void SPIBase::BlockingWrite(uint8_t data)
 		//Send it
 		m_lane->TXDR = data;
 		m_lane->CR1 |= SPI_START;
+
+		//Wait for the send to finish
+		while( (m_lane->SR & SPI_TX_EMPTY) == 0)
+		{}
+
+		//Force SPI off after
+		if(!m_fullDuplex)
+		{
+			m_lane->CR1 &= ~SPI_ENABLE;
+			asm("dmb st");
+		}
 
 	#elif defined(STM32L031)
 
@@ -278,6 +293,8 @@ void SPIBase::BlockingWrite(uint8_t data)
 
 	#endif
 
+	m_lastWasWrite = true;
+
 	//If there's anything in the RX buffer, discard it
 	DiscardRxData();
 }
@@ -288,22 +305,38 @@ uint8_t SPIBase::BlockingRead()
 	WaitForWrites();
 	DiscardRxData();
 
-	m_lastWasWrite = false;
-
 	#if SPI_T_VERSION == 2
 
-		//TODO: half duplex support
+		//In half-duplex mode, select input mode if we need to switch
+		if(!m_fullDuplex)
+		{
+			m_lane->CR1 &= ~SPI_ENABLE;
+			m_lane->CR1 &= ~SPI_HDDIR;
+			m_lane->CR1 |= SPI_ENABLE;
+		}
 
 		//Write a dummy byte
 		m_lane->TXDR = 0;
 		m_lane->CR1 |= SPI_START;
 
 		//Wait for lane to be ready
+		while( (m_lane->SR & SPI_TX_EMPTY) != 0)
+		{}
 		while( (m_lane->SR & SPI_RX_NOT_EMPTY) == 0)
 		{}
 
+		uint8_t ret = m_lane->RXDR;
+
+		//In half duplex mode, disable the peripheral and switch back to output mode
+		if(!m_fullDuplex)
+		{
+			m_lane->CR1 &= ~SPI_ENABLE;
+			m_lane->CR1 |= SPI_HDDIR;
+			m_lane->CR1 |= SPI_ENABLE;
+		}
+
 		//Done, return it
-		return m_lane->RXDR;
+		return ret;
 
 	#else
 
@@ -321,6 +354,8 @@ uint8_t SPIBase::BlockingRead()
 		//Done, return it
 		return m_lane->DR;
 	#endif
+
+	m_lastWasWrite = false;
 }
 
 uint8_t SPIBase::BlockingReadDevice()
@@ -351,6 +386,14 @@ uint8_t SPIBase::BlockingReadDevice()
 void SPIBase::WaitForWrites()
 {
 	#if SPI_T_VERSION == 2
+
+		//If disabled, nothing to do
+		if( (m_lane->CR1 & SPI_ENABLE) == 0)
+			return;
+
+		//nothing to do if we are reading in half duplex mode
+		if(!m_fullDuplex && !m_lastWasWrite)
+			return;
 
 		//Wait for busy flag to clear
 		while( (m_lane->SR & SPI_TX_EMPTY) == 0)

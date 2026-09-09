@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2020-2024 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2026 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -85,7 +85,8 @@ enum spi_sr_bits
 enum spi_cr1_bits
 {
 	SPI_ENABLE		= 0x00000001,
-	SPI_AF_LOCK		= 0x00010000
+	SPI_AF_LOCK		= 0x00010000,
+	SPI_HDDIR		= 0x00000800
 };
 
 enum spi_cfg2_bits
@@ -93,17 +94,22 @@ enum spi_cfg2_bits
 	SPI_CPOL		= 0x02000000,
 	SPI_LSB_FIRST	= 0x00800000,
 	SPI_SSOE		= 0x20000000,
-	SPI_MASTER		= 0x00400000
+	SPI_MASTER		= 0x00400000,
+
+	SPI_FULL_DUPLEX	= 0x00000000,
+	SPI_HALF_DUPLEX = 0x00060000
 };
 
 enum spi_sr_bits
 {
-	SPI_TX_FIFO_MASK	= 0x0002,
-	//SPI_RX_FIFO_MASK	= 0x0600,
-	//SPI_BUSY			= 0x0080,
 	SPI_TX_EMPTY		= 0x1000,
-	SPI_RX_NOT_EMPTY	= 0x0001,
-	SPI_START			= 0x0200
+	//SPI_RX_FIFO_MASK	= 0x0600,
+	SPI_START			= 0x0200,
+	//SPI_BUSY			= 0x0080,
+	SPI_OVERFLOW		= 0x0040,
+	SPI_EOT				= 0x0008,
+	SPI_TX_FIFO_MASK	= 0x0002,
+	SPI_RX_NOT_EMPTY	= 0x0001
 };
 
 enum spi_ier_bits
