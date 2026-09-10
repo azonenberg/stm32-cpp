@@ -352,5 +352,7 @@ SECTIONS
 		KEEP (*(.uid))
 		. += 0x74;
 		KEEP (*(.fid))
+		. += 0x3c;
+		KEEP (*(.lid))
 	} > SIG
 }

@@ -110,6 +110,7 @@ volatile dmamux_t DMAMUX1 __attribute__((section(".dmamux1")));
 */
 volatile uint32_t U_ID[3] __attribute__((section(".uid")));
 volatile uint16_t F_ID __attribute__((section(".fid")));
+volatile uint32_t L_ID __attribute__((section(".lid")));
 volatile uint16_t PKG_ID __attribute__((section(".pkg")));
 
 volatile cryp_t CRYP __attribute__((section(".cryp")));
