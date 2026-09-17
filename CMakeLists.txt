@@ -14,6 +14,7 @@ add_library(stm32-cpp STATIC
 
 	src/peripheral/ADC.cpp
 	src/peripheral/CRC.cpp
+	src/peripheral/DAC.cpp
 	src/peripheral/DTS.cpp
 	src/peripheral/EXTI.cpp
 	src/peripheral/Flash.cpp

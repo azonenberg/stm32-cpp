@@ -80,6 +80,8 @@ volatile ptp_t PTP __attribute__((section(".ptp")));
 volatile edma_t EDMA __attribute__((section(".edma")));
 */
 
+volatile dac_t DAC1 __attribute__((section(".dac1")));
+
 volatile syscfg_t SYSCFG __attribute__((section(".syscfg")));
 
 volatile dbgmcu_t DBGMCU __attribute__((section(".dbgmcu")));

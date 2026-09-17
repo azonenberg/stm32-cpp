@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2020-2025 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2026 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -58,6 +58,13 @@ void RCCHelper::Enable(volatile risaf_t* risaf)
 	#else
 		#error unimplemented
 	#endif
+}
+#endif
+
+#ifdef HAVE_DAC
+void RCCHelper::Enable([[maybe_unused]] volatile dac_t* dac)
+{
+	RCC.APB1LENR |= RCC_APB1L_DAC12;
 }
 #endif
 

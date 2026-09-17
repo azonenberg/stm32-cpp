@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2020-2025 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2026 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -124,6 +124,7 @@ enum rcc_apb1l
 	RCC_APB1L_I2C1		= 0x00200000,
 	RCC_APB1L_I2C2		= 0x00400000,
 	RCC_APB1L_I2C3		= 0x00800000,
+	RCC_APB1L_DAC12		= 0x20000000,
 	RCC_APB1L_UART7		= 0x40000000,
 	RCC_APB1L_UART8		= 0x80000000
 };
@@ -403,6 +404,10 @@ extern volatile spi_t SPI3;
 extern volatile spi_t SPI4;
 extern volatile spi_t SPI5;
 extern volatile spi_t SPI6;
+
+#define DAC_T_VERSION 1
+#include "stm32-dac.h"
+extern volatile dac_t DAC1;
 
 #define RTC_T_VERSION 2
 #include "stm32-rtc.h"

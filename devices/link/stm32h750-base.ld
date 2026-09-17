@@ -181,6 +181,12 @@ SECTIONS
 		KEEP (*(.i2c2))
 		. = ALIGN(1024);
 		KEEP (*(.i2c3))
+		. = ALIGN(1024);
+		. += 3072;			/* 4000_6000 - 4000_6bff reserved */
+		. += 1024;			/* HDMI-CEC not implemented */
+		. += 1024;			/* 4000_7000 - 4000_73ff reserved */
+		. = ALIGN(1024);
+		KEEP (*(.dac1))
 
 		/*
 			TODO: HDMI-CEC, DAC1, UART7, UART8, CRS, SWPMI, OPAMP, MDIOS, FDCAN1, FDCAN2, CAN CCU, CAN MSG
