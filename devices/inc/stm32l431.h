@@ -229,7 +229,7 @@ typedef struct
 
 extern volatile tim_t TIM1;
 extern volatile tim_t TIM2;
-extern volatile tim_t TIM3;
+//no TIM3 on L431
 extern volatile tim_t TIM6;
 extern volatile tim_t TIM7;
 extern volatile tim_t TIM15;

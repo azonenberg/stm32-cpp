@@ -97,7 +97,7 @@ SECTIONS
 		. = ALIGN(1024);
 		KEEP (*(.tim2))
 		. = ALIGN(1024);
-		KEEP (*(.tim3))
+		. += 1024;		/* TIM3 not implemented on L431 */
 		. += 2048;		/* reserved 4000_0800 */
 		. = ALIGN(1024);
 		KEEP (*(.tim6))

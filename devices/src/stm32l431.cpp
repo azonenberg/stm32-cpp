@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2020-2024 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2026 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -72,7 +72,6 @@ volatile usart_t UART4 __attribute__((section(".uart4")));
 
 volatile tim_t TIM1 __attribute__((section(".tim1")));
 volatile tim_t TIM2 __attribute__((section(".tim2")));
-volatile tim_t TIM3 __attribute__((section(".tim3")));
 volatile tim_t TIM6 __attribute__((section(".tim6")));
 volatile tim_t TIM7 __attribute__((section(".tim7")));
 volatile tim_t TIM15 __attribute__((section(".tim15")));
