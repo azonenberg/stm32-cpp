@@ -1,8 +1,8 @@
 /***********************************************************************************************************************
 *                                                                                                                      *
-* STM32-CPP v0.1                                                                                                       *
+* STM32-CPP                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2020-2023 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2026 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -79,7 +79,8 @@ public:
 	{
 		FEATURE_GENERAL_PURPOSE,
 		FEATURE_GENERAL_PURPOSE_16BIT,
-		FEATURE_ADVANCED
+		FEATURE_ADVANCED,
+		FEATURE_BASIC
 	};
 
 	Timer(volatile tim_t* chan, Features features, uint16_t prescale);
@@ -100,9 +101,19 @@ public:
 
 	void Sleep(uint32_t ticks, bool reset = false);
 
+	void SleepWithIRQ(uint32_t ticks);
+
+	void OnIRQ()
+	{
+		m_irqTriggeredFlag = 1;
+		m_chan->SR = 0;
+	}
+
 protected:
 	volatile tim_t*	m_chan;
 	Features m_features;
+
+	bool m_irqTriggeredFlag;
 };
 
 #endif	//ifdef SIMULATION

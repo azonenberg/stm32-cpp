@@ -2,7 +2,7 @@
 *                                                                                                                      *
 * STM32-CPP                                                                                                            *
 *                                                                                                                      *
-* Copyright (c) 2020-2025 Andrew D. Zonenberg                                                                          *
+* Copyright (c) 2020-2026 Andrew D. Zonenberg                                                                          *
 * All rights reserved.                                                                                                 *
 *                                                                                                                      *
 * Redistribution and use in source and binary forms, with or without modification, are permitted provided that the     *
@@ -46,6 +46,7 @@
 Timer::Timer(volatile tim_t* chan, Features features, uint16_t prescale)
 	: m_chan(chan)
 	, m_features(features)
+	, m_irqTriggeredFlag(false)
 {
 	RCCHelper::Enable(chan);
 	Initialize(prescale);
@@ -104,16 +105,52 @@ void Timer::Sleep(uint32_t ticks, bool reset)
 
 	if(m_features == FEATURE_GENERAL_PURPOSE_16BIT)
 	{
+		//TODO: fix the same race here
 		uint16_t target = m_chan->CNT + ticks;
 		while(m_chan->CNT != target)
 		{}
 	}
 	else
 	{
-		uint32_t target = m_chan->CNT + ticks;
-		while(m_chan->CNT != target)
-		{}
+		uint32_t startCNT = m_chan->CNT;
+		uint32_t target = startCNT + ticks;
+
+		//If we are going to wrap, handle that
+		if(target < startCNT)
+		{
+			while( (m_chan->CNT < target) || (m_chan->CNT > startCNT) )
+			{}
+		}
+
+		//Not wrapping
+		else
+		{
+			while(m_chan->CNT < target)
+			{}
+		}
 	}
+}
+
+
+/**
+	@brief Blocking wait until the timer has advanced by the specified number of ticks
+
+	This function always resets the timer
+
+	@param ticks		Number of ticks to wait
+ */
+void Timer::SleepWithIRQ(uint32_t ticks)
+{
+	m_chan->ARR = ticks;
+	m_chan->CR1 = 0;	//disabled
+	m_chan->CNT = 0;	//restart
+	m_chan->DIER = 1;	//update interrupt enable
+	m_chan->CR1 = 9;	//one pulse, enabled
+
+	m_irqTriggeredFlag = false;
+
+	while(!m_irqTriggeredFlag)
+		asm("wfi");
 }
 
 #endif
