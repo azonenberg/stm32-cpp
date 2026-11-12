@@ -137,11 +137,11 @@ void Timer::Sleep(uint32_t ticks, bool reset)
 
 	This function always resets the timer
 
-	@param ticks		Number of ticks to wait
+	@param ticks		Number of ticks to wait (must be >1)
  */
 void Timer::SleepWithIRQ(uint32_t ticks)
 {
-	m_chan->ARR = ticks;
+	m_chan->ARR = ticks - 1;
 	m_chan->CR1 = 0;	//disabled
 	m_chan->CNT = 0;	//restart
 	m_chan->DIER = 1;	//update interrupt enable
